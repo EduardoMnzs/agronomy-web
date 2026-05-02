@@ -21,7 +21,6 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Custom scrollbar for better look in internal scrolls */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

@@ -9,14 +9,13 @@ export default function Workbench() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   useEffect(() => {
-    // Initialize dark mode on mount
     document.documentElement.classList.add('dark');
   }, []);
 
   return (
     <div className="h-screen w-screen bg-[#F7F7FF] dark:bg-[#2c3033] flex overflow-hidden transition-colors duration-300">
       <Sidebar isMobileOpen={isMobileOpen} onCloseMobile={() => setIsMobileOpen(false)} />
-      
+
       <div className="flex-1 flex flex-col min-w-0">
         <Header title="Consulta" onOpenMobile={() => setIsMobileOpen(true)} />
         <main className="flex-1 p-3 lg:p-[14px] overflow-y-auto lg:overflow-hidden box-border">

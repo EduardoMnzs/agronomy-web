@@ -5,7 +5,7 @@ import agronomyLogo from '../../assets/images/Agronomy-logo.png';
 
 
 const Card = ({ children, className = '' }) => (
-  <motion.div 
+  <motion.div
     variants={{
       hidden: { opacity: 0, y: 20 },
       show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
@@ -25,7 +25,7 @@ const thinkingSteps = [
 
 export default function CenterColumn() {
   const [query, setQuery] = useState('');
-  const [status, setStatus] = useState('idle'); // idle, thinking, answered
+  const [status, setStatus] = useState('idle');
   const [activeChip, setActiveChip] = useState('contexto');
   const [stepIndex, setStepIndex] = useState(0);
 
@@ -41,8 +41,7 @@ export default function CenterColumn() {
       setQuery(text);
       setStatus('thinking');
       setStepIndex(0);
-      
-      // Simulate backend delay (e.g. 4 seconds)
+
       setTimeout(() => {
         setStatus('answered');
       }, 4000);
@@ -60,7 +59,7 @@ export default function CenterColumn() {
   }, [status]);
 
   return (
-    <motion.div 
+    <motion.div
       initial="hidden"
       animate="show"
       variants={{
@@ -71,7 +70,7 @@ export default function CenterColumn() {
     >
       <AnimatePresence>
         {status === 'idle' && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, height: 0, marginBottom: 0 }}
             animate={{ opacity: 1, height: 'auto', marginBottom: 0 }}
             exit={{ opacity: 0, height: 0, marginBottom: 0, padding: 0, overflow: 'hidden' }}
@@ -102,7 +101,7 @@ export default function CenterColumn() {
             }
           }}
         />
-        
+
         <div className="flex justify-between items-center mt-auto border-t border-gray-100 dark:border-[#2c3033] pt-3">
           <div className="flex flex-wrap gap-1.5">
             {chips.map(chip => (
@@ -112,27 +111,26 @@ export default function CenterColumn() {
                 key={chip.id}
                 disabled={status === 'thinking'}
                 onClick={() => setActiveChip(chip.id)}
-                className={`text-[10px] px-2.5 py-1.5 rounded-md transition-colors duration-300 ${
-                  activeChip === chip.id 
-                    ? 'bg-gray-100 dark:bg-[#2c3033] text-[#131E29] dark:text-white font-medium border border-gray-300 dark:border-gray-600 shadow-sm' 
+                className={`text-[10px] px-2.5 py-1.5 rounded-md transition-colors duration-300 ${activeChip === chip.id
+                    ? 'bg-gray-100 dark:bg-[#2c3033] text-[#131E29] dark:text-white font-medium border border-gray-300 dark:border-gray-600 shadow-sm'
                     : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#2c3033] border border-transparent'
-                } ${status === 'thinking' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  } ${status === 'thinking' ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {chip.label}
               </motion.button>
             ))}
           </div>
-          
-          <motion.button 
+
+          <motion.button
             whileHover={status !== 'thinking' ? { scale: 1.05 } : {}}
             whileTap={status !== 'thinking' ? { scale: 0.95 } : {}}
             onClick={() => handleConsultar()}
             disabled={status === 'thinking'}
             className={`p-2 rounded-full flex items-center justify-center transition-all duration-300 shrink-0 relative overflow-hidden w-8 h-8
-              ${status === 'thinking' ? 'bg-[#2c3033] text-gray-500 cursor-not-allowed' : 
-                query.trim() 
-                ? 'bg-[#EC6608] text-white hover:bg-[#d95d07] shadow-sm' 
-                : 'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608]'
+              ${status === 'thinking' ? 'bg-[#2c3033] text-gray-500 cursor-not-allowed' :
+                query.trim()
+                  ? 'bg-[#EC6608] text-white hover:bg-[#d95d07] shadow-sm'
+                  : 'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608]'
               }`}
           >
             <AnimatePresence mode="wait">
@@ -175,7 +173,7 @@ export default function CenterColumn() {
       <Card className="flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
           {status === 'answered' ? (
-            <motion.div 
+            <motion.div
               key="answer"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -197,14 +195,14 @@ export default function CenterColumn() {
                 </div>
                 <p>
                   Onde:
-                  <br/>• CTC = 8.5
-                  <br/>• V2 (Desejada para soja) = 60%
-                  <br/>• V1 (Atual) = 32%
-                  <br/>• PRNT (Exemplo) = 90%
+                  <br />• CTC = 8.5
+                  <br />• V2 (Desejada para soja) = 60%
+                  <br />• V1 (Atual) = 32%
+                  <br />• PRNT (Exemplo) = 90%
                 </p>
                 <p>
                   Substituindo os valores:
-                  <br/>
+                  <br />
                   <span className="font-mono bg-[#EC6608]/10 dark:bg-[#EC6608]/20 text-[#EC6608] px-1.5 py-0.5 rounded dark:border dark:border-[#EC6608]/30 transition-colors duration-300">
                     NC = 8.5 × (60 - 32) / 90 = 2.64 t/ha
                   </span>
@@ -216,7 +214,7 @@ export default function CenterColumn() {
               </div>
             </motion.div>
           ) : status === 'thinking' ? (
-            <motion.div 
+            <motion.div
               key="thinking"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -229,7 +227,7 @@ export default function CenterColumn() {
                 <div className="absolute w-16 h-16 rounded-full border-4 border-transparent border-t-[#EC6608] dark:border-t-[#EC6608] animate-spin"></div>
                 <img src={agronomyLogo} alt="Loading" className="w-6 h-6 object-contain animate-pulse opacity-90" />
               </div>
-              
+
               <div className="h-6 relative w-full flex justify-center items-center overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.p
@@ -246,7 +244,7 @@ export default function CenterColumn() {
               </div>
             </motion.div>
           ) : (
-            <motion.div 
+            <motion.div
               key="empty"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -268,7 +266,7 @@ export default function CenterColumn() {
                   "Comparar cultivares BRS 1010 IPRO e M 5917 IPRO.",
                   "Impacto do estresse hídrico no enchimento de grãos?"
                 ].map((text, i) => (
-                  <motion.button 
+                  <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     key={i}
