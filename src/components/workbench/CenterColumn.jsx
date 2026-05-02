@@ -126,7 +126,7 @@ export default function CenterColumn() {
             whileTap={status !== 'thinking' ? { scale: 0.95 } : {}}
             onClick={() => handleConsultar()}
             disabled={status === 'thinking'}
-            className={`p-2 rounded-full flex items-center justify-center transition-all duration-300 shrink-0 relative overflow-hidden w-8 h-8
+            className={`cursor-pointer p-2 rounded-full flex items-center justify-center transition-all duration-300 shrink-0 relative overflow-hidden w-8 h-8
               ${status === 'thinking' ? 'bg-[#2c3033] text-gray-500 cursor-not-allowed' :
                 query.trim()
                   ? 'bg-[#EC6608] text-white hover:bg-[#d95d07] shadow-sm'
@@ -271,7 +271,7 @@ export default function CenterColumn() {
                     whileTap={{ scale: 0.98 }}
                     key={i}
                     onClick={() => { handleConsultar(text); }}
-                    className="text-left text-xs p-3.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#EC6608] dark:hover:border-[#EC6608] hover:bg-orange-50/50 dark:hover:bg-[#EC6608]/10 transition-colors duration-300 text-gray-600 dark:text-gray-300 shadow-sm"
+                    className="cursor-pointer text-left text-xs p-3.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#EC6608] dark:hover:border-[#EC6608] hover:bg-orange-50/50 dark:hover:bg-[#EC6608]/10 transition-colors duration-300 text-gray-600 dark:text-gray-300 shadow-sm"
                   >
                     {text}
                   </motion.button>

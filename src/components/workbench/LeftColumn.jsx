@@ -78,9 +78,9 @@ export default function LeftColumn() {
         <div className="flex justify-between items-center mb-3 shrink-0">
           <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider transition-colors duration-300">Documentos</h2>
           <div className="flex items-center gap-2">
-            <button onClick={handleSelectAll} className="text-[10px] text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608] transition-colors">Tudo</button>
+            <button onClick={handleSelectAll} className="cursor-pointer text-[10px] text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608] transition-colors">Tudo</button>
             <span className="text-gray-300 dark:text-gray-600 text-[10px]">|</span>
-            <button onClick={handleClear} className="text-[10px] text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors">Limpar</button>
+            <button onClick={handleClear} className="cursor-pointer text-[10px] text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors">Limpar</button>
           </div>
         </div>
         

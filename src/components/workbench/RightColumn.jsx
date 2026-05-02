@@ -32,11 +32,11 @@ export default function RightColumn() {
             <span className="text-xs font-medium text-[#131E29] dark:text-white truncate transition-colors duration-300">Embrapa_Calagem_Recomendacoes.pdf</span>
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <button className="p-1 hover:bg-gray-100 dark:hover:bg-[#2c3033] rounded text-gray-500 dark:text-gray-400 transition-colors duration-300">
+            <button className="cursor-pointer p-1 hover:bg-gray-100 dark:hover:bg-[#2c3033] rounded text-gray-500 dark:text-gray-400 transition-colors duration-300">
               <ZoomOut className="w-3.5 h-3.5" />
             </button>
             <span className="text-[10px] text-gray-500 dark:text-gray-400 font-mono w-8 text-center transition-colors duration-300">100%</span>
-            <button className="p-1 hover:bg-gray-100 dark:hover:bg-[#2c3033] rounded text-gray-500 dark:text-gray-400 transition-colors duration-300">
+            <button className="cursor-pointer p-1 hover:bg-gray-100 dark:hover:bg-[#2c3033] rounded text-gray-500 dark:text-gray-400 transition-colors duration-300">
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -58,9 +58,9 @@ export default function RightColumn() {
           </div>
           
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-gray-800/80 dark:bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-2 transition-colors duration-300">
-            <button className="hover:text-[#EC6608] transition-colors"><ChevronLeft className="w-3 h-3" /></button>
+            <button className="cursor-pointer hover:text-[#EC6608] transition-colors"><ChevronLeft className="w-3 h-3" /></button>
             <span>Pág 14 / 42</span>
-            <button className="hover:text-[#EC6608] transition-colors"><ChevronRight className="w-3 h-3" /></button>
+            <button className="cursor-pointer hover:text-[#EC6608] transition-colors"><ChevronRight className="w-3 h-3" /></button>
           </div>
         </div>
       </Card>
