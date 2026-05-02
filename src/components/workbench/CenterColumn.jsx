@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Mic, Sparkles, CheckCircle2, MessageSquareText, Sprout, Bug, FlaskConical, CloudRain, Loader2 } from 'lucide-react';
+import { Send, Mic, Sparkles, CheckCircle2, MessageSquareText, Sprout, Bug, FlaskConical, CloudRain, Loader2, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import agronomyLogo from '../../assets/images/Agronomy-logo.png';
 
@@ -23,9 +23,24 @@ const thinkingSteps = [
   "Elaborando a resposta..."
 ];
 
-export default function CenterColumn() {
+export default function CenterColumn({ onFocusClick, onAnswered }) {
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('idle');
+
+  const containerVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    show: {
+      opacity: 1,
+      scale: 1,
+      transition: { staggerChildren: 0.1 }
+    },
+    exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
   const [activeChip, setActiveChip] = useState('contexto');
   const [stepIndex, setStepIndex] = useState(0);
 
@@ -44,6 +59,7 @@ export default function CenterColumn() {
 
       setTimeout(() => {
         setStatus('answered');
+        if (onAnswered) onAnswered();
       }, 4000);
     }
   };
@@ -121,52 +137,64 @@ export default function CenterColumn() {
             ))}
           </div>
 
-          <motion.button
-            whileHover={status !== 'thinking' ? { scale: 1.05 } : {}}
-            whileTap={status !== 'thinking' ? { scale: 0.95 } : {}}
-            onClick={() => handleConsultar()}
-            disabled={status === 'thinking'}
-            className={`cursor-pointer p-2 rounded-full flex items-center justify-center transition-all duration-300 shrink-0 relative overflow-hidden w-8 h-8
-              ${status === 'thinking' ? 'bg-[#2c3033] text-gray-500 cursor-not-allowed' :
-                query.trim()
-                  ? 'bg-[#EC6608] text-white hover:bg-[#d95d07] shadow-sm'
-                  : 'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608]'
-              }`}
-          >
-            <AnimatePresence mode="wait">
-              {status === 'thinking' ? (
-                <motion.div
-                  key="loading"
-                  initial={{ opacity: 0, rotate: -90 }}
-                  animate={{ opacity: 1, rotate: 0 }}
-                  exit={{ opacity: 0, scale: 0 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                </motion.div>
-              ) : query.trim() ? (
-                <motion.div
-                  key="send"
-                  initial={{ scale: 0, rotate: -45 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  exit={{ scale: 0, rotate: 45 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  <Send className="w-4 h-4 pr-0.5 pt-0.5" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="mic"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  exit={{ scale: 0 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  <Mic className="w-4 h-4" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.button>
+          <div className="flex items-center gap-1">
+            <motion.button
+              whileHover={status !== 'thinking' ? { scale: 1.05 } : {}}
+              whileTap={status !== 'thinking' ? { scale: 0.95 } : {}}
+              onClick={onFocusClick}
+              title="Modo Foco"
+              className="cursor-pointer p-2 text-gray-400 hover:text-[#EC6608] hover:bg-orange-50 dark:hover:bg-[#EC6608]/10 rounded-full transition-colors duration-300"
+            >
+              <Target className="w-4 h-4" />
+            </motion.button>
+            <motion.button
+              whileHover={status !== 'thinking' ? { scale: 1.05 } : {}}
+              whileTap={status !== 'thinking' ? { scale: 0.95 } : {}}
+              onClick={() => handleConsultar()}
+              disabled={status === 'thinking'}
+              className={`cursor-pointer p-2 rounded-full flex items-center justify-center transition-all duration-300 shrink-0 relative overflow-hidden w-8 h-8
+                ${status === 'thinking'
+                  ? 'bg-gray-100 dark:bg-[#2c3033] text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                  : query.trim()
+                    ? 'bg-[#EC6608] text-white hover:bg-[#d95d07] shadow-sm'
+                    : 'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608]'
+                }`}
+            >
+              <AnimatePresence mode="wait">
+                {status === 'thinking' ? (
+                  <motion.div
+                    key="loading"
+                    initial={{ opacity: 0, rotate: -90 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  >
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  </motion.div>
+                ) : query.trim() ? (
+                  <motion.div
+                    key="send"
+                    initial={{ scale: 0, rotate: -45 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    exit={{ scale: 0, rotate: 45 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  >
+                    <Send className="w-4 h-4 pr-0.5 pt-0.5" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="mic"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  >
+                    <Mic className="w-4 h-4" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          </div>
         </div>
       </Card>
 
@@ -246,20 +274,20 @@ export default function CenterColumn() {
           ) : (
             <motion.div
               key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+              exit="exit"
               className="flex-1 flex flex-col items-center justify-center text-center p-6 h-full"
             >
-              <div className="w-12 h-12 bg-gray-50 dark:bg-[#2c3033] rounded-2xl flex items-center justify-center mb-4 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+              <motion.div variants={itemVariants} className="w-12 h-12 bg-gray-50 dark:bg-[#2c3033] rounded-2xl flex items-center justify-center mb-4 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
                 <MessageSquareText className="w-6 h-6 text-gray-400" />
-              </div>
-              <h3 className="text-sm font-semibold text-[#131E29] dark:text-white mb-1 transition-colors duration-300">Pronto para consultar</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-6 max-w-[250px] transition-colors duration-300">
+              </motion.div>
+              <motion.h3 variants={itemVariants} className="text-sm font-semibold text-[#131E29] dark:text-white mb-1 transition-colors duration-300">Pronto para consultar</motion.h3>
+              <motion.p variants={itemVariants} className="text-xs text-gray-500 dark:text-gray-400 mb-6 max-w-[250px] transition-colors duration-300">
                 Digite uma pergunta acima ou escolha uma das sugestões baseadas no contexto atual.
-              </p>
-              <div className="grid grid-cols-2 gap-2 w-full max-w-[540px]">
+              </motion.p>
+              <motion.div variants={itemVariants} className="grid grid-cols-2 gap-2 w-full max-w-[540px]">
                 {[
                   "Qual a necessidade de calagem (NC) para este talhão?",
                   "Melhor herbicida para controle de buva resistente?",
@@ -276,7 +304,7 @@ export default function CenterColumn() {
                     {text}
                   </motion.button>
                 ))}
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>

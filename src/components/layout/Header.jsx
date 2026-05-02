@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, Menu, Sun, Moon } from 'lucide-react';
 
-export default function Header({ title = 'Consulta', onOpenMobile }) {
+export default function Header({ title = 'Consulta', onOpenMobile, viewMode, setViewMode }) {
   return (
     <header className="h-16 bg-white dark:bg-[#323639] border-b border-gray-200 dark:border-[#2c3033] flex items-center justify-between px-4 md:px-8 shadow-sm z-0 flex-shrink-0 transition-colors duration-300">
       <HeaderLeft title={title} onOpenMobile={onOpenMobile} />
-      <HeaderRight />
+      <HeaderRight viewMode={viewMode} setViewMode={setViewMode} />
     </header>
   );
 }
@@ -26,7 +26,7 @@ function HeaderLeft({ title, onOpenMobile }) {
   );
 }
 
-function HeaderRight() {
+function HeaderRight({ viewMode, setViewMode }) {
   return (
     <div className="flex items-center gap-3 md:gap-6">
       <SearchInput />
@@ -57,7 +57,7 @@ function ThemeToggle() {
   };
 
   return (
-    <button 
+    <button
       onClick={toggleTheme}
       className="cursor-pointer relative p-2 text-gray-400 hover:text-[#131E29] dark:hover:text-white transition-colors bg-gray-50 dark:bg-[#2c3033] rounded-full"
       title={isDark ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
