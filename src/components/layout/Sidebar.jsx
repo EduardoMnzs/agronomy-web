@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, PanelLeftClose, PanelLeftOpen, Settings, LogOut, SquarePen,
@@ -61,6 +61,7 @@ export default function Sidebar({ isMobileOpen, onCloseMobile }) {
 
 function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleCollapse, conversations, handlePin, handleRename, handleDelete, handleClearAll }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const collapsed = forceExpanded ? false : isCollapsed;
 
   const containerVariants = {
@@ -100,7 +101,7 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
         transition={{ type: 'spring', stiffness: 320, damping: 26, delay: 0.1 }}
         className="px-3 pt-3 pb-2 flex-shrink-0"
       >
-        <SidebarItem icon={SquarePen} label="Nova consulta" collapsed={collapsed} accent />
+        <SidebarItem icon={SquarePen} label="Nova consulta" collapsed={collapsed} accent onClick={() => navigate('/app')} />
       </motion.div>
 
       <motion.div
@@ -127,7 +128,7 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
           <Section label="Administração" collapsed={collapsed}>
             <SidebarItem icon={Book} label="Base de conhecimento" collapsed={collapsed} />
             <SidebarItem icon={Upload} label="Indexar documento" collapsed={collapsed} />
-            <SidebarItem icon={Users} label="Usuários" collapsed={collapsed} />
+            <SidebarItem icon={Users} label="Usuários" collapsed={collapsed} active={location.pathname === '/users'} onClick={() => navigate('/users')} />
           </Section>
         </motion.div>
 
@@ -191,7 +192,7 @@ function Section({ label, collapsed, children, action }) {
   );
 }
 
-function SidebarItem({ icon: Icon, label, collapsed, accent, muted, danger, truncate, onClick }) {
+function SidebarItem({ icon: Icon, label, collapsed, accent, active, muted, danger, truncate, onClick }) {
   return (
     <button
       onClick={onClick}
@@ -199,9 +200,10 @@ function SidebarItem({ icon: Icon, label, collapsed, accent, muted, danger, trun
       className={`cursor-pointer w-full flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 text-sm
         ${collapsed ? 'justify-center' : 'gap-2.5'}
         ${accent ? 'bg-[#EC6608] text-white hover:bg-[#d95d07] font-semibold shadow-sm' : ''}
+        ${active ? 'bg-[#EC6608]/10 dark:bg-[#EC6608]/20 text-[#EC6608] font-medium' : ''}
         ${muted ? 'text-gray-400 dark:text-white/30 hover:bg-gray-50 dark:hover:bg-white/5 border border-dashed border-gray-200 dark:border-white/10' : ''}
         ${danger ? 'text-red-500/80 dark:text-red-400/80 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600' : ''}
-        ${!accent && !muted && !danger ? 'text-gray-500 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-[#131E29] dark:hover:text-white' : ''}`}
+        ${!accent && !active && !muted && !danger ? 'text-gray-500 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-[#131E29] dark:hover:text-white' : ''}`}
     >
       {Icon && <Icon size={16} className="flex-shrink-0" />}
       {!collapsed && (

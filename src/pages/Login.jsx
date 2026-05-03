@@ -28,13 +28,13 @@ export default function Login() {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#EC6608]/20 dark:bg-[#EC6608]/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 dark:bg-blue-500/5 blur-[120px] pointer-events-none" />
 
-      <div className="hidden lg:flex lg:w-1/2 relative bg-[#131E29] items-center justify-center p-12 overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 relative bg-[#0a0a0b] items-center justify-center p-12 overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
         <div className="absolute -left-40 top-1/2 -translate-y-1/2 pointer-events-none opacity-15">
           <img src={agronomyLogo} alt="Background Logo" className="w-[700px] h-[700px] object-contain" />
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#131E29]/50 to-[#131E29]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0b]/50 to-[#0a0a0b]" />
 
         <div className="relative z-10 w-full max-w-lg">
           <motion.div
