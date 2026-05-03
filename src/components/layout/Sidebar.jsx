@@ -1,38 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, PanelLeftClose, PanelLeftOpen, Settings, LogOut, SquarePen, Clock, Folder, Book, Upload, Users, Sprout } from 'lucide-react';
+import {
+  X, PanelLeftClose, PanelLeftOpen, Settings, LogOut, SquarePen,
+  Folder, Book, Upload, Users, FilePlus, MoreHorizontal,
+  Pin, Pencil, Trash2, MessageSquare, Sprout
+} from 'lucide-react';
 import agronomyLogo from '../../assets/images/Agronomy-logo.png';
 
-const NAV_ITEMS = [
-  { id: 'consulta', label: 'Consulta', icon: SquarePen },
-  { id: 'historico', label: 'Histórico', icon: Clock },
-  { id: 'documentos', label: 'Meus documentos', icon: Folder },
-  { id: 'base', label: 'Base de conhecimento', icon: Book },
-  { id: 'indexar', label: 'Indexar documento', icon: Upload },
-  { id: 'usuarios', label: 'Usuários', icon: Users },
+const mockDocuments = [
+  { id: 'd1', name: 'analise_solo_talhao_7.pdf' },
 ];
 
-const SidebarContent = ({ isCollapsed, currentRoute, onNavigate, onCloseMobile, onToggleCollapse }) => (
-  <>
-    <SidebarBrand isCollapsed={isCollapsed} onCloseMobile={onCloseMobile} />
-    <SidebarNav
-      currentRoute={currentRoute}
-      onNavigate={onNavigate}
-      isCollapsed={isCollapsed}
-      onCloseMobile={onCloseMobile}
-    />
-    <CollapseToggle isCollapsed={isCollapsed} onToggle={onToggleCollapse} />
-    <SidebarBottomActions isCollapsed={isCollapsed} onNavigate={onNavigate} onCloseMobile={onCloseMobile} />
-    <SidebarFooter isCollapsed={isCollapsed} />
-  </>
-);
+const mockConversations = [
+  { id: 'c1', label: 'Necessidade de calagem para soja', pinned: true },
+  { id: 'c2', label: 'Controle de buva resistente no PR', pinned: false },
+  { id: 'c3', label: 'Comparação de cultivares IPRO', pinned: false },
+  { id: 'c4', label: 'Estresse hídrico no enchimento', pinned: false },
+];
 
 export default function Sidebar({ isMobileOpen, onCloseMobile }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [currentRoute, setCurrentRoute] = useState('consulta');
+  const [conversations, setConversations] = useState(mockConversations);
 
-  const onToggleCollapse = () => setIsCollapsed(!isCollapsed);
-  const onNavigate = (id) => setCurrentRoute(id);
+  const handlePin = (id) => setConversations(prev => prev.map(c => c.id === id ? { ...c, pinned: !c.pinned } : c));
+  const handleRename = (id, newLabel) => setConversations(prev => prev.map(c => c.id === id ? { ...c, label: newLabel } : c));
+  const handleDelete = (id) => setConversations(prev => prev.filter(c => c.id !== id));
+  const handleClearAll = () => setConversations([]);
+
+  const sharedProps = { isCollapsed, conversations, handlePin, handleRename, handleDelete, handleClearAll };
 
   return (
     <>
@@ -40,171 +35,324 @@ export default function Sidebar({ isMobileOpen, onCloseMobile }) {
         {isMobileOpen && (
           <>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               className="fixed inset-0 bg-black/50 z-20 lg:hidden"
               onClick={onCloseMobile}
             />
             <motion.aside
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 250 }}
+              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 250 }}
               className="fixed inset-y-0 left-0 z-30 w-64 bg-white dark:bg-[#323639] border-r border-gray-200 dark:border-transparent h-screen flex flex-col text-[#131E29] dark:text-white shadow-xl flex-shrink-0 lg:hidden overflow-hidden"
             >
-              <SidebarContent 
-                isCollapsed={false} 
-                currentRoute={currentRoute} 
-                onNavigate={onNavigate} 
-                onCloseMobile={onCloseMobile} 
-                onToggleCollapse={onToggleCollapse} 
-              />
+              <SidebarInner {...sharedProps} onCloseMobile={onCloseMobile} onToggleCollapse={() => setIsCollapsed(v => !v)} forceExpanded />
             </motion.aside>
           </>
         )}
       </AnimatePresence>
 
-      <aside
-        className={`
-          hidden lg:flex relative inset-y-0 left-0 z-30
-          bg-white dark:bg-[#323639] border-r border-gray-200 dark:border-transparent h-screen flex-col text-[#131E29] dark:text-white shadow-xl flex-shrink-0
-          overflow-hidden transition-[width,background-color,border-color] duration-300 ease-in-out
-          ${isCollapsed ? 'w-[72px]' : 'w-64'}
-        `}
-      >
-        <SidebarContent 
-          isCollapsed={isCollapsed} 
-          currentRoute={currentRoute} 
-          onNavigate={onNavigate} 
-          onCloseMobile={onCloseMobile} 
-          onToggleCollapse={onToggleCollapse} 
-        />
+      <aside className={`hidden lg:flex relative inset-y-0 left-0 z-30 bg-white dark:bg-[#323639] border-r border-gray-200 dark:border-transparent h-screen flex-col text-[#131E29] dark:text-white shadow-xl flex-shrink-0 overflow-hidden transition-[width,background-color,border-color] duration-300 ease-in-out ${isCollapsed ? 'w-[72px]' : 'w-64'}`}>
+        <SidebarInner {...sharedProps} onCloseMobile={() => { }} onToggleCollapse={() => setIsCollapsed(v => !v)} />
       </aside>
     </>
   );
 }
 
-function SidebarBrand({ isCollapsed, onCloseMobile }) {
-  return (
-    <div className={`px-4 flex items-center border-b border-gray-100 dark:border-white/5 h-16 flex-shrink-0 transition-colors duration-300 ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-      <img src={agronomyLogo} alt="Agronomy Logo" className="w-8 h-8 object-contain flex-shrink-0" />
+function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleCollapse, conversations, handlePin, handleRename, handleDelete, handleClearAll }) {
+  const collapsed = forceExpanded ? false : isCollapsed;
 
-      <div className={`flex flex-col min-w-0 flex-1 transition-[opacity] duration-150 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100 delay-150'}`}>
-        <div className="text-xl tracking-tight leading-none whitespace-nowrap text-[#131E29] dark:text-white transition-colors duration-300">
-          <span className="font-bold">AGRONO</span>
-          <span className="font-light">MY</span>
+  return (
+    <div className="flex flex-col h-full">
+      <div className={`px-4 flex items-center border-b border-gray-100 dark:border-white/5 h-16 flex-shrink-0 transition-colors duration-300 ${collapsed ? 'justify-center' : 'gap-3'}`}>
+        <img src={agronomyLogo} alt="Agronomy Logo" className="w-8 h-8 object-contain flex-shrink-0" />
+        <div className={`flex flex-col min-w-0 flex-1 transition-[opacity] duration-150 ${collapsed ? 'opacity-0 pointer-events-none' : 'opacity-100 delay-150'}`}>
+          <div className="text-xl tracking-tight leading-none whitespace-nowrap text-[#131E29] dark:text-white">
+            <span className="font-bold">AGRONO</span><span className="font-light">MY</span>
+          </div>
+          <p className="text-[10px] text-[#EC6608] font-mono uppercase tracking-[0.2em] mt-1">Knowledge</p>
         </div>
-        <p className="text-[10px] text-[#EC6608] font-mono uppercase tracking-[0.2em] mt-1 whitespace-nowrap">
-          Knowledge
-        </p>
+        <button onClick={onCloseMobile} className={`flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-[#131E29] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors flex-shrink-0 lg:hidden ${collapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+          <X size={16} />
+        </button>
+      </div>
+
+      <div className="px-3 pt-3 pb-2 flex-shrink-0">
+        <SidebarItem icon={SquarePen} label="Nova consulta" collapsed={collapsed} accent />
+      </div>
+
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-5">
+        {!collapsed && (
+          <Section label="Documentos" collapsed={collapsed}>
+            {mockDocuments.slice(0, 2).map(doc => (
+              <SidebarItem key={doc.id} icon={Folder} label={doc.name} collapsed={collapsed} truncate />
+            ))}
+            {mockDocuments.length < 2 && (
+              <SidebarItem label="+ Adicionar Documento" collapsed={collapsed} muted />
+            )}
+          </Section>
+        )}
+
+        <Section label="Administração" collapsed={collapsed}>
+          <SidebarItem icon={Book} label="Base de conhecimento" collapsed={collapsed} />
+          <SidebarItem icon={Upload} label="Indexar documento" collapsed={collapsed} />
+          <SidebarItem icon={Users} label="Usuários" collapsed={collapsed} />
+        </Section>
+
+        {!collapsed && (
+          <Section label="Conversas" collapsed={collapsed}>
+            <AnimatePresence initial={false}>
+              {[...conversations].sort((a, b) => b.pinned - a.pinned).map(conv => (
+                <ConversationItem
+                  key={conv.id}
+                  conv={conv}
+                  collapsed={collapsed}
+                  onPin={handlePin}
+                  onRename={handleRename}
+                  onDelete={handleDelete}
+                />
+              ))}
+            </AnimatePresence>
+            {conversations.length === 0 && (
+              <p className="text-[11px] text-gray-400 dark:text-white/30 px-2 py-1">Nenhuma conversa ainda.</p>
+            )}
+          </Section>
+        )}
       </div>
 
       <button
-        onClick={onCloseMobile}
-        className={`flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-[#131E29] dark:text-white/30 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors flex-shrink-0 lg:hidden ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        onClick={onToggleCollapse}
+        className="hidden lg:flex cursor-pointer items-center justify-center gap-2 w-full py-3 border-t border-gray-100 dark:border-white/5 text-gray-500 dark:text-white/60 hover:text-[#131E29] dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-200 flex-shrink-0 text-sm"
       >
-        <X size={16} />
+        {collapsed
+          ? <PanelLeftOpen size={18} className="text-gray-400 dark:text-white/40" />
+          : <><PanelLeftClose size={18} className="text-gray-400 dark:text-white/40" /><span className="whitespace-nowrap">Recolher</span></>
+        }
       </button>
+
+      <div className="p-3 border-t border-gray-100 dark:border-white/5 space-y-1">
+        <SidebarItem icon={Settings} label="Configurações" collapsed={collapsed} />
+        <SidebarItem icon={LogOut} label="Sair" collapsed={collapsed} danger />
+      </div>
+
+      <div className={`bg-gray-50 dark:bg-[#2c3033] border-t border-gray-100 dark:border-white/5 text-[10px] font-medium text-gray-400 dark:text-white/20 text-center uppercase tracking-tighter flex-shrink-0 overflow-hidden whitespace-nowrap transition-all duration-300 ${collapsed ? 'opacity-0 py-0 h-0' : 'opacity-100 p-4 delay-150'}`}>
+        AGRONOMY ASSISTANT <br /> &copy; 2026 EDUARDO MENEZES
+      </div>
     </div>
   );
 }
 
-function SidebarNav({ currentRoute, onNavigate, isCollapsed, onCloseMobile }) {
-  function handleNavigate(id) {
-    onNavigate(id);
-    onCloseMobile();
-  }
-
+function Section({ label, collapsed, children, action }) {
   return (
-    <nav className="flex-1 p-3 space-y-1 overflow-y-auto overflow-x-hidden">
-      <div className={`text-[10px] font-bold text-gray-400 dark:text-white/30 mb-4 px-2 uppercase tracking-widest mt-2 whitespace-nowrap transition-all duration-300 ${isCollapsed ? 'opacity-0' : 'opacity-100 delay-150'}`}>
-        Navegação
-      </div>
-      {NAV_ITEMS.map((item) => (
-        <NavItem
-          key={item.id}
-          item={item}
-          isActive={currentRoute === item.id}
-          isCollapsed={isCollapsed}
-          onClick={() => handleNavigate(item.id)}
-        />
-      ))}
-    </nav>
+    <div className="space-y-0.5">
+      {!collapsed && (
+        <div className="flex items-center justify-between px-2 mb-1">
+          <span className="text-[10px] font-bold text-gray-400 dark:text-white/30 uppercase tracking-widest">{label}</span>
+          {action}
+        </div>
+      )}
+      {children}
+    </div>
   );
 }
 
-function NavItem({ item, isActive, isCollapsed, onClick }) {
-  const Icon = item.icon;
+function SidebarItem({ icon: Icon, label, collapsed, accent, muted, danger, truncate, onClick }) {
   return (
     <button
       onClick={onClick}
-      title={isCollapsed ? item.label : undefined}
-      className={`cursor-pointer w-full flex items-center px-3 py-3 rounded-sm transition-colors duration-200 text-sm
-        ${isCollapsed ? 'justify-center gap-0' : 'gap-3'}
-        ${isActive
-          ? 'bg-[#EC6608] text-white font-semibold shadow-sm'
-          : 'text-gray-500 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-[#131E29] dark:hover:text-white'
-        }`}
+      title={collapsed ? label : undefined}
+      className={`cursor-pointer w-full flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 text-sm
+        ${collapsed ? 'justify-center' : 'gap-2.5'}
+        ${accent ? 'bg-[#EC6608] text-white hover:bg-[#d95d07] font-semibold shadow-sm' : ''}
+        ${muted ? 'text-gray-400 dark:text-white/30 hover:bg-gray-50 dark:hover:bg-white/5 border border-dashed border-gray-200 dark:border-white/10' : ''}
+        ${danger ? 'text-red-500/80 dark:text-red-400/80 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600' : ''}
+        ${!accent && !muted && !danger ? 'text-gray-500 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-[#131E29] dark:hover:text-white' : ''}`}
     >
-      <Icon size={18} className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400 dark:text-white/40'}`} />
-      <span className={`whitespace-nowrap overflow-hidden transition-[opacity,width] duration-150 ${isCollapsed ? 'opacity-0 w-0 min-w-0' : 'opacity-100 delay-150'}`}>
-        {item.label}
-      </span>
+      {Icon && <Icon size={16} className="flex-shrink-0" />}
+      {!collapsed && (
+        <span className={`flex-1 text-left whitespace-nowrap ${truncate ? 'overflow-hidden text-ellipsis' : ''}`}>
+          {label}
+        </span>
+      )}
     </button>
   );
 }
 
-function CollapseToggle({ isCollapsed, onToggle }) {
+function ConversationItem({ conv, collapsed, onPin, onRename, onDelete }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
+  const [renaming, setRenaming] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [draft, setDraft] = useState(conv.label);
+  const btnRef = useRef(null);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handler = (e) => {
+      const menu = document.getElementById('sidebar-ctx-menu');
+      if (menu && !menu.contains(e.target) && btnRef.current && !btnRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (renaming && inputRef.current) inputRef.current.focus();
+  }, [renaming]);
+
+  const openMenu = () => {
+    if (btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setMenuPos({ top: rect.bottom + 4, left: rect.right - 160 });
+    }
+    setMenuOpen(v => !v);
+  };
+
+  const commitRename = () => {
+    if (draft.trim()) onRename(conv.id, draft.trim());
+    setRenaming(false);
+  };
+
+  if (collapsed) {
+    return (
+      <button title={conv.label} className="cursor-pointer w-full flex items-center justify-center px-3 py-2.5 rounded-lg text-gray-500 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-[#131E29] dark:hover:text-white transition-colors duration-200">
+        <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-white/30" />
+      </button>
+    );
+  }
+
+  return (
+    <>
+      <motion.div
+        layout
+        initial={{ opacity: 0, y: -6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        transition={{ duration: 0.2 }}
+        className="relative group flex items-center gap-1.5 px-2 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-200"
+      >
+        {renaming ? (
+          <input
+            ref={inputRef}
+            value={draft}
+            onChange={e => setDraft(e.target.value)}
+            onBlur={commitRename}
+            onKeyDown={e => { if (e.key === 'Enter') commitRename(); if (e.key === 'Escape') setRenaming(false); }}
+            className="flex-1 text-xs bg-transparent border-b border-[#EC6608] outline-none text-[#131E29] dark:text-white"
+          />
+        ) : (
+          <span className="flex-1 text-xs text-gray-600 dark:text-white/70 truncate">{conv.label}</span>
+        )}
+
+        {conv.pinned ? (
+          <span className="relative flex-shrink-0 w-6 h-6 flex items-center justify-center">
+            <Pin size={11} className={`text-[#EC6608] transition-opacity absolute ${menuOpen ? 'opacity-0' : 'group-hover:opacity-0'}`} />
+            <button
+              ref={btnRef}
+              onClick={openMenu}
+              className={`cursor-pointer p-1 rounded text-gray-400 hover:text-[#131E29] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-all absolute ${menuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus:opacity-100'}`}
+            >
+              <MoreHorizontal size={14} />
+            </button>
+          </span>
+        ) : (
+          <button
+            ref={btnRef}
+            onClick={openMenu}
+            className="cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded text-gray-400 hover:text-[#131E29] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-all"
+          >
+            <MoreHorizontal size={14} />
+          </button>
+        )}
+      </motion.div>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            id="sidebar-ctx-menu"
+            initial={{ opacity: 0, scale: 0.92, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: -4 }}
+            transition={{ duration: 0.15 }}
+            style={{ top: menuPos.top, left: menuPos.left }}
+            className="fixed z-[9999] w-40 bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl py-1 overflow-hidden"
+          >
+            <ContextMenuItem icon={Pin} label={conv.pinned ? 'Desafixar' : 'Fixar'} onClick={() => { onPin(conv.id); setMenuOpen(false); }} />
+            <ContextMenuItem icon={Pencil} label="Renomear" onClick={() => { setRenaming(true); setMenuOpen(false); }} />
+            <div className="my-1 border-t border-gray-100 dark:border-gray-700" />
+            <ContextMenuItem icon={Trash2} label="Excluir" danger onClick={() => { setConfirmDelete(true); setMenuOpen(false); }} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {confirmDelete && (
+          <DeleteConfirmModal
+            label={conv.label}
+            onConfirm={() => { onDelete(conv.id); setConfirmDelete(false); }}
+            onCancel={() => setConfirmDelete(false)}
+          />
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+function ContextMenuItem({ icon: Icon, label, onClick, danger }) {
   return (
     <button
-      onClick={onToggle}
-      className="hidden cursor-pointer lg:flex items-center justify-center gap-2 w-full py-3 border-t border-gray-100 dark:border-white/5 text-gray-500 dark:text-white/60 hover:text-[#131E29] dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-200 flex-shrink-0 text-sm"
+      onClick={onClick}
+      className={`cursor-pointer w-full flex items-center gap-2.5 px-3 py-2 text-xs transition-colors duration-150
+        ${danger
+          ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10'
+          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-[#131E29] dark:hover:text-white'
+        }`}
     >
-      {isCollapsed
-        ? <PanelLeftOpen size={18} className="text-gray-400 dark:text-white/40 flex-shrink-0" />
-        : <>
-          <PanelLeftClose size={18} className="text-gray-400 dark:text-white/40 flex-shrink-0" />
-          <span className="whitespace-nowrap">Recolher</span>
-        </>
-      }
+      <Icon size={13} className="flex-shrink-0" />
+      {label}
     </button>
   );
 }
 
-function SidebarBottomActions({ isCollapsed, onNavigate, onCloseMobile }) {
+function DeleteConfirmModal({ label, onConfirm, onCancel }) {
   return (
-    <div className="p-3 border-t border-gray-100 dark:border-white/5 space-y-1 transition-colors duration-300">
-      <button
-        onClick={() => { onNavigate('settings'); onCloseMobile(); }}
-        className={`cursor-pointer w-full flex items-center px-3 py-3 rounded-sm transition-colors duration-200 text-sm text-gray-500 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-[#131E29] dark:hover:text-white ${isCollapsed ? 'justify-center gap-0' : 'gap-3'}`}
-        title={isCollapsed ? 'Configurações' : undefined}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.15 }}
+      className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+      onClick={onCancel}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.93, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.93, y: 8 }}
+        transition={{ duration: 0.18 }}
+        onClick={e => e.stopPropagation()}
+        className="bg-white dark:bg-[#323639] rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 w-80 mx-4"
       >
-        <Settings size={18} className="flex-shrink-0 text-gray-400 dark:text-white/40" />
-        <span className={`whitespace-nowrap overflow-hidden transition-[opacity,width] duration-150 ${isCollapsed ? 'opacity-0 w-0 min-w-0' : 'opacity-100 delay-150'}`}>
-          Configurações
-        </span>
-      </button>
-      <button
-        onClick={() => { console.log('logout'); }}
-        className={`cursor-pointer w-full flex items-center px-3 py-3 rounded-sm transition-colors duration-200 text-sm text-red-500/80 dark:text-red-400/80 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 ${isCollapsed ? 'justify-center gap-0' : 'gap-3'}`}
-        title={isCollapsed ? 'Sair' : undefined}
-      >
-        <LogOut size={18} className="flex-shrink-0 text-red-500/60 dark:text-red-400/60" />
-        <span className={`whitespace-nowrap overflow-hidden transition-[opacity,width] duration-150 ${isCollapsed ? 'opacity-0 w-0 min-w-0' : 'opacity-100 delay-150'}`}>
-          Sair
-        </span>
-      </button>
-    </div>
-  );
-}
-
-function SidebarFooter({ isCollapsed }) {
-  return (
-    <div className={`bg-gray-50 dark:bg-[#2c3033] border-t border-gray-100 dark:border-white/5 text-[10px] font-medium text-gray-400 dark:text-white/20 text-center uppercase tracking-tighter flex-shrink-0 overflow-hidden whitespace-nowrap transition-all duration-300 ${isCollapsed ? 'opacity-0 py-0 h-0' : 'opacity-100 p-4 delay-150'}`}>
-      AGRONOMY ASSISTANT <br />
-      &copy; 2026 EDUARDO MENEZES
-    </div>
+        <h3 className="text-sm font-semibold text-[#131E29] dark:text-white mb-3">Excluir conversa?</h3>
+        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-6">
+          A conversa <strong className="text-gray-700 dark:text-gray-200">"{label}"</strong> será excluída permanentemente e não poderá ser recuperada.
+        </p>
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={onCancel}
+            className="cursor-pointer px-4 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-[#2c3033] hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={onConfirm}
+            className="cursor-pointer px-4 py-1.5 text-xs font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors duration-200"
+          >
+            Excluir
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
