@@ -61,9 +61,24 @@ export default function Sidebar({ isMobileOpen, onCloseMobile }) {
 function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleCollapse, conversations, handlePin, handleRename, handleDelete, handleClearAll }) {
   const collapsed = forceExpanded ? false : isCollapsed;
 
+  const containerVariants = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, x: -14 },
+    show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 320, damping: 26 } }
+  };
+
   return (
     <div className="flex flex-col h-full">
-      <div className={`px-4 flex items-center border-b border-gray-100 dark:border-white/5 h-16 flex-shrink-0 transition-colors duration-300 ${collapsed ? 'justify-center' : 'gap-3'}`}>
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: 'easeOut' }}
+        className={`px-4 flex items-center border-b border-gray-100 dark:border-white/5 h-16 flex-shrink-0 transition-colors duration-300 ${collapsed ? 'justify-center' : 'gap-3'}`}
+      >
         <img src={agronomyLogo} alt="Agronomy Logo" className="w-8 h-8 object-contain flex-shrink-0" />
         <div className={`flex flex-col min-w-0 flex-1 transition-[opacity] duration-150 ${collapsed ? 'opacity-0 pointer-events-none' : 'opacity-100 delay-150'}`}>
           <div className="text-xl tracking-tight leading-none whitespace-nowrap text-[#131E29] dark:text-white">
@@ -74,50 +89,68 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
         <button onClick={onCloseMobile} className={`flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-[#131E29] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors flex-shrink-0 lg:hidden ${collapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <X size={16} />
         </button>
-      </div>
+      </motion.div>
 
-      <div className="px-3 pt-3 pb-2 flex-shrink-0">
+      <motion.div
+        key={`nova-${collapsed}`}
+        initial={{ opacity: 0, x: -14 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 26, delay: 0.1 }}
+        className="px-3 pt-3 pb-2 flex-shrink-0"
+      >
         <SidebarItem icon={SquarePen} label="Nova consulta" collapsed={collapsed} accent />
-      </div>
+      </motion.div>
 
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-5">
+      <motion.div
+        key={`content-${collapsed}`}
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-5"
+      >
         {!collapsed && (
-          <Section label="Documentos" collapsed={collapsed}>
-            {mockDocuments.slice(0, 2).map(doc => (
-              <SidebarItem key={doc.id} icon={Folder} label={doc.name} collapsed={collapsed} truncate />
-            ))}
-            {mockDocuments.length < 2 && (
-              <SidebarItem label="+ Adicionar Documento" collapsed={collapsed} muted />
-            )}
-          </Section>
-        )}
-
-        <Section label="Administração" collapsed={collapsed}>
-          <SidebarItem icon={Book} label="Base de conhecimento" collapsed={collapsed} />
-          <SidebarItem icon={Upload} label="Indexar documento" collapsed={collapsed} />
-          <SidebarItem icon={Users} label="Usuários" collapsed={collapsed} />
-        </Section>
-
-        {!collapsed && (
-          <Section label="Conversas" collapsed={collapsed}>
-            <AnimatePresence initial={false}>
-              {[...conversations].sort((a, b) => b.pinned - a.pinned).map(conv => (
-                <ConversationItem
-                  key={conv.id}
-                  conv={conv}
-                  collapsed={collapsed}
-                  onPin={handlePin}
-                  onRename={handleRename}
-                  onDelete={handleDelete}
-                />
+          <motion.div variants={itemVariants}>
+            <Section label="Documentos" collapsed={collapsed}>
+              {mockDocuments.slice(0, 2).map(doc => (
+                <SidebarItem key={doc.id} icon={Folder} label={doc.name} collapsed={collapsed} truncate />
               ))}
-            </AnimatePresence>
-            {conversations.length === 0 && (
-              <p className="text-[11px] text-gray-400 dark:text-white/30 px-2 py-1">Nenhuma conversa ainda.</p>
-            )}
-          </Section>
+              {mockDocuments.length < 2 && (
+                <SidebarItem label="+ Adicionar Documento" collapsed={collapsed} muted />
+              )}
+            </Section>
+          </motion.div>
         )}
-      </div>
+
+        <motion.div variants={itemVariants}>
+          <Section label="Administração" collapsed={collapsed}>
+            <SidebarItem icon={Book} label="Base de conhecimento" collapsed={collapsed} />
+            <SidebarItem icon={Upload} label="Indexar documento" collapsed={collapsed} />
+            <SidebarItem icon={Users} label="Usuários" collapsed={collapsed} />
+          </Section>
+        </motion.div>
+
+        {!collapsed && (
+          <motion.div variants={itemVariants}>
+            <Section label="Conversas" collapsed={collapsed}>
+              <AnimatePresence initial={false}>
+                {[...conversations].sort((a, b) => b.pinned - a.pinned).map(conv => (
+                  <ConversationItem
+                    key={conv.id}
+                    conv={conv}
+                    collapsed={collapsed}
+                    onPin={handlePin}
+                    onRename={handleRename}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </AnimatePresence>
+              {conversations.length === 0 && (
+                <p className="text-[11px] text-gray-400 dark:text-white/30 px-2 py-1">Nenhuma conversa ainda.</p>
+              )}
+            </Section>
+          </motion.div>
+        )}
+      </motion.div>
 
       <button
         onClick={onToggleCollapse}
@@ -140,6 +173,7 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
     </div>
   );
 }
+
 
 function Section({ label, collapsed, children, action }) {
   return (

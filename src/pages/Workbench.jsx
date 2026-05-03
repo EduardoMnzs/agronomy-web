@@ -26,18 +26,18 @@ export default function Workbench() {
           viewMode={viewMode}
           setViewMode={setViewMode}
         />
-        <main className="flex-1 p-3 lg:p-[14px] overflow-y-auto lg:overflow-hidden box-border">
+        <main className={`flex-1 ${viewMode === 'focus' ? 'p-0' : 'p-3'} lg:p-[14px] min-h-0 overflow-y-auto lg:overflow-hidden box-border`}>
           {viewMode === 'focus' ? (
             <FocusView onAdvancedClick={() => setViewMode('advanced')} />
           ) : (
             <div className="flex flex-col lg:grid lg:grid-cols-[260px_minmax(0,1fr)_320px] gap-[14px] lg:h-full">
-              <div className="order-2 lg:order-1 h-[450px] lg:h-full lg:min-h-0">
+              <div className="hidden lg:block lg:order-1 lg:h-full lg:min-h-0">
                 <LeftColumn />
               </div>
-              <div className="order-1 lg:order-2 h-[80vh] lg:h-full lg:min-h-0">
+              <div className="order-1 lg:order-2 lg:h-full lg:min-h-0">
                 <CenterColumn onFocusClick={() => setViewMode('focus')} onAnswered={() => setHasAnswer(true)} />
               </div>
-              <div className="order-3 lg:order-3 h-[450px] lg:h-full lg:min-h-0">
+              <div className="hidden lg:block lg:order-3 lg:h-full lg:min-h-0">
                 <RightColumn hasAnswer={hasAnswer} />
               </div>
             </div>

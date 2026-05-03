@@ -82,7 +82,7 @@ export default function CenterColumn({ onFocusClick, onAnswered }) {
         hidden: { opacity: 0 },
         show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } }
       }}
-      className="flex flex-col gap-[14px] h-full overflow-hidden"
+      className="flex flex-col gap-[14px] lg:h-full lg:overflow-hidden"
     >
       <AnimatePresence>
         {status === 'idle' && (
@@ -118,8 +118,8 @@ export default function CenterColumn({ onFocusClick, onAnswered }) {
           }}
         />
 
-        <div className="flex justify-between items-center mt-auto border-t border-gray-100 dark:border-[#2c3033] pt-3">
-          <div className="flex flex-wrap gap-1.5">
+        <div className="flex items-center justify-between mt-auto border-t border-gray-100 dark:border-[#2c3033] pt-3 gap-2">
+          <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
             {chips.map(chip => (
               <motion.button
                 whileHover={status !== 'thinking' ? { scale: 1.05 } : {}}
@@ -137,7 +137,7 @@ export default function CenterColumn({ onFocusClick, onAnswered }) {
             ))}
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             <motion.button
               whileHover={status !== 'thinking' ? { scale: 1.05 } : {}}
               whileTap={status !== 'thinking' ? { scale: 0.95 } : {}}

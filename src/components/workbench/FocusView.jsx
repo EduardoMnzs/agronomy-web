@@ -74,7 +74,6 @@ export default function FocusView({ onAdvancedClick }) {
           <div className="w-full max-w-[900px] mx-auto flex flex-col">
 
             <div className="px-4 md:px-8 space-y-10">
-          {/* User message */}
           <motion.div 
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -85,7 +84,6 @@ export default function FocusView({ onAdvancedClick }) {
             </div>
           </motion.div>
 
-          {/* AI Response */}
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -110,7 +108,7 @@ export default function FocusView({ onAdvancedClick }) {
 
               {status === 'thinking' ? (
                 <div className="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">
-                  <div className="relative h-6 w-[300px] overflow-hidden">
+                  <div className="relative h-6 w-full max-w-[320px] overflow-hidden">
                     <AnimatePresence mode="wait">
                       <motion.span
                         key={stepIndex}
@@ -166,7 +164,6 @@ export default function FocusView({ onAdvancedClick }) {
           </div>
         </div>
 
-        {/* Floating Bottom Input */}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#F7F7FF] dark:from-[#2c3033] via-[#F7F7FF]/80 dark:via-[#2c3033]/80 to-transparent pt-10 pb-6 px-4 md:px-8 pointer-events-none">
           <div className="max-w-[800px] mx-auto pointer-events-auto">
             <div className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-3xl shadow-lg p-2.5 flex items-center gap-2 transition-all duration-300 focus-within:border-[#EC6608]/50 focus-within:ring-2 focus-within:ring-[#EC6608]/10">
@@ -233,15 +230,16 @@ export default function FocusView({ onAdvancedClick }) {
 
   // Idle State (Left Aligned View)
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center p-4 lg:p-8">
+    <div className="h-full w-full overflow-y-auto">
+      <div className="min-h-full flex flex-col items-center justify-center px-4 py-8 lg:px-8 lg:py-10">
       <motion.div 
         variants={containerVariants}
         initial="hidden"
         animate="show"
         className="w-full max-w-[800px] flex flex-col items-start"
       >
-        <motion.div variants={itemVariants} className="text-left mb-8 w-full">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#131E29] dark:text-white mb-2 transition-colors duration-300">
+        <motion.div variants={itemVariants} className="text-left mb-6 w-full">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#131E29] dark:text-white mb-2 transition-colors duration-300">
             Olá, <span className="text-[#EC6608]">Eduardo</span> 👋
           </h1>
           <p className="text-base text-gray-500 dark:text-gray-400 transition-colors duration-300">
@@ -331,6 +329,7 @@ export default function FocusView({ onAdvancedClick }) {
           ))}
         </motion.div>
       </motion.div>
+      </div>
     </div>
   );
 }

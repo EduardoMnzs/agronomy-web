@@ -37,7 +37,6 @@ export default function RightColumn({ hasAnswer }) {
             }}
             className="flex flex-col gap-[14px] h-full overflow-hidden"
           >
-            {/* PDF Preview */}
             <Card className="shrink-0 h-[260px] !p-0 overflow-hidden flex flex-col border-gray-200 dark:border-[#2c3033] transition-colors duration-300">
               <div className="bg-white dark:bg-[#323639] border-b border-gray-200 dark:border-[#2c3033] p-2 flex items-center justify-between shrink-0 transition-colors duration-300">
                 <div className="flex items-center gap-2 overflow-hidden pr-2">
@@ -77,7 +76,6 @@ export default function RightColumn({ hasAnswer }) {
               </div>
             </Card>
 
-            {/* Citations */}
             <Card className="flex-1 overflow-hidden">
               <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 shrink-0 transition-colors duration-300">Citações</h2>
               <div className="flex-1 overflow-y-auto pr-3 pl-1 py-1 -mr-3 -ml-1 -my-1 flex flex-col gap-3">

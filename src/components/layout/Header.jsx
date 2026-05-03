@@ -13,7 +13,6 @@ export default function Header({ title = 'Consulta', onOpenMobile, viewMode, set
 function HeaderLeft({ title, onOpenMobile }) {
   return (
     <div className="flex items-center gap-3">
-      {/* Hamburger — mobile only */}
       <button
         onClick={onOpenMobile}
         className="p-2 text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 lg:hidden"
