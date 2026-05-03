@@ -108,7 +108,7 @@ export default function FocusView({ onAdvancedClick }) {
 
               {status === 'thinking' ? (
                 <div className="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">
-                  <div className="relative h-6 w-full max-w-[320px] overflow-hidden">
+                  <div className="relative h-6 w-[250px] sm:w-[320px] overflow-hidden">
                     <AnimatePresence mode="wait">
                       <motion.span
                         key={stepIndex}

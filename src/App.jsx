@@ -7,7 +7,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/workbench" replace />} />
-        <Route path="/workbench" element={<Workbench />} />
+        <Route path="/app" element={<Workbench />} />
       </Routes>
     </BrowserRouter>
   );
