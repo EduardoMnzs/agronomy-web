@@ -7,6 +7,7 @@ import {
   Pin, Pencil, Trash2, MessageSquare, Sprout
 } from 'lucide-react';
 import agronomyLogo from '../../assets/images/Agronomy-logo.png';
+import { auth } from '../../api/api';
 
 const mockDocuments = [
   { id: 'd1', name: 'analise_solo_talhao_7.pdf' },
@@ -167,7 +168,7 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
 
       <div className="p-3 border-t border-gray-100 dark:border-white/5 space-y-1">
         <SidebarItem icon={Settings} label="Configurações" collapsed={collapsed} />
-        <SidebarItem icon={LogOut} label="Sair" collapsed={collapsed} danger onClick={() => navigate('/login')} />
+        <SidebarItem icon={LogOut} label="Sair" collapsed={collapsed} danger onClick={() => { auth.logout(); window.location.href = '/login'; }} />
       </div>
 
       <div className={`bg-gray-50 dark:bg-[#2c3033] border-t border-gray-100 dark:border-white/5 text-[10px] font-medium text-gray-400 dark:text-white/20 text-center uppercase tracking-tighter flex-shrink-0 overflow-hidden whitespace-nowrap transition-all duration-300 ${collapsed ? 'opacity-0 py-0 h-0' : 'opacity-100 p-4 delay-150'}`}>

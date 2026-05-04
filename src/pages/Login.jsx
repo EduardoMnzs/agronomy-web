@@ -1,25 +1,34 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowRight, Sprout, Zap, Brain, Loader2 } from 'lucide-react';
+import { Mail, Lock, Loader2, Eye, EyeOff } from 'lucide-react';
 import agronomyLogo from '../assets/images/Agronomy-logo.png';
+import { auth } from '../api/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (!email || !password) return;
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    setError('');
+
+    try {
+      await auth.login(email, password, rememberMe);
       navigate('/app');
-    }, 1200);
+    } catch (err) {
+      setError(err.message || 'Credenciais inválidas.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -113,7 +122,7 @@ export default function Login() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="eduardo@agronomy.com"
+                  placeholder="exemplo@agronomy.com"
                   className="w-full pl-10 pr-3 py-2.5 text-sm bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-700 rounded-lg text-[#131E29] dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#EC6608] focus:ring-2 focus:ring-[#EC6608]/20 transition-all shadow-sm"
                 />
               </div>
@@ -126,15 +135,26 @@ export default function Login() {
                   <Lock size={16} className="text-gray-400 group-focus-within:text-[#EC6608] transition-colors" />
                 </div>
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-3 py-2.5 text-sm bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-700 rounded-lg text-[#131E29] dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#EC6608] focus:ring-2 focus:ring-[#EC6608]/20 transition-all shadow-sm"
+                  className="w-full pl-10 pr-10 py-2.5 text-sm bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-700 rounded-lg text-[#131E29] dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#EC6608] focus:ring-2 focus:ring-[#EC6608]/20 transition-all shadow-sm"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="cursor-pointer absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-[#EC6608] transition-colors"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
             </div>
+
+            {error && (
+              <p className="text-xs text-red-500 dark:text-red-400">{error}</p>
+            )}
 
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-2">

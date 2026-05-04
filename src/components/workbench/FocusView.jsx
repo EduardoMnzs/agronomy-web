@@ -230,7 +230,7 @@ export default function FocusView({ onAdvancedClick }) {
 
   return (
     <div className="h-full w-full overflow-y-auto">
-      <div className="min-h-full flex flex-col items-center px-4 py-8 lg:px-8 lg:py-10">
+      <div className="min-h-full flex flex-col items-center justify-center px-4 py-8 lg:px-8 lg:py-10">
       <motion.div 
         variants={containerVariants}
         initial="hidden"
@@ -316,7 +316,7 @@ export default function FocusView({ onAdvancedClick }) {
           </motion.div>
         </div>
 
-        <motion.div variants={itemVariants} className="w-full md:max-w-[90%] grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8 mx-auto">
+        <motion.div variants={itemVariants} className="w-full md:max-w-[90%] grid grid-cols-1 sm:grid-cols-2 gap-2 mt-5 mx-auto">
           {suggestions.map((text, i) => (
             <motion.button
               whileHover={{ scale: 1.02 }}
