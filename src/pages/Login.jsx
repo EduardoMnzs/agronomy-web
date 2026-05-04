@@ -16,7 +16,6 @@ export default function Login() {
     if (!email || !password) return;
 
     setIsLoading(true);
-    // Simula um delay de rede para mostrar o loading premium
     setTimeout(() => {
       setIsLoading(false);
       navigate('/app');

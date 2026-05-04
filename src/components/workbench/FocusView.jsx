@@ -6,7 +6,7 @@ import agronomyLogo from '../../assets/images/Agronomy-logo.png';
 export default function FocusView({ onAdvancedClick }) {
   const [query, setQuery] = useState('');
   const [activeChip, setActiveChip] = useState('todos');
-  const [status, setStatus] = useState('idle'); // idle, thinking, answered
+  const [status, setStatus] = useState('idle');
   const [currentQuestion, setCurrentQuestion] = useState('');
   const [stepIndex, setStepIndex] = useState(0);
 
@@ -228,7 +228,6 @@ export default function FocusView({ onAdvancedClick }) {
     );
   }
 
-  // Idle State (Left Aligned View)
   return (
     <div className="h-full w-full overflow-y-auto">
       <div className="min-h-full flex flex-col items-center justify-center px-4 py-8 lg:px-8 lg:py-10">

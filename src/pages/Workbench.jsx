@@ -8,21 +8,18 @@ import FocusView from '../components/workbench/FocusView';
 
 export default function Workbench() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [viewMode, setViewMode] = useState('focus'); // 'focus' or 'advanced'
+  const [viewMode, setViewMode] = useState('focus');
   const [hasAnswer, setHasAnswer] = useState(false);
 
-  useEffect(() => {
-    document.documentElement.classList.add('dark');
-  }, []);
 
   return (
     <div className="h-screen w-screen bg-[#F7F7FF] dark:bg-[#2c3033] flex overflow-hidden transition-colors duration-300">
       <Sidebar isMobileOpen={isMobileOpen} onCloseMobile={() => setIsMobileOpen(false)} />
 
       <div className="flex-1 flex flex-col min-w-0">
-        <Header 
-          title={viewMode === 'focus' ? 'Consulta Rápida' : 'Consulta Avançada'} 
-          onOpenMobile={() => setIsMobileOpen(true)} 
+        <Header
+          title={viewMode === 'focus' ? 'Consulta Rápida' : 'Consulta Avançada'}
+          onOpenMobile={() => setIsMobileOpen(true)}
           viewMode={viewMode}
           setViewMode={setViewMode}
         />

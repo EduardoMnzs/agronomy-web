@@ -87,7 +87,7 @@ export default function LeftColumn() {
         <div className="flex-1 overflow-y-auto pr-2 -mr-2 flex flex-col gap-5">
           <div>
             <h3 className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-2.5 flex items-center gap-1.5 uppercase transition-colors duration-300">
-              <Database className="w-3.5 h-3.5" /> Base de conhecimento
+              Base de conhecimento
             </h3>
             <div className="flex flex-col gap-2.5">
               {Object.entries(baseDocs).map(([doc, checked]) => (
@@ -108,7 +108,7 @@ export default function LeftColumn() {
           
           <div>
             <h3 className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-2.5 flex items-center gap-1.5 uppercase transition-colors duration-300">
-              <FileText className="w-3.5 h-3.5" /> Meus documentos
+              Meus documentos
             </h3>
             <div className="flex flex-col gap-2.5">
               {Object.entries(myDocs).map(([doc, checked]) => (
