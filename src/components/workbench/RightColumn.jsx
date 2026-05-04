@@ -23,7 +23,7 @@ export default function RightColumn({ hasAnswer }) {
         hidden: { opacity: 0 },
         show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.3 } }
       }}
-      className="flex flex-col gap-[14px] h-full overflow-hidden"
+      className="flex flex-col gap-[14px] h-auto lg:h-full overflow-visible lg:overflow-hidden"
     >
       <AnimatePresence mode="wait">
         {hasAnswer ? (
@@ -35,7 +35,7 @@ export default function RightColumn({ hasAnswer }) {
               hidden: { opacity: 0 },
               show: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.05 } }
             }}
-            className="flex flex-col gap-[14px] h-full overflow-hidden"
+            className="flex flex-col gap-[14px] h-auto lg:h-full overflow-visible lg:overflow-hidden"
           >
             <Card className="shrink-0 h-[260px] !p-0 overflow-hidden flex flex-col border-gray-200 dark:border-[#2c3033] transition-colors duration-300">
               <div className="bg-white dark:bg-[#323639] border-b border-gray-200 dark:border-[#2c3033] p-2 flex items-center justify-between shrink-0 transition-colors duration-300">
@@ -76,7 +76,7 @@ export default function RightColumn({ hasAnswer }) {
               </div>
             </Card>
 
-            <Card className="flex-1 overflow-hidden">
+            <Card className="flex-1 min-h-[300px] lg:min-h-0 overflow-hidden">
               <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 shrink-0 transition-colors duration-300">Citações</h2>
               <div className="flex-1 overflow-y-auto pr-3 pl-1 py-1 -mr-3 -ml-1 -my-1 flex flex-col gap-3">
                 
@@ -119,7 +119,7 @@ export default function RightColumn({ hasAnswer }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center h-full gap-4 text-center px-6"
+            className="flex flex-col items-center justify-center min-h-[200px] lg:h-full gap-4 text-center px-6"
           >
             <div className="w-12 h-12 bg-gray-50 dark:bg-[#2c3033] rounded-2xl flex items-center justify-center border border-gray-100 dark:border-gray-700">
               <BookOpen className="w-6 h-6 text-gray-300 dark:text-gray-600" />

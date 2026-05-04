@@ -16,7 +16,7 @@ export default function Workbench() {
     <div className="h-screen w-screen bg-[#F7F7FF] dark:bg-[#2c3033] flex overflow-hidden transition-colors duration-300">
       <Sidebar isMobileOpen={isMobileOpen} onCloseMobile={() => setIsMobileOpen(false)} />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full">
         <Header
           title={viewMode === 'focus' ? 'Consulta Rápida' : 'Consulta Avançada'}
           onOpenMobile={() => setIsMobileOpen(true)}
@@ -34,7 +34,7 @@ export default function Workbench() {
               <div className="order-1 lg:order-2 lg:h-full lg:min-h-0">
                 <CenterColumn onFocusClick={() => setViewMode('focus')} onAnswered={() => setHasAnswer(true)} />
               </div>
-              <div className="hidden lg:block lg:order-3 lg:h-full lg:min-h-0">
+              <div className="block lg:order-3 lg:h-full lg:min-h-0 order-2">
                 <RightColumn hasAnswer={hasAnswer} />
               </div>
             </div>

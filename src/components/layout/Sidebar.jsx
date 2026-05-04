@@ -38,13 +38,13 @@ export default function Sidebar({ isMobileOpen, onCloseMobile }) {
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/50 z-20 lg:hidden"
+              className="fixed inset-0 bg-black/50 z-[60] lg:hidden"
               onClick={onCloseMobile}
             />
             <motion.aside
               initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-              className="fixed inset-y-0 left-0 z-30 w-64 bg-white dark:bg-[#323639] border-r border-gray-200 dark:border-transparent h-screen flex flex-col text-[#131E29] dark:text-white shadow-xl flex-shrink-0 lg:hidden overflow-hidden"
+              className="fixed inset-y-0 left-0 z-[70] w-64 bg-white dark:bg-[#323639] border-r border-gray-200 dark:border-transparent h-screen flex flex-col text-[#131E29] dark:text-white shadow-xl flex-shrink-0 lg:hidden overflow-hidden"
             >
               <SidebarInner {...sharedProps} onCloseMobile={onCloseMobile} onToggleCollapse={() => setIsCollapsed(v => !v)} forceExpanded />
             </motion.aside>

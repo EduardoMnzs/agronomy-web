@@ -206,7 +206,7 @@ export default function CenterColumn({ onFocusClick, onAnswered }) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="flex flex-col h-full"
+              className="flex flex-col h-auto lg:h-full"
             >
               <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-100 dark:border-[#2c3033] shrink-0 transition-colors duration-300">
                 <h2 className="text-sm font-semibold text-[#131E29] dark:text-white transition-colors duration-300">Resposta</h2>
@@ -248,7 +248,7 @@ export default function CenterColumn({ onFocusClick, onAnswered }) {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="flex-1 flex flex-col items-center justify-center text-center p-6 h-full"
+              className="flex-1 flex flex-col items-center justify-center text-center p-6 h-auto lg:h-full"
             >
               <div className="relative flex items-center justify-center mb-8">
                 <div className="absolute w-16 h-16 rounded-full border-4 border-gray-100 dark:border-[#2c3033]"></div>
@@ -278,7 +278,7 @@ export default function CenterColumn({ onFocusClick, onAnswered }) {
               initial="hidden"
               animate="show"
               exit="exit"
-              className="flex-1 flex flex-col items-center justify-center text-center p-6 h-full"
+              className="flex-1 flex flex-col items-center justify-center text-center p-6 h-auto lg:h-full"
             >
               <motion.div variants={itemVariants} className="w-12 h-12 bg-gray-50 dark:bg-[#2c3033] rounded-2xl flex items-center justify-center mb-4 border border-gray-100 dark:border-gray-700 transition-colors duration-300">
                 <MessageSquareText className="w-6 h-6 text-gray-400" />

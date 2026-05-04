@@ -3,7 +3,7 @@ import { Search, Bell, Menu, Sun, Moon } from 'lucide-react';
 
 export default function Header({ title = 'Consulta', onOpenMobile, viewMode, setViewMode }) {
   return (
-    <header className="h-16 bg-white dark:bg-[#323639] border-b border-gray-200 dark:border-[#2c3033] flex items-center justify-between px-4 md:px-8 shadow-sm z-0 flex-shrink-0 transition-colors duration-300">
+    <header className="sticky top-0 h-16 bg-white dark:bg-[#323639] border-b border-gray-200 dark:border-[#2c3033] flex items-center justify-between px-4 md:px-8 shadow-sm z-40 flex-shrink-0 transition-colors duration-300">
       <HeaderLeft title={title} onOpenMobile={onOpenMobile} />
       <HeaderRight viewMode={viewMode} setViewMode={setViewMode} />
     </header>

@@ -347,7 +347,7 @@ export default function KnowledgeBase() {
     <div className="h-screen w-screen bg-[#F7F7FF] dark:bg-[#2c3033] flex overflow-hidden transition-colors duration-300">
       <Sidebar isMobileOpen={isMobileOpen} onCloseMobile={() => setIsMobileOpen(false)} />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full">
         <Header title="Base de Conhecimento" onOpenMobile={() => setIsMobileOpen(true)} />
 
         <main ref={mainRef} className="flex-1 p-4 lg:p-8 overflow-y-auto box-border">

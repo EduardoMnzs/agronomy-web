@@ -230,89 +230,91 @@ export default function FocusView({ onAdvancedClick }) {
 
   return (
     <div className="h-full w-full overflow-y-auto">
-      <div className="min-h-full flex flex-col items-center justify-center px-4 py-8 lg:px-8 lg:py-10">
+      <div className="min-h-full flex flex-col items-center px-4 py-8 lg:px-8 lg:py-10">
       <motion.div 
         variants={containerVariants}
         initial="hidden"
         animate="show"
         className="w-full max-w-[800px] flex flex-col items-start"
       >
-        <motion.div variants={itemVariants} className="text-left mb-6 w-full">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#131E29] dark:text-white mb-2 transition-colors duration-300">
-            Olá, <span className="text-[#EC6608]">Eduardo</span> 👋
-          </h1>
-          <p className="text-base text-gray-500 dark:text-gray-400 transition-colors duration-300">
-            O que podemos analisar na safra hoje?
-          </p>
-        </motion.div>
+        <div className="sticky top-0 z-20 w-full pt-4 pb-2 bg-[#F7F7FF] dark:bg-[#2c3033] transition-colors duration-300 sm:relative sm:pt-0 sm:pb-0 sm:bg-transparent">
+          <motion.div variants={itemVariants} className="text-left mb-6 w-full">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#131E29] dark:text-white mb-2 transition-colors duration-300">
+              Olá, <span className="text-[#EC6608]">Eduardo</span> 👋
+            </h1>
+            <p className="text-base text-gray-500 dark:text-gray-400 transition-colors duration-300">
+              O que podemos analisar na safra hoje?
+            </p>
+          </motion.div>
 
-        <motion.div variants={itemVariants} className="w-full bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-4 mb-6 focus-within:border-[#EC6608]/50 focus-within:ring-2 focus-within:ring-[#EC6608]/10 transition-all duration-300">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Pergunte algo — ex: dose de calcário, recomendação de cultivar, modo de ação de herbicida..."
-            className="w-full h-[32px] outline-none text-base text-[#131E29] dark:text-white placeholder:text-gray-400 bg-transparent mb-4 transition-colors duration-300"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleConsultar();
-              }
-            }}
-          />
-          
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100 dark:border-[#2c3033] gap-4 sm:gap-0 transition-colors duration-300">
-            <div className="flex flex-wrap gap-2">
-              {chips.map(chip => (
-                <motion.button
+          <motion.div variants={itemVariants} className="w-full bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-4 mb-6 focus-within:border-[#EC6608]/50 focus-within:ring-2 focus-within:ring-[#EC6608]/10 transition-all duration-300">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Pergunte algo — ex: dose de calcário, recomendação de cultivar, modo de ação de herbicida..."
+              className="w-full h-[32px] outline-none text-base text-[#131E29] dark:text-white placeholder:text-gray-400 bg-transparent mb-4 transition-colors duration-300"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleConsultar();
+                }
+              }}
+            />
+            
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-4 border-t border-gray-100 dark:border-[#2c3033] gap-4 sm:gap-0 transition-colors duration-300">
+              <div className="flex flex-wrap gap-1.5">
+                {chips.map(chip => (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    key={chip.id}
+                    onClick={() => setActiveChip(chip.id)}
+                    className={`cursor-pointer text-[10px] px-2.5 py-1.5 rounded-md transition-colors duration-300 ${
+                      activeChip === chip.id
+                        ? 'bg-gray-100 dark:bg-[#2c3033] text-[#131E29] dark:text-white font-medium border border-gray-300 dark:border-gray-600 shadow-sm'
+                        : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#2c3033] border border-transparent'
+                    }`}
+                  >
+                    {chip.label}
+                  </motion.button>
+                ))}
+              </div>
+              
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <button 
+                  onClick={onAdvancedClick}
+                  title="Visualização Avançada"
+                  className="cursor-pointer p-2 text-gray-400 hover:text-[#EC6608] hover:bg-orange-50 dark:hover:bg-[#EC6608]/10 rounded-full transition-colors duration-300"
+                >
+                  <LayoutGrid className="w-5 h-5" />
+                </button>
+                <motion.button 
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  key={chip.id}
-                  onClick={() => setActiveChip(chip.id)}
-                  className={`cursor-pointer text-[10px] px-2.5 py-1.5 rounded-md transition-colors duration-300 ${
-                    activeChip === chip.id
-                      ? 'bg-gray-100 dark:bg-[#2c3033] text-[#131E29] dark:text-white font-medium border border-gray-300 dark:border-gray-600 shadow-sm'
-                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-[#2c3033] border border-transparent'
-                  }`}
+                  onClick={() => handleConsultar()}
+                  className={`cursor-pointer w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors shadow-sm
+                    ${query.trim()
+                      ? 'bg-[#EC6608] text-white hover:bg-[#d95d07]'
+                      : 'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608]'
+                    }`}
                 >
-                  {chip.label}
+                  <AnimatePresence mode="wait">
+                    {query.trim() ? (
+                      <motion.div key="send" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+                        <Send className="w-4 h-4 pr-0.5 pt-0.5" />
+                      </motion.div>
+                    ) : (
+                      <motion.div key="mic" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+                        <Mic className="w-4 h-4" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.button>
-              ))}
+              </div>
             </div>
-            
-            <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-              <button 
-                onClick={onAdvancedClick}
-                title="Visualização Avançada"
-                className="cursor-pointer p-2 text-gray-400 hover:text-[#EC6608] hover:bg-orange-50 dark:hover:bg-[#EC6608]/10 rounded-full transition-colors duration-300"
-              >
-                <LayoutGrid className="w-5 h-5" />
-              </button>
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleConsultar()}
-                className={`cursor-pointer w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors shadow-sm
-                  ${query.trim()
-                    ? 'bg-[#EC6608] text-white hover:bg-[#d95d07]'
-                    : 'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608]'
-                  }`}
-              >
-                <AnimatePresence mode="wait">
-                  {query.trim() ? (
-                    <motion.div key="send" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                      <Send className="w-4 h-4 pr-0.5 pt-0.5" />
-                    </motion.div>
-                  ) : (
-                    <motion.div key="mic" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
-                      <Mic className="w-4 h-4" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
         <motion.div variants={itemVariants} className="w-full md:max-w-[90%] grid grid-cols-1 sm:grid-cols-2 gap-2 mb-8 mx-auto">
           {suggestions.map((text, i) => (
