@@ -126,7 +126,7 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
 
         <motion.div variants={itemVariants}>
           <Section label="Administração" collapsed={collapsed}>
-            <SidebarItem icon={Book} label="Base de conhecimento" collapsed={collapsed} />
+            <SidebarItem icon={Book} label="Base de conhecimento" collapsed={collapsed} active={location.pathname === '/knowledge-base'} onClick={() => navigate('/knowledge-base')} />
             <SidebarItem icon={Upload} label="Indexar documento" collapsed={collapsed} active={location.pathname === '/index-document'} onClick={() => navigate('/index-document')} />
             <SidebarItem icon={Users} label="Usuários" collapsed={collapsed} active={location.pathname === '/users'} onClick={() => navigate('/users')} />
           </Section>

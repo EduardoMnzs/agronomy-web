@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, Search, MoreVertical, Edit2, Trash2, Mail, Shield, CheckCircle2, XCircle, ChevronDown, AlertTriangle, X, RefreshCw } from 'lucide-react';
+import { Users, Plus, Search, MoreVertical, Edit2, Trash2, Mail, Shield, CheckCircle2, XCircle, ChevronDown, AlertTriangle, X, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
 import CustomSelect from '../components/ui/CustomSelect';
@@ -10,13 +10,25 @@ const mockUsers = [
   { id: 2, name: 'Carlos Silva', email: 'carlos.silva@fazenda.com', role: 'Usuário', status: 'Ativo', lastActive: 'Há 2 horas' },
   { id: 3, name: 'Ana Oliveira', email: 'ana.oliveira@agrotech.com', role: 'Usuário', status: 'Inativo', lastActive: 'Há 5 dias' },
   { id: 4, name: 'João Santos', email: 'joao.santos@fazenda.com', role: 'Usuário', status: 'Pendente', lastActive: 'Nunca' },
+  { id: 5, name: 'Mariana Costa', email: 'mariana@agronomy.com', role: 'Administrador', status: 'Ativo', lastActive: 'Há 1 hora' },
+  { id: 6, name: 'Ricardo Lopes', email: 'ricardo@fazenda.com', role: 'Usuário', status: 'Ativo', lastActive: 'Há 10 minutos' },
+  { id: 7, name: 'Beatriz Lima', email: 'beatriz@agrotech.com', role: 'Usuário', status: 'Inativo', lastActive: 'Há 12 dias' },
+  { id: 8, name: 'Felipe Rocha', email: 'felipe@fazenda.com', role: 'Usuário', status: 'Ativo', lastActive: 'Ontem' },
+  { id: 9, name: 'Carla Dias', email: 'carla@agronomy.com', role: 'Usuário', status: 'Pendente', lastActive: 'Nunca' },
+  { id: 10, name: 'Gustavo Lima', email: 'gustavo@fazenda.com', role: 'Usuário', status: 'Ativo', lastActive: 'Há 3 horas' },
+  { id: 11, name: 'Sofia Mendes', email: 'sofia@agrotech.com', role: 'Usuário', status: 'Ativo', lastActive: 'Há 45 minutos' },
+  { id: 12, name: 'André Souza', email: 'andre@fazenda.com', role: 'Usuário', status: 'Inativo', lastActive: 'Há 2 semanas' },
 ];
+
+const ITEMS_PER_PAGE = 10;
 
 export default function UsersPage() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const mainRef = React.useRef(null);
 
   const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -78,6 +90,29 @@ export default function UsersPage() {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
+  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+  const paginatedUsers = filteredUsers.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  const adminCount = filteredUsers.filter(u => u.role === 'Administrador').length;
+  const regularUserCount = filteredUsers.filter(u => u.role === 'Usuário').length;
+  const hasActiveFilters = searchTerm !== '' || roleFilter !== '' || statusFilter !== '';
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setRoleFilter('');
+    setStatusFilter('');
+  };
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, roleFilter, statusFilter]);
+
+  React.useEffect(() => {
+    if (mainRef.current) {
+      mainRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentPage]);
+
   return (
     <div className="h-screen w-screen bg-[#F7F7FF] dark:bg-[#2c3033] flex overflow-hidden transition-colors duration-300">
       <Sidebar isMobileOpen={isMobileOpen} onCloseMobile={() => setIsMobileOpen(false)} />
@@ -88,12 +123,12 @@ export default function UsersPage() {
           onOpenMobile={() => setIsMobileOpen(true)}
         />
 
-        <main className="flex-1 p-4 lg:p-8 overflow-y-auto box-border">
+        <main ref={mainRef} className="flex-1 p-4 lg:p-8 overflow-y-auto box-border">
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="show"
-            className="max-w-6xl mx-auto w-full flex flex-col gap-6"
+            className="max-w-7xl mx-auto w-full flex flex-col gap-6"
           >
             <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
@@ -145,6 +180,26 @@ export default function UsersPage() {
               </div>
             </motion.div>
 
+            <div className="flex items-center justify-between min-h-[24px]">
+              <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                {regularUserCount} {regularUserCount === 1 ? 'usuário' : 'usuários'} · {adminCount} {adminCount === 1 ? 'admin' : 'admins'}
+              </div>
+              <AnimatePresence>
+                {hasActiveFilters && (
+                  <motion.button
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 10 }}
+                    onClick={clearFilters}
+                    className="cursor-pointer text-xs font-bold text-[#EC6608] hover:text-[#d95d07] flex items-center gap-1.5 transition-colors"
+                  >
+                    <X size={14} />
+                    Limpar Filtros
+                  </motion.button>
+                )}
+              </AnimatePresence>
+            </div>
+
             <motion.div variants={itemVariants} className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -158,7 +213,7 @@ export default function UsersPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                    {filteredUsers.map((user) => (
+                    {paginatedUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
@@ -221,6 +276,42 @@ export default function UsersPage() {
                 </table>
               </div>
             </motion.div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 pt-2 pb-8">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="cursor-pointer p-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/5 transition-all"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                
+                <div className="flex items-center gap-1">
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button
+                      key={i + 1}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`cursor-pointer w-10 h-10 rounded-xl text-sm font-bold transition-all ${
+                        currentPage === i + 1
+                          ? 'bg-[#EC6608] text-white'
+                          : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                  className="cursor-pointer p-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-white/5 transition-all"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </div>
+            )}
           </motion.div>
         </main>
       </div>

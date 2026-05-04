@@ -4,6 +4,7 @@ import Workbench from './pages/Workbench';
 import Login from './pages/Login';
 import Users from './pages/Users';
 import IndexDocument from './pages/IndexDocument';
+import KnowledgeBase from './pages/KnowledgeBase';
 
 function App() {
   React.useEffect(() => {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/app" element={<Workbench />} />
         <Route path="/users" element={<Users />} />
+        <Route path="/knowledge-base" element={<KnowledgeBase />} />
         <Route path="/index-document" element={<IndexDocument />} />
       </Routes>
     </BrowserRouter>

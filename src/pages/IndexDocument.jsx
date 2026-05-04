@@ -252,7 +252,7 @@ export default function IndexDocument() {
         <Header title="Base de conhecimento" onOpenMobile={() => setIsMobileOpen(true)} />
 
         <main className="flex-1 p-4 lg:p-8 overflow-y-auto box-border">
-          <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-6xl mx-auto w-full flex flex-col gap-6">
+          <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-7xl mx-auto w-full flex flex-col gap-6">
 
             <motion.div variants={itemVariants}>
               <h1 className="text-2xl font-bold text-[#131E29] dark:text-white">Indexar Novo Documento</h1>
