@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -392,7 +393,7 @@ function ContextMenuItem({ icon: Icon, label, onClick, danger }) {
 }
 
 function DeleteConfirmModal({ label, onConfirm, onCancel }) {
-  return (
+  return createPortal(
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -428,6 +429,7 @@ function DeleteConfirmModal({ label, onConfirm, onCancel }) {
           </button>
         </div>
       </motion.div>
-    </motion.div>
+    </motion.div>,
+    document.body
   );
 }

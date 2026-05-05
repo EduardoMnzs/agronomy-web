@@ -34,6 +34,11 @@ export const documents = {
       body: formData,
     }),
 
+  get: (id) =>
+    request(`/knowledge/${id}`, {
+      headers: authHeader(),
+    }),
+
   getStatus: (id) =>
     request(`/knowledge/${id}/status`, {
       headers: authHeader(),
