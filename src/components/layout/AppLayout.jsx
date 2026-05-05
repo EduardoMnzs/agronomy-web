@@ -19,8 +19,17 @@ export default function AppLayout() {
       const conv = await convsApi.get(id);
       setConversationId(conv.id);
       setMessages(conv.messages ?? []);
-      const last = [...(conv.messages ?? [])].reverse().find((m) => m.role === 'assistant');
-      setCitations(last?.citations ?? []);
+      const seen = new Set();
+      const allCitations = (conv.messages ?? [])
+        .filter((m) => m.role === 'assistant')
+        .flatMap((m) => m.citations ?? [])
+        .filter((c) => {
+          const key = `${c.doc_name}:${c.page}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+      setCitations(allCitations);
       navigate(`/app/${id}`);
       setIsMobileOpen(false);
     } catch {}
@@ -42,9 +51,14 @@ export default function AppLayout() {
 
   const onAssistantReply = (question, result) => {
     const id = result.conversation_id;
+    const newSources = result.sources ?? [];
     setConversationId(id);
-    setCitations(result.sources ?? []);
-    setMessages((prev) => [...prev, { role: 'assistant', content: result.answer, citations: result.sources ?? [] }]);
+    setCitations((prev) => {
+      const existing = new Set(prev.map((c) => `${c.doc_name}:${c.page}`));
+      const fresh = newSources.filter((c) => !existing.has(`${c.doc_name}:${c.page}`));
+      return [...prev, ...fresh];
+    });
+    setMessages((prev) => [...prev, { role: 'assistant', content: result.answer, citations: newSources }]);
     if (id) {
       setNewConversationEntry({
         id,
