@@ -1,17 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, LayoutGrid, Loader2, Mic } from 'lucide-react';
+import { Send, LayoutGrid, Loader2, Mic, ArrowDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import agronomyLogo from '../../assets/images/Agronomy-logo.png';
 import { query as queryApi } from '../../api/api';
 import MarkdownAnswer from '../ui/MarkdownAnswer';
+import useCurrentUser from '../../hooks/useCurrentUser';
 
 export default function FocusView({ onAdvancedClick, messages, conversationId, onUserMessage, onAssistantReply }) {
+  const { firstName } = useCurrentUser();
   const [inputValue, setInputValue] = useState('');
   const [activeChip, setActiveChip] = useState('todos');
   const [thinking, setThinking] = useState(false);
   const [error, setError] = useState('');
   const [stepIndex, setStepIndex] = useState(0);
   const bottomRef = useRef(null);
+  const scrollRef = useRef(null);
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
 
   const chips = [
     { id: 'todos', label: 'Todos os docs' },
@@ -35,8 +39,19 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
   ];
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!showScrollBtn) bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, thinking]);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const distFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+      setShowScrollBtn(distFromBottom > 120);
+    };
+    el.addEventListener('scroll', onScroll);
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleConsultar = async (text = inputValue) => {
     if (!text.trim() || thinking) return;
@@ -80,7 +95,7 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
   if (hasMessages || thinking) {
     return (
       <div className="h-full w-full flex flex-col relative">
-        <div className="flex-1 overflow-y-auto w-full pt-4 lg:pt-6 pb-40">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto w-full pt-4 lg:pt-6 pb-40">
           <div className="w-full max-w-[900px] mx-auto px-4 md:px-8 space-y-6">
             {messages.map((msg, i) =>
               msg.role === 'user' ? (
@@ -128,8 +143,25 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#F7F7FF] dark:from-[#2c3033] via-[#F7F7FF]/80 dark:via-[#2c3033]/80 to-transparent pt-10 pb-6 px-4 md:px-8 pointer-events-none">
-          <div className="max-w-[800px] mx-auto pointer-events-auto">
+        <AnimatePresence>
+          {showScrollBtn && (
+            <motion.button
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' })}
+              className="cursor-pointer absolute bottom-32 left-1/2 -translate-x-1/2 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-600 shadow-md text-gray-500 dark:text-gray-400 hover:border-[#EC6608] hover:text-[#EC6608] transition-colors"
+            >
+              <ArrowDown size={15} />
+            </motion.button>
+          )}
+        </AnimatePresence>
+
+        <div className="absolute bottom-0 left-0 right-0 pt-10 pb-6 px-4 md:px-8 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-t from-[#F7F7FF] via-[#F7F7FF]/80 to-transparent transition-opacity duration-300 dark:opacity-0" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#2c3033] via-[#2c3033]/80 to-transparent transition-opacity duration-300 opacity-0 dark:opacity-100" />
+          <div className="relative max-w-[800px] mx-auto pointer-events-auto">
             <div className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-3xl shadow-lg p-2.5 flex items-center gap-2 transition-all duration-300 focus-within:border-[#EC6608]/50 focus-within:ring-2 focus-within:ring-[#EC6608]/10">
               <input
                 type="text"
@@ -189,7 +221,7 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
           <div className="sticky top-0 z-20 w-full pt-4 pb-2 bg-[#F7F7FF] dark:bg-[#2c3033] transition-colors duration-300 sm:relative sm:pt-0 sm:pb-0 sm:bg-transparent">
             <motion.div variants={itemVariants} className="text-left mb-6 w-full">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#131E29] dark:text-white mb-2 transition-colors duration-300">
-                Olá, <span className="text-[#EC6608]">Eduardo</span> 👋
+                Olá, <span className="text-[#EC6608]">{firstName}</span> 👋
               </h1>
               <p className="text-base text-gray-500 dark:text-gray-400 transition-colors duration-300">
                 O que podemos analisar na safra hoje?

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Mic, MessageSquareText, Loader2, Target } from 'lucide-react';
+import useCurrentUser from '../../hooks/useCurrentUser';
+import { Send, Mic, MessageSquareText, Loader2, Target, ArrowDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import agronomyLogo from '../../assets/images/Agronomy-logo.png';
 import { query as queryApi } from '../../api/api';
@@ -25,12 +26,15 @@ const thinkingSteps = [
 ];
 
 export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messages, conversationId, onUserMessage, onAssistantReply }) {
+  const { firstName } = useCurrentUser();
   const [inputValue, setInputValue] = useState('');
   const [thinking, setThinking] = useState(false);
   const [error, setError] = useState('');
   const [activeChip, setActiveChip] = useState('contexto');
   const [stepIndex, setStepIndex] = useState(0);
   const bottomRef = useRef(null);
+  const scrollRef = useRef(null);
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
 
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.95 },
@@ -51,8 +55,19 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
   ];
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!showScrollBtn) bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, thinking]);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const distFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+      setShowScrollBtn(distFromBottom > 120);
+    };
+    el.addEventListener('scroll', onScroll);
+    return () => el.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleConsultar = async (text = inputValue) => {
     if (!text.trim() || thinking) return;
@@ -102,7 +117,7 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
             className="pt-2 px-2 shrink-0"
           >
             <h2 className="text-xl font-bold text-[#131E29] dark:text-white transition-colors duration-300">
-              Olá, <span className="text-[#EC6608]">Eduardo</span> 👋
+              Olá, <span className="text-[#EC6608]">{firstName}</span> 👋
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 transition-colors duration-300">
               O que podemos analisar na safra hoje?
@@ -184,11 +199,11 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
       <Card className="flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
           {status === 'answered' || status === 'thinking' ? (
-            <motion.div key="thread" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex flex-col h-full">
+            <motion.div key="thread" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex flex-col h-full relative">
               <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-100 dark:border-[#2c3033] shrink-0 transition-colors duration-300">
                 <h2 className="text-sm font-semibold text-[#131E29] dark:text-white transition-colors duration-300">Resposta</h2>
               </div>
-              <div className="flex-1 overflow-y-auto pr-2 -mr-2 space-y-4 transition-colors duration-300">
+              <div ref={scrollRef} className="flex-1 overflow-y-auto pr-2 -mr-2 space-y-4 transition-colors duration-300">
                 {messages.map((msg, i) => (
                   msg.role === 'user' ? (
                     <div key={i} className="flex justify-end">
@@ -226,6 +241,21 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
                 {error && <p className="text-xs text-red-500">{error}</p>}
                 <div ref={bottomRef} />
               </div>
+              <AnimatePresence>
+                {showScrollBtn && (
+                  <motion.button
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    transition={{ duration: 0.15 }}
+                    onClick={() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                    className="cursor-pointer absolute bottom-2 inset-x-0 mx-auto w-fit flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-600 shadow-md text-xs font-medium text-gray-600 dark:text-gray-300 hover:border-[#EC6608] hover:text-[#EC6608] transition-colors z-10 whitespace-nowrap"
+                  >
+                    <ArrowDown size={13} />
+                    Ir para o final
+                  </motion.button>
+                )}
+              </AnimatePresence>
             </motion.div>
           ) : (
             <motion.div key="empty" variants={containerVariants} initial="hidden" animate="show" exit="exit" className="flex-1 flex flex-col items-center justify-center text-center p-6 h-full">

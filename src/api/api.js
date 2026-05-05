@@ -90,6 +90,10 @@ export const conversations = {
   remove: (id) => request(`/conversations/${id}`, { method: 'DELETE', headers: authHeader() }),
 };
 
+export const user = {
+  me: () => request('/users/me', { headers: authHeader() }),
+};
+
 export const auth = {
   login: async (username, password, rememberMe) => {
     const body = new URLSearchParams({ username, password, remember_me: rememberMe });

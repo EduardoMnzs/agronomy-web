@@ -69,6 +69,27 @@ export default function KnowledgeBase() {
   const [previewError, setPreviewError] = useState('');
   const [previewContent, setPreviewContent] = useState(null);
 
+  const handleDownloadClick = async (doc) => {
+    try {
+      const data = await documents.get(doc.id);
+      const url = data?.url;
+      if (!url) return;
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      const ext = (data.file_type || doc.file_type || '').toLowerCase();
+      let filename = data.original_filename || doc.original_filename || doc.name || 'download';
+      if (ext && !filename.toLowerCase().endsWith(`.${ext}`)) {
+        filename = `${filename.replace(/\.[^.]+$/, '')}.${ext}`;
+      }
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    } catch {}
+  };
+
   const handlePreviewClick = async (doc) => {
     setPreviewDoc(doc);
     setPreviewContent(null);
@@ -301,7 +322,7 @@ export default function KnowledgeBase() {
                 </div>
               ) : filteredDocs.length > 0 ? (
                 filteredDocs.map((doc) => (
-                  <DocumentCard key={doc.id} doc={doc} onDelete={() => handleDeleteClick(doc)} onPreview={() => handlePreviewClick(doc)} variants={itemVariants} />
+                  <DocumentCard key={doc.id} doc={doc} onDelete={() => handleDeleteClick(doc)} onPreview={() => handlePreviewClick(doc)} onDownload={() => handleDownloadClick(doc)} variants={itemVariants} />
                 ))
               ) : (
                 <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
@@ -641,7 +662,7 @@ function DocumentPreviewModal({ doc, loading, error, content, onClose }) {
   );
 }
 
-function DocumentCard({ doc, onDelete, onPreview, variants }) {
+function DocumentCard({ doc, onDelete, onPreview, onDownload, variants }) {
   const [showOptions, setShowOptions] = useState(false);
 
   const ext = (doc.file_type || doc.type || '').toLowerCase();
@@ -706,7 +727,10 @@ function DocumentCard({ doc, onDelete, onPreview, variants }) {
                   >
                     <Eye size={16} /> Visualizar
                   </button>
-                  <button className="cursor-pointer w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onDownload(); setShowOptions(false); }}
+                    className="cursor-pointer w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left"
+                  >
                     <Download size={16} /> Baixar
                   </button>
                   <div className="h-px bg-gray-100 dark:bg-gray-700 mx-2" />

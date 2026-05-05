@@ -208,8 +208,10 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
         <SidebarItem icon={LogOut} label="Sair" collapsed={collapsed} danger onClick={() => { auth.logout(); window.location.href = '/login'; }} />
       </div>
 
-      <div className={`bg-gray-50 dark:bg-[#2c3033] border-t border-gray-100 dark:border-white/5 text-[10px] font-medium text-gray-400 dark:text-white/20 text-center uppercase tracking-tighter flex-shrink-0 overflow-hidden whitespace-nowrap transition-all duration-300 ${collapsed ? 'opacity-0 py-0 h-0' : 'opacity-100 p-4 delay-150'}`}>
-        AGRONOMY ASSISTANT <br /> &copy; 2026 EDUARDO MENEZES
+      <div className={`bg-gray-50 dark:bg-[#2c3033] border-t border-gray-100 dark:border-white/5 flex-shrink-0 overflow-hidden whitespace-nowrap transition-[padding,height,background-color,border-color] duration-300 ${collapsed ? 'py-0 h-0' : 'p-4'}`}>
+        <span className={`block text-[10px] font-medium text-gray-400 dark:text-white/20 text-center uppercase tracking-tighter transition-opacity duration-300 ${collapsed ? 'opacity-0' : 'opacity-100 delay-150'}`}>
+          AGRONOMY ASSISTANT <br /> &copy; 2026 EDUARDO MENEZES
+        </span>
       </div>
     </div>
   );

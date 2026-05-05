@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, Menu, Sun, Moon } from 'lucide-react';
+import useCurrentUser from '../../hooks/useCurrentUser';
 
 export default function Header({ title = 'Consulta', onOpenMobile, viewMode, setViewMode }) {
   return (
@@ -95,14 +96,18 @@ function NotificationButton() {
 }
 
 function UserInfo() {
+  const { data, initials, role } = useCurrentUser();
+  const displayName = data?.full_name ?? data?.name ?? data?.username ?? '—';
+  const displayRole = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Usuário';
+
   return (
     <div className="flex items-center gap-2 md:gap-3 pl-1 md:pl-2">
       <div className="text-right hidden sm:block">
-        <p className="text-xs font-bold text-[#131E29] dark:text-white leading-none transition-colors duration-300">Eduardo Menezes</p>
-        <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium transition-colors duration-300">Administrador</p>
+        <p className="text-xs font-bold text-[#131E29] dark:text-white leading-none transition-colors duration-300">{displayName}</p>
+        <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium transition-colors duration-300">{displayRole}</p>
       </div>
       <div className="w-9 h-9 rounded-full bg-[#EC6608] text-white flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0">
-        EM
+        {initials || '?'}
       </div>
     </div>
   );
