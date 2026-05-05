@@ -46,6 +46,7 @@ export default function Sidebar({ isMobileOpen, onCloseMobile, onSelectConversat
   const handleDelete = async (id) => {
     await convsApi.remove(id).catch(() => {});
     setConversations((prev) => prev.filter((c) => c.id !== id));
+    if (id === activeConversationId) onNewConversation?.();
   };
 
   const handleClearAll = () => setConversations([]);
