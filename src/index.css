@@ -199,3 +199,175 @@ body {
 .dark .prose-md hr {
   border-color: #4B5563;
 }
+
+/* AnswerText — markdown rendered inside chat responses */
+.prose-answer {
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: #374151;
+}
+.dark .prose-answer {
+  color: #D1D5DB;
+}
+
+.prose-answer p {
+  margin-bottom: 0.75rem;
+}
+.prose-answer p:last-child {
+  margin-bottom: 0;
+}
+
+.prose-answer strong {
+  font-weight: 600;
+  color: #131E29;
+}
+.dark .prose-answer strong {
+  color: #F9FAFB;
+}
+
+.prose-answer em {
+  font-style: italic;
+  color: #4B5563;
+}
+.dark .prose-answer em {
+  color: #9CA3AF;
+}
+
+.prose-answer code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  background: #FFF3E8;
+  color: #EC6608;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+.dark .prose-answer code {
+  background: rgba(236, 102, 8, 0.15);
+  color: #EC6608;
+}
+
+.prose-answer pre {
+  background: #F3F4F6;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  border: 1px solid #E5E7EB;
+}
+.dark .prose-answer pre {
+  background: #2c3033;
+  border-color: #4B5563;
+}
+.prose-answer pre code {
+  background: none;
+  padding: 0;
+  color: #131E29;
+  font-size: 0.78rem;
+}
+.dark .prose-answer pre code {
+  color: #E5E7EB;
+}
+
+.prose-answer h1,
+.prose-answer h2,
+.prose-answer h3 {
+  font-weight: 700;
+  color: #131E29;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+.dark .prose-answer h1,
+.dark .prose-answer h2,
+.dark .prose-answer h3 {
+  color: #F9FAFB;
+}
+.prose-answer h1 { font-size: 1.15rem; }
+.prose-answer h2 { font-size: 1.05rem; }
+.prose-answer h3 { font-size: 0.95rem; }
+
+.prose-answer ul,
+.prose-answer ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.prose-answer ul { list-style-type: disc; }
+.prose-answer ol { list-style-type: decimal; }
+.prose-answer li {
+  margin-bottom: 0.2rem;
+}
+.prose-answer li::marker {
+  color: #EC6608;
+}
+
+.prose-answer blockquote {
+  border-left: 3px solid #EC6608;
+  padding-left: 1rem;
+  margin: 0.75rem 0;
+  color: #6B7280;
+  font-style: italic;
+}
+.dark .prose-answer blockquote {
+  color: #9CA3AF;
+}
+
+.prose-answer a {
+  color: #EC6608;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-answer a:hover {
+  color: #d95d07;
+}
+
+.prose-answer hr {
+  border: none;
+  border-top: 1px solid #E5E7EB;
+  margin: 1.25rem 0;
+}
+.dark .prose-answer hr {
+  border-color: #4B5563;
+}
+
+.prose-answer table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.8rem;
+}
+.prose-answer th {
+  background: #FFF3E8;
+  color: #EC6608;
+  font-weight: 600;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #E5E7EB;
+  text-align: left;
+}
+.dark .prose-answer th {
+  background: rgba(236, 102, 8, 0.1);
+  border-color: #4B5563;
+}
+.prose-answer td {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #E5E7EB;
+  color: #374151;
+}
+.dark .prose-answer td {
+  border-color: #4B5563;
+  color: #D1D5DB;
+}
+.prose-answer tr:nth-child(even) td {
+  background: #F9FAFB;
+}
+.dark .prose-answer tr:nth-child(even) td {
+  background: rgba(44, 48, 51, 0.4);
+}
+
+/* Citation superscripts like [1] */
+.prose-answer sup {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #EC6608;
+  vertical-align: super;
+  line-height: 0;
+  margin-left: 1px;
+}

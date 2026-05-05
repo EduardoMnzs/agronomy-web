@@ -1,12 +1,12 @@
-import React from 'react';
-import { FileText, ZoomIn, ZoomOut, Download, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
+import { useState } from 'react';
+import { BookOpen, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Card = ({ children, className = '' }) => (
-  <motion.div 
+  <motion.div
     variants={{
       hidden: { opacity: 0, y: 20 },
-      show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+      show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
     }}
     className={`bg-white dark:bg-[#323639] border border-gray-200 dark:border-transparent rounded-[12px] p-[14px] shadow-[0_1px_3px_rgba(19,30,41,.06)] dark:shadow-sm flex flex-col transition-colors duration-300 ${className}`}
   >
@@ -14,123 +14,178 @@ const Card = ({ children, className = '' }) => (
   </motion.div>
 );
 
-export default function RightColumn({ hasAnswer }) {
+const MOCK_CITATIONS = [
+  {
+    ref: '[1]',
+    doc_name: 'Embrapa_Calagem_Recomendacoes.pdf',
+    page: 42,
+    section: 'A fórmula padrão para o cálculo da NC pelo método da Saturação por Bases é: NC (t/ha) = CTC × (V2 - V1) / PRNT',
+  },
+  {
+    ref: '[2]',
+    doc_name: 'Manual_Calcario_Dolomítico.pdf',
+    page: 17,
+    section: 'Recomenda-se a aplicação a lanço com incorporação profunda (0-20 cm), preferencialmente de calcário dolomítico.',
+  },
+];
+
+function PdfMockViewer({ docName }) {
+  const [zoom, setZoom] = useState(100);
+  const [page, setPage] = useState(1);
+  const totalPages = 3;
+
   return (
-    <motion.div 
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between mb-2 shrink-0 gap-1">
+        <span className="text-[10px] text-gray-500 dark:text-gray-400 truncate flex-1 font-mono" title={docName}>
+          {docName}
+        </span>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setZoom((z) => Math.max(50, z - 25))}
+            className="cursor-pointer p-1 rounded text-gray-400 hover:text-[#EC6608] hover:bg-orange-50 dark:hover:bg-[#EC6608]/10 transition-colors"
+          >
+            <ZoomOut size={13} />
+          </button>
+          <span className="text-[10px] text-gray-400 font-mono w-8 text-center">{zoom}%</span>
+          <button
+            onClick={() => setZoom((z) => Math.min(200, z + 25))}
+            className="cursor-pointer p-1 rounded text-gray-400 hover:text-[#EC6608] hover:bg-orange-50 dark:hover:bg-[#EC6608]/10 transition-colors"
+          >
+            <ZoomIn size={13} />
+          </button>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-auto rounded-lg bg-gray-100 dark:bg-[#2c3033] flex items-start justify-center p-3">
+        <div
+          className="bg-white dark:bg-[#3a3f42] rounded shadow-md p-6 text-[11px] text-gray-600 dark:text-gray-300 leading-relaxed"
+          style={{ width: `${zoom}%`, minWidth: 160, maxWidth: '100%', transition: 'width 0.2s' }}
+        >
+          <p className="font-bold text-[#131E29] dark:text-white text-sm mb-3">
+            Capítulo 4 — Necessidade de Calagem
+          </p>
+          <p className="mb-2">
+            A <strong className="text-[#EC6608]">necessidade de calagem (NC)</strong> pelo método da saturação por bases leva em conta a CTC do solo, a saturação atual e a desejada para a cultura.
+          </p>
+          <div className="bg-gray-50 dark:bg-[#2c3033] rounded p-3 font-mono text-xs text-[#EC6608] my-3 border border-gray-200 dark:border-gray-700">
+            NC (t/ha) = CTC × (V2 − V1) / PRNT
+          </div>
+          <p className="mb-2">
+            Para soja recomenda-se <strong>V2 = 60%</strong>. Com CTC = 8,5 e V1 = 32, PRNT = 90:
+          </p>
+          <p className="font-mono text-[#EC6608] font-semibold">NC = 8,5 × (60 − 32) / 90 = 2,64 t/ha</p>
+          <p className="mt-3 text-gray-400 dark:text-gray-500 text-[10px]">p. {page} de {totalPages}</p>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-center gap-3 mt-2 shrink-0">
+        <button
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
+          disabled={page === 1}
+          className="cursor-pointer p-1 rounded text-gray-400 hover:text-[#EC6608] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronLeft size={15} />
+        </button>
+        <span className="text-[10px] text-gray-500 dark:text-gray-400 font-mono">
+          {page} / {totalPages}
+        </span>
+        <button
+          onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+          disabled={page === totalPages}
+          className="cursor-pointer p-1 rounded text-gray-400 hover:text-[#EC6608] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronRight size={15} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function RightColumn({ citations }) {
+  const activeCitations = (citations && citations.length > 0) ? citations : null;
+  const displayCitations = activeCitations ?? MOCK_CITATIONS;
+  const hasAnswer = !!activeCitations;
+  const previewDoc = displayCitations[0]?.doc_name ?? 'Embrapa_Calagem_Recomendacoes.pdf';
+
+  return (
+    <motion.div
       initial="hidden"
       animate="show"
       variants={{
         hidden: { opacity: 0 },
-        show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.3 } }
+        show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.3 } },
       }}
       className="flex flex-col gap-[14px] h-auto lg:h-full overflow-visible lg:overflow-hidden"
     >
-      <AnimatePresence mode="wait">
-        {hasAnswer ? (
-          <motion.div
-            key="content"
-            initial="hidden"
-            animate="show"
-            variants={{
-              hidden: { opacity: 0 },
-              show: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.05 } }
-            }}
-            className="flex flex-col gap-[14px] h-auto lg:h-full overflow-visible lg:overflow-hidden"
-          >
-            <Card className="shrink-0 h-[260px] !p-0 overflow-hidden flex flex-col border-gray-200 dark:border-[#2c3033] transition-colors duration-300">
-              <div className="bg-white dark:bg-[#323639] border-b border-gray-200 dark:border-[#2c3033] p-2 flex items-center justify-between shrink-0 transition-colors duration-300">
-                <div className="flex items-center gap-2 overflow-hidden pr-2">
-                  <FileText className="w-4 h-4 text-gray-400 shrink-0" />
-                  <span className="text-xs font-medium text-[#131E29] dark:text-white truncate transition-colors duration-300">Embrapa_Calagem_Recomendacoes.pdf</span>
-                </div>
-                <div className="flex items-center gap-1 shrink-0">
-                  <button className="cursor-pointer p-1 hover:bg-gray-100 dark:hover:bg-[#2c3033] rounded text-gray-500 dark:text-gray-400 transition-colors duration-300">
-                    <ZoomOut className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="text-[10px] text-gray-500 dark:text-gray-400 font-mono w-8 text-center transition-colors duration-300">100%</span>
-                  <button className="cursor-pointer p-1 hover:bg-gray-100 dark:hover:bg-[#2c3033] rounded text-gray-500 dark:text-gray-400 transition-colors duration-300">
-                    <ZoomIn className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-              
-              <div className="flex-1 bg-slate-100/80 dark:bg-[#2c3033] p-4 flex items-start justify-center overflow-auto relative transition-colors duration-300">
-                <div className="w-full max-w-[200px] h-[300px] bg-white shadow-md border border-gray-200 dark:border-gray-300 p-4 flex flex-col gap-2 transition-colors duration-300">
-                  <div className="h-2 w-3/4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-1.5 w-full bg-gray-100 rounded"></div>
-                  <div className="h-1.5 w-full bg-gray-100 rounded"></div>
-                  <div className="h-1.5 w-5/6 bg-gray-100 rounded"></div>
-                  
-                  <div className="mt-4 h-2 w-1/2 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-1.5 w-full bg-orange-100 border border-orange-200 rounded"></div>
-                  <div className="h-1.5 w-full bg-orange-100 border border-orange-200 rounded"></div>
-                  <div className="h-1.5 w-4/5 bg-orange-100 border border-orange-200 rounded"></div>
-                  <div className="h-1.5 w-full bg-gray-100 rounded mt-2"></div>
-                </div>
-                
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-gray-800/80 dark:bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-2 transition-colors duration-300">
-                  <button className="cursor-pointer hover:text-[#EC6608] transition-colors"><ChevronLeft className="w-3 h-3" /></button>
-                  <span>Pág 14 / 42</span>
-                  <button className="cursor-pointer hover:text-[#EC6608] transition-colors"><ChevronRight className="w-3 h-3" /></button>
-                </div>
-              </div>
-            </Card>
+      <Card className="flex-1 min-h-[260px] lg:min-h-0 overflow-hidden">
+        <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 shrink-0 transition-colors duration-300">
+          Visualização
+        </h2>
+        <div className="flex-1 overflow-hidden">
+          <PdfMockViewer docName={previewDoc} />
+        </div>
+      </Card>
 
-            <Card className="flex-1 min-h-[300px] lg:min-h-0 overflow-hidden">
-              <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 shrink-0 transition-colors duration-300">Citações</h2>
-              <div className="flex-1 overflow-y-auto pr-3 pl-1 py-1 -mr-3 -ml-1 -my-1 flex flex-col gap-3">
-                
-                <motion.div 
+      <Card className="shrink-0 max-h-[280px] overflow-hidden">
+        <div className="flex items-center justify-between mb-3 shrink-0">
+          <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider transition-colors duration-300">
+            Citações
+          </h2>
+          {!hasAnswer && (
+            <span className="text-[10px] text-gray-300 dark:text-gray-600 italic">exemplo</span>
+          )}
+        </div>
+
+        <AnimatePresence mode="wait">
+          {displayCitations.length > 0 ? (
+            <motion.div
+              key="citations"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex-1 overflow-y-auto pr-1 -mr-1 flex flex-col gap-2"
+            >
+              {displayCitations.map((source) => (
+                <motion.div
+                  key={source.ref}
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   className="border border-gray-100 dark:border-[#2c3033] bg-gray-50/50 dark:bg-[#2c3033] rounded-lg p-3 hover:border-orange-200 dark:hover:border-[#EC6608] hover:bg-white dark:hover:bg-[#323639] transition-colors duration-300 cursor-pointer group"
                 >
                   <div className="flex items-start gap-2 mb-1.5">
-                    <span className="text-[10px] font-bold text-[#EC6608] bg-orange-100 dark:bg-[#EC6608]/20 px-1.5 py-0.5 rounded leading-none shrink-0 mt-0.5 transition-colors duration-300">1</span>
-                    <span className="text-xs font-medium text-[#131E29] dark:text-white truncate group-hover:text-[#EC6608] transition-colors duration-300">Embrapa_Calagem_Recomendacoes.pdf</span>
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500 font-mono ml-auto shrink-0 mt-0.5 transition-colors duration-300">p. 14</span>
+                    <span className="text-[10px] font-bold text-[#EC6608] bg-orange-100 dark:bg-[#EC6608]/20 px-1.5 py-0.5 rounded leading-none shrink-0 mt-0.5">
+                      {source.ref}
+                    </span>
+                    <span className="text-xs font-medium text-[#131E29] dark:text-white truncate group-hover:text-[#EC6608] transition-colors duration-300">
+                      {source.doc_name}
+                    </span>
+                    <span className="text-[10px] text-gray-400 dark:text-gray-500 font-mono ml-auto shrink-0 mt-0.5">
+                      p. {source.page}
+                    </span>
                   </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed transition-colors duration-300">
-                    "Para a cultura da soja no bioma Cerrado, o método mais indicado para cálculo da Necessidade de Calagem (NC) é o da Saturação por Bases, utilizando como meta (V2) o valor de 60%..."
-                  </p>
+                  {source.section && (
+                    <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed">
+                      {source.section}
+                    </p>
+                  )}
                 </motion.div>
-
-                <motion.div 
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  className="border border-gray-100 dark:border-[#2c3033] bg-gray-50/50 dark:bg-[#2c3033] rounded-lg p-3 hover:border-orange-200 dark:hover:border-[#EC6608] hover:bg-white dark:hover:bg-[#323639] transition-colors duration-300 cursor-pointer group"
-                >
-                  <div className="flex items-start gap-2 mb-1.5">
-                    <span className="text-[10px] font-bold text-[#EC6608] bg-orange-100 dark:bg-[#EC6608]/20 px-1.5 py-0.5 rounded leading-none shrink-0 mt-0.5 transition-colors duration-300">2</span>
-                    <span className="text-xs font-medium text-[#131E29] dark:text-white truncate group-hover:text-[#EC6608] transition-colors duration-300">Manual_Manejo_Solo_Cerrado.pdf</span>
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500 font-mono ml-auto shrink-0 mt-0.5 transition-colors duration-300">p. 82</span>
-                  </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-3 leading-relaxed transition-colors duration-300">
-                    "A aplicação deve ser realizada a lanço com incorporação na camada de 0 a 20 cm. O uso de calcário dolomítico é recomendado em solos com teores de Mg inferiores a 0,5 cmolc/dm³."
-                  </p>
-                </motion.div>
-
-              </div>
-            </Card>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="empty"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center min-h-[200px] lg:h-full gap-4 text-center px-6"
-          >
-            <div className="w-12 h-12 bg-gray-50 dark:bg-[#2c3033] rounded-2xl flex items-center justify-center border border-gray-100 dark:border-gray-700">
-              <BookOpen className="w-6 h-6 text-gray-300 dark:text-gray-600" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-400 dark:text-gray-500 mb-1">Nenhuma consulta ainda</p>
-              <p className="text-xs text-gray-300 dark:text-gray-600 leading-relaxed">As citações e o preview do PDF aparecerão aqui após a resposta.</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex flex-col items-center justify-center py-6 gap-3 text-center"
+            >
+              <BookOpen className="w-5 h-5 text-gray-300 dark:text-gray-600" />
+              <p className="text-xs text-gray-400 dark:text-gray-500">
+                As citações aparecerão aqui após a resposta.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Card>
     </motion.div>
   );
 }

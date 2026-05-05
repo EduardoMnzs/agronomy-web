@@ -1,35 +1,66 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, PanelLeftClose, PanelLeftOpen, Settings, LogOut, SquarePen,
   Folder, Book, Upload, Users, FilePlus, MoreHorizontal,
-  Pin, Pencil, Trash2, MessageSquare, Sprout
+  Pin, Pencil, Trash2,
 } from 'lucide-react';
 import agronomyLogo from '../../assets/images/Agronomy-logo.png';
-import { auth } from '../../api/api';
+import { auth, conversations as convsApi } from '../../api/api';
 
 const mockDocuments = [
-  { id: 'd1', name: 'analise_solo_talhao_7.pdf' },
+  { id: 'my-1', name: 'analise_solo_talhao_7.pdf' },
 ];
 
-const mockConversations = [
-  { id: 'c1', label: 'Necessidade de calagem para soja', pinned: true },
-  { id: 'c2', label: 'Controle de buva resistente no PR', pinned: false },
-  { id: 'c3', label: 'Comparação de cultivares IPRO', pinned: false },
-  { id: 'c4', label: 'Estresse hídrico no enchimento', pinned: false },
-];
-
-export default function Sidebar({ isMobileOpen, onCloseMobile }) {
+export default function Sidebar({ isMobileOpen, onCloseMobile, onSelectConversation, onNewConversation, activeConversationId, newConversationEntry, onConversationEntryAdded }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [conversations, setConversations] = useState(mockConversations);
+  const [conversations, setConversations] = useState([]);
 
-  const handlePin = (id) => setConversations(prev => prev.map(c => c.id === id ? { ...c, pinned: !c.pinned } : c));
-  const handleRename = (id, newLabel) => setConversations(prev => prev.map(c => c.id === id ? { ...c, label: newLabel } : c));
-  const handleDelete = (id) => setConversations(prev => prev.filter(c => c.id !== id));
+  useEffect(() => {
+    convsApi.list().then(setConversations).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!newConversationEntry) return;
+    setConversations((prev) => {
+      if (prev.some((c) => c.id === newConversationEntry.id)) return prev;
+      return [newConversationEntry, ...prev];
+    });
+    onConversationEntryAdded?.();
+  }, [newConversationEntry]);
+
+  const handlePin = async (id) => {
+    const conv = conversations.find((c) => c.id === id);
+    if (!conv) return;
+    const newPinned = !conv.pinned;
+    setConversations((prev) => prev.map((c) => c.id === id ? { ...c, pinned: newPinned } : c));
+    await convsApi.patch(id, { pinned: newPinned }).catch(() => {});
+  };
+
+  const handleRename = async (id, newTitle) => {
+    setConversations((prev) => prev.map((c) => c.id === id ? { ...c, title: newTitle } : c));
+    await convsApi.patch(id, { title: newTitle }).catch(() => {});
+  };
+
+  const handleDelete = async (id) => {
+    await convsApi.remove(id).catch(() => {});
+    setConversations((prev) => prev.filter((c) => c.id !== id));
+  };
+
   const handleClearAll = () => setConversations([]);
 
-  const sharedProps = { isCollapsed, conversations, handlePin, handleRename, handleDelete, handleClearAll };
+  const sharedProps = {
+    isCollapsed,
+    conversations,
+    handlePin,
+    handleRename,
+    handleDelete,
+    handleClearAll,
+    onSelectConversation,
+    onNewConversation,
+    activeConversationId,
+  };
 
   return (
     <>
@@ -47,32 +78,32 @@ export default function Sidebar({ isMobileOpen, onCloseMobile }) {
               transition={{ type: 'spring', damping: 25, stiffness: 250 }}
               className="fixed inset-y-0 left-0 z-[70] w-64 bg-white dark:bg-[#323639] border-r border-gray-200 dark:border-transparent h-screen flex flex-col text-[#131E29] dark:text-white shadow-xl flex-shrink-0 lg:hidden overflow-hidden"
             >
-              <SidebarInner {...sharedProps} onCloseMobile={onCloseMobile} onToggleCollapse={() => setIsCollapsed(v => !v)} forceExpanded />
+              <SidebarInner {...sharedProps} onCloseMobile={onCloseMobile} onToggleCollapse={() => setIsCollapsed((v) => !v)} forceExpanded />
             </motion.aside>
           </>
         )}
       </AnimatePresence>
 
       <aside className={`hidden lg:flex relative inset-y-0 left-0 z-30 bg-white dark:bg-[#323639] border-r border-gray-200 dark:border-transparent h-screen flex-col text-[#131E29] dark:text-white shadow-xl flex-shrink-0 overflow-hidden transition-[width,background-color,border-color] duration-300 ease-in-out ${isCollapsed ? 'w-[72px]' : 'w-64'}`}>
-        <SidebarInner {...sharedProps} onCloseMobile={() => { }} onToggleCollapse={() => setIsCollapsed(v => !v)} />
+        <SidebarInner {...sharedProps} onCloseMobile={() => {}} onToggleCollapse={() => setIsCollapsed((v) => !v)} />
       </aside>
     </>
   );
 }
 
-function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleCollapse, conversations, handlePin, handleRename, handleDelete, handleClearAll }) {
+function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleCollapse, conversations, handlePin, handleRename, handleDelete, handleClearAll, onSelectConversation, onNewConversation, activeConversationId }) {
   const navigate = useNavigate();
   const location = useLocation();
   const collapsed = forceExpanded ? false : isCollapsed;
 
   const containerVariants = {
     hidden: {},
-    show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } }
+    show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, x: -14 },
-    show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 320, damping: 26 } }
+    show: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 320, damping: 26 } },
   };
 
   return (
@@ -102,7 +133,7 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
         transition={{ type: 'spring', stiffness: 320, damping: 26, delay: 0.1 }}
         className="px-3 pt-3 pb-2 flex-shrink-0"
       >
-        <SidebarItem icon={SquarePen} label="Nova consulta" collapsed={collapsed} accent onClick={() => navigate('/app')} />
+        <SidebarItem icon={SquarePen} label="Nova consulta" collapsed={collapsed} accent onClick={() => { onNewConversation?.(); navigate('/app'); onCloseMobile(); }} />
       </motion.div>
 
       <motion.div
@@ -115,11 +146,11 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
         {!collapsed && (
           <motion.div variants={itemVariants}>
             <Section label="Documentos" collapsed={collapsed}>
-              {mockDocuments.slice(0, 2).map(doc => (
+              {mockDocuments.slice(0, 2).map((doc) => (
                 <SidebarItem key={doc.id} icon={Folder} label={doc.name} collapsed={collapsed} truncate />
               ))}
               {mockDocuments.length < 2 && (
-                <SidebarItem label="+ Adicionar Documento" collapsed={collapsed} muted />
+                <SidebarItem icon={FilePlus} label="Adicionar documento" collapsed={collapsed} muted onClick={() => navigate('/index-document')} />
               )}
             </Section>
           </motion.div>
@@ -127,24 +158,28 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
 
         <motion.div variants={itemVariants}>
           <Section label="Administração" collapsed={collapsed}>
-            <SidebarItem icon={Book} label="Base de conhecimento" collapsed={collapsed} active={location.pathname === '/knowledge-base'} onClick={() => navigate('/knowledge-base')} />
-            <SidebarItem icon={Upload} label="Indexar documento" collapsed={collapsed} active={location.pathname === '/index-document'} onClick={() => navigate('/index-document')} />
-            <SidebarItem icon={Users} label="Usuários" collapsed={collapsed} active={location.pathname === '/users'} onClick={() => navigate('/users')} />
+            <SidebarItem icon={Book} label="Base de conhecimento" collapsed={collapsed} active={location.pathname === '/knowledge-base'} onClick={() => { navigate('/knowledge-base'); onCloseMobile(); }} />
+            <SidebarItem icon={Upload} label="Indexar documento" collapsed={collapsed} active={location.pathname === '/index-document'} onClick={() => { navigate('/index-document'); onCloseMobile(); }} />
+            <SidebarItem icon={Users} label="Usuários" collapsed={collapsed} active={location.pathname === '/users'} onClick={() => { navigate('/users'); onCloseMobile(); }} />
           </Section>
         </motion.div>
-
         {!collapsed && (
           <motion.div variants={itemVariants}>
             <Section label="Conversas" collapsed={collapsed}>
               <AnimatePresence initial={false}>
-                {[...conversations].sort((a, b) => b.pinned - a.pinned).map(conv => (
+                {[...conversations].sort((a, b) => {
+                  if (b.pinned !== a.pinned) return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
+                  return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
+                }).map((conv) => (
                   <ConversationItem
                     key={conv.id}
                     conv={conv}
                     collapsed={collapsed}
+                    active={activeConversationId === conv.id}
                     onPin={handlePin}
                     onRename={handleRename}
                     onDelete={handleDelete}
+                    onSelect={onSelectConversation}
                   />
                 ))}
               </AnimatePresence>
@@ -178,14 +213,12 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
   );
 }
 
-
-function Section({ label, collapsed, children, action }) {
+function Section({ label, collapsed, children }) {
   return (
     <div className="space-y-0.5">
       {!collapsed && (
         <div className="flex items-center justify-between px-2 mb-1">
           <span className="text-[10px] font-bold text-gray-400 dark:text-white/30 uppercase tracking-widest">{label}</span>
-          {action}
         </div>
       )}
       {children}
@@ -216,12 +249,12 @@ function SidebarItem({ icon: Icon, label, collapsed, accent, active, muted, dang
   );
 }
 
-function ConversationItem({ conv, collapsed, onPin, onRename, onDelete }) {
+function ConversationItem({ conv, collapsed, active, onPin, onRename, onDelete, onSelect }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
   const [renaming, setRenaming] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [draft, setDraft] = useState(conv.label);
+  const [draft, setDraft] = useState(conv.title);
   const btnRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -246,7 +279,7 @@ function ConversationItem({ conv, collapsed, onPin, onRename, onDelete }) {
       const rect = btnRef.current.getBoundingClientRect();
       setMenuPos({ top: rect.bottom + 4, left: rect.right - 160 });
     }
-    setMenuOpen(v => !v);
+    setMenuOpen((v) => !v);
   };
 
   const commitRename = () => {
@@ -256,7 +289,7 @@ function ConversationItem({ conv, collapsed, onPin, onRename, onDelete }) {
 
   if (collapsed) {
     return (
-      <button title={conv.label} className="cursor-pointer w-full flex items-center justify-center px-3 py-2.5 rounded-lg text-gray-500 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-[#131E29] dark:hover:text-white transition-colors duration-200">
+      <button title={conv.title} className="cursor-pointer w-full flex items-center justify-center px-3 py-2.5 rounded-lg text-gray-500 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-[#131E29] dark:hover:text-white transition-colors duration-200">
         <span className="w-1.5 h-1.5 rounded-full bg-gray-400 dark:bg-white/30" />
       </button>
     );
@@ -270,19 +303,21 @@ function ConversationItem({ conv, collapsed, onPin, onRename, onDelete }) {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, x: -20 }}
         transition={{ duration: 0.2 }}
-        className="relative group flex items-center gap-1.5 px-2 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-200"
+        className={`relative group flex items-center gap-1.5 px-2 py-2 rounded-lg transition-colors duration-200 cursor-pointer ${active ? 'bg-[#EC6608]/10 dark:bg-[#EC6608]/15' : 'hover:bg-gray-50 dark:hover:bg-white/5'}`}
+        onClick={() => !renaming && onSelect?.(conv.id)}
       >
         {renaming ? (
           <input
             ref={inputRef}
             value={draft}
-            onChange={e => setDraft(e.target.value)}
+            onChange={(e) => setDraft(e.target.value)}
             onBlur={commitRename}
-            onKeyDown={e => { if (e.key === 'Enter') commitRename(); if (e.key === 'Escape') setRenaming(false); }}
+            onKeyDown={(e) => { if (e.key === 'Enter') commitRename(); if (e.key === 'Escape') setRenaming(false); }}
             className="flex-1 text-xs bg-transparent border-b border-[#EC6608] outline-none text-[#131E29] dark:text-white"
+            onClick={(e) => e.stopPropagation()}
           />
         ) : (
-          <span className="flex-1 text-xs text-gray-600 dark:text-white/70 truncate">{conv.label}</span>
+          <span className={`flex-1 text-xs truncate ${active ? 'text-[#EC6608] font-medium' : 'text-gray-600 dark:text-white/70'}`}>{conv.title}</span>
         )}
 
         {conv.pinned ? (
@@ -290,7 +325,7 @@ function ConversationItem({ conv, collapsed, onPin, onRename, onDelete }) {
             <Pin size={11} className={`text-[#EC6608] transition-opacity absolute ${menuOpen ? 'opacity-0' : 'group-hover:opacity-0'}`} />
             <button
               ref={btnRef}
-              onClick={openMenu}
+              onClick={(e) => { e.stopPropagation(); openMenu(); }}
               className={`cursor-pointer p-1 rounded text-gray-400 hover:text-[#131E29] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-all absolute ${menuOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus:opacity-100'}`}
             >
               <MoreHorizontal size={14} />
@@ -299,7 +334,7 @@ function ConversationItem({ conv, collapsed, onPin, onRename, onDelete }) {
         ) : (
           <button
             ref={btnRef}
-            onClick={openMenu}
+            onClick={(e) => { e.stopPropagation(); openMenu(); }}
             className="cursor-pointer opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 rounded text-gray-400 hover:text-[#131E29] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-all"
           >
             <MoreHorizontal size={14} />
@@ -329,7 +364,7 @@ function ConversationItem({ conv, collapsed, onPin, onRename, onDelete }) {
       <AnimatePresence>
         {confirmDelete && (
           <DeleteConfirmModal
-            label={conv.label}
+            label={conv.title}
             onConfirm={() => { onDelete(conv.id); setConfirmDelete(false); }}
             onCancel={() => setConfirmDelete(false)}
           />
@@ -370,7 +405,7 @@ function DeleteConfirmModal({ label, onConfirm, onCancel }) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.93, y: 8 }}
         transition={{ duration: 0.18 }}
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
         className="bg-white dark:bg-[#323639] rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 w-80 mx-4"
       >
         <h3 className="text-sm font-semibold text-[#131E29] dark:text-white mb-3">Excluir conversa?</h3>

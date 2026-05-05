@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Plus, Search, MoreVertical, Edit2, Trash2, Mail, Shield, CheckCircle2, XCircle, ChevronDown, AlertTriangle, X, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
-import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
 import CustomSelect from '../components/ui/CustomSelect';
 
@@ -23,7 +23,7 @@ const mockUsers = [
 const ITEMS_PER_PAGE = 10;
 
 export default function UsersPage() {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { setIsMobileOpen } = useOutletContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -114,14 +114,11 @@ export default function UsersPage() {
   }, [currentPage]);
 
   return (
-    <div className="h-screen w-screen bg-[#F7F7FF] dark:bg-[#2c3033] flex overflow-hidden transition-colors duration-300">
-      <Sidebar isMobileOpen={isMobileOpen} onCloseMobile={() => setIsMobileOpen(false)} />
-
-      <div className="flex-1 flex flex-col min-w-0 h-full">
-        <Header
-          title="Usuários"
-          onOpenMobile={() => setIsMobileOpen(true)}
-        />
+    <>
+      <Header
+        title="Usuários"
+        onOpenMobile={() => setIsMobileOpen(true)}
+      />
 
         <main ref={mainRef} className="flex-1 p-4 lg:p-8 overflow-y-auto box-border">
           <motion.div
@@ -314,7 +311,6 @@ export default function UsersPage() {
             )}
           </motion.div>
         </main>
-      </div>
 
       <AnimatePresence>
         {isUserModalOpen && (
@@ -460,6 +456,6 @@ export default function UsersPage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }

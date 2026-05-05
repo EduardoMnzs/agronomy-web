@@ -1,13 +1,14 @@
-import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileUp, File, X, CheckCircle2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { useOutletContext } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { FileUp, File, X, AlertCircle, Loader2 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import mammoth from 'mammoth';
 import { marked } from 'marked';
-import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
 import CustomSelect from '../components/ui/CustomSelect';
 import Toast from '../components/ui/Toast';
+import { documents } from '../api/api';
 
 function SpreadsheetPreview({ sheets }) {
   const [activeSheet, setActiveSheet] = useState(0);
@@ -123,7 +124,7 @@ function MarkdownPreview({ html }) {
 }
 
 export default function IndexDocument() {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { setIsMobileOpen } = useOutletContext();
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState(null);
@@ -248,13 +249,16 @@ export default function IndexDocument() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [indexingStatus, setIndexingStatus] = useState('idle');
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!file) { 
-      setError('Por favor, selecione um arquivo para indexar.'); 
-      return; 
+    if (!file) {
+      setError('Por favor, selecione um arquivo para indexar.');
+      return;
     }
 
     if (!formData.category) {
@@ -262,22 +266,57 @@ export default function IndexDocument() {
       return;
     }
 
-    setSuccess(true);
-    setTimeout(() => {
-      setSuccess(false);
-      removeFile();
-      setFormData({ name: '', category: '', description: '' });
-    }, 3000);
+    setIsSubmitting(true);
+    setIndexingStatus('queued');
+
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('name', formData.name);
+      fd.append('category', formData.category);
+      if (formData.description) fd.append('description', formData.description);
+
+      const doc = await documents.index(fd);
+
+      const deadline = Date.now() + 10 * 60 * 1000;
+      while (Date.now() < deadline) {
+        await new Promise(r => setTimeout(r, 2000));
+        const status = await documents.getStatus(doc.id);
+        setIndexingStatus(status.status);
+
+        if (status.status === 'done') {
+          setSuccess(true);
+          setTimeout(() => {
+            setSuccess(false);
+            setIndexingStatus('idle');
+            removeFile();
+            setFormData({ name: '', category: '', description: '' });
+          }, 3000);
+          return;
+        }
+
+        if (status.status === 'error') {
+          setError(status.status_message || 'Erro durante a indexação.');
+          setIndexingStatus('idle');
+          return;
+        }
+      }
+
+      setError('Timeout: a indexação demorou mais que 10 minutos.');
+      setIndexingStatus('idle');
+    } catch (err) {
+      setError(err.message || 'Erro ao indexar documento. Tente novamente.');
+      setIndexingStatus('idle');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const hasPreview = filePreviewUrl || sheetData || jsonData || docxHtml || markdownHtml;
 
   return (
-    <div className="h-screen w-screen bg-[#F7F7FF] dark:bg-[#2c3033] flex overflow-hidden transition-colors duration-300">
-      <Sidebar isMobileOpen={isMobileOpen} onCloseMobile={() => setIsMobileOpen(false)} />
-
-      <div className="flex-1 flex flex-col min-w-0">
-        <Header title="Base de conhecimento" onOpenMobile={() => setIsMobileOpen(true)} />
+    <>
+      <Header title="Indexar Documento" onOpenMobile={() => setIsMobileOpen(true)} />
 
         <main className="flex-1 p-4 lg:p-8 overflow-y-auto box-border">
           <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-7xl mx-auto w-full flex flex-col gap-6">
@@ -399,11 +438,12 @@ export default function IndexDocument() {
                       value={formData.category}
                       onChange={(val) => setFormData({ ...formData, category: val })}
                       options={[
-                        { value: 'analise_solo', label: 'Análise de Solo' },
-                        { value: 'relatorio_safra', label: 'Relatório de Safra' },
-                        { value: 'clima', label: 'Dados Climáticos' },
-                        { value: 'maquinario', label: 'Manual de Maquinário' },
-                        { value: 'insumos', label: 'Tabela de Insumos' },
+                        { value: 'solo', label: 'Solo' },
+                        { value: 'insumos', label: 'Insumos' },
+                        { value: 'sementes', label: 'Sementes' },
+                        { value: 'maquinas', label: 'Máquinas' },
+                        { value: 'herbicidas', label: 'Herbicidas' },
+                        { value: 'historico', label: 'Histórico' },
                         { value: 'outro', label: 'Outro' },
                       ]}
                     />
@@ -425,10 +465,17 @@ export default function IndexDocument() {
                   <div className="pt-4 flex justify-end">
                     <button
                       type="submit"
-                      disabled={!file || !formData.category}
+                      disabled={!file || !formData.category || isSubmitting}
                       className="cursor-pointer bg-[#EC6608] hover:bg-[#d95d07] disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm"
                     >
-                      Iniciar Indexação
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 size={15} className="animate-spin" />
+                          {indexingStatus === 'queued' ? 'Na fila...' : 'Indexando...'}
+                        </>
+                      ) : (
+                        'Iniciar Indexação'
+                      )}
                     </button>
                   </div>
                 </div>
@@ -436,7 +483,6 @@ export default function IndexDocument() {
             </form>
           </motion.div>
         </main>
-      </div>
-    </div>
+    </>
   );
 }

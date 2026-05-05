@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
@@ -8,326 +8,140 @@ import {
   MoreVertical,
   Trash2,
   Eye,
-  Filter,
   Download,
   Calendar,
   Database,
   X,
   ChevronLeft,
   ChevronRight,
-  CheckCircle2
+  CheckCircle2,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/layout/Sidebar';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Toast from '../components/ui/Toast';
 import CustomSelect from '../components/ui/CustomSelect';
+import { documents } from '../api/api';
 
-const categories = [
-  { id: 'todos', label: 'Todas as categorias' },
-  { id: 'analise_solo', label: 'Análise de Solo' },
-  { id: 'relatorio_safra', label: 'Relatório de Safra' },
-  { id: 'clima', label: 'Dados Climáticos' },
-  { id: 'maquinario', label: 'Manual de Maquinário' },
-  { id: 'insumos', label: 'Tabela de Insumos' },
-  { id: 'outro', label: 'Outro' },
-];
+const CATEGORY_LABELS = {
+  solo: 'Solo',
+  insumos: 'Insumos',
+  sementes: 'Sementes',
+  maquinas: 'Máquinas',
+  herbicidas: 'Herbicidas',
+  historico: 'Histórico',
+  outro: 'Outro',
+};
 
-const types = [
-  { value: 'todos', label: 'Todos os tipos' },
+const categoryOptions = Object.entries(CATEGORY_LABELS).map(([value, label]) => ({ value, label }));
+
+const typeOptions = [
   { value: 'pdf', label: 'Documentos (PDF)' },
   { value: 'xlsx', label: 'Planilhas (XLSX/XLS)' },
   { value: 'csv', label: 'Dados (CSV)' },
   { value: 'json', label: 'Estruturados (JSON)' },
   { value: 'docx', label: 'Textos (DOCX)' },
-];
-
-const dateFilters = [
-  { value: 'hoje', label: 'Hoje' },
-  { value: 'semana', label: 'Últimos 7 dias' },
-  { value: 'mes', label: 'Este mês' },
-  { value: 'ano', label: 'Este ano' },
-];
-
-const mockDocuments = [
-  {
-    id: 1,
-    name: 'Análise de Solo - Setor Norte 2024',
-    category: 'analise_solo',
-    categoryLabel: 'Análise de Solo',
-    type: 'pdf',
-    size: '2.4 MB',
-    date: '15 Mai, 2024',
-    createdAt: new Date('2024-05-15'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 2,
-    name: 'Relatório Safra Milho - Fazenda Esperança',
-    category: 'relatorio_safra',
-    categoryLabel: 'Relatório de Safra',
-    type: 'xlsx',
-    size: '1.1 MB',
-    date: '12 Mai, 2024',
-    createdAt: new Date('2024-05-12'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 3,
-    name: 'Histórico Pluviométrico - 2023',
-    category: 'clima',
-    categoryLabel: 'Dados Climáticos',
-    type: 'csv',
-    size: '0.8 MB',
-    date: '08 Mai, 2024',
-    createdAt: new Date('2024-05-08'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 4,
-    name: 'Manual Trator John Deere 6150J',
-    category: 'maquinario',
-    categoryLabel: 'Manual de Maquinário',
-    type: 'pdf',
-    size: '15.7 MB',
-    date: '01 Mai, 2024',
-    createdAt: new Date('2024-05-01'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 5,
-    name: 'Preços Insumos - Fertilizantes Q2',
-    category: 'insumos',
-    categoryLabel: 'Tabela de Insumos',
-    type: 'json',
-    size: '0.2 MB',
-    date: '28 Abr, 2024',
-    createdAt: new Date('2024-04-28'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 6,
-    name: 'Manual de Boas Práticas Agrícolas - 2024',
-    category: 'outro',
-    categoryLabel: 'Outro',
-    type: 'docx',
-    size: '0.5 MB',
-    date: '20 Mai, 2024',
-    createdAt: new Date('2024-05-20'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 7,
-    name: 'Manejo de Pragas - Safra Verão',
-    category: 'outro',
-    categoryLabel: 'Outro',
-    type: 'pdf',
-    size: '3.1 MB',
-    date: '18 Mai, 2024',
-    createdAt: new Date('2024-05-18'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 8,
-    name: 'Inventário de Defensivos - Galpão 02',
-    category: 'insumos',
-    categoryLabel: 'Tabela de Insumos',
-    type: 'xlsx',
-    size: '1.2 MB',
-    date: '16 Mai, 2024',
-    createdAt: new Date('2024-05-16'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 9,
-    name: 'Calibração Pulverizador Case IH 3230',
-    category: 'maquinario',
-    categoryLabel: 'Manual de Maquinário',
-    type: 'pdf',
-    size: '2.8 MB',
-    date: '14 Mai, 2024',
-    createdAt: new Date('2024-05-14'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 10,
-    name: 'Custos Produção Soja 24/25',
-    category: 'relatorio_safra',
-    categoryLabel: 'Relatório de Safra',
-    type: 'xlsx',
-    size: '0.9 MB',
-    date: '10 Mai, 2024',
-    createdAt: new Date('2024-05-10'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 11,
-    name: 'Análise de Solo - Gleba Santa Rita',
-    category: 'analise_solo',
-    categoryLabel: 'Análise de Solo',
-    type: 'pdf',
-    size: '1.8 MB',
-    date: '07 Mai, 2024',
-    createdAt: new Date('2024-05-07'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 12,
-    name: 'Previsão Trimestral - El Niño 2024',
-    category: 'clima',
-    categoryLabel: 'Dados Climáticos',
-    type: 'pdf',
-    size: '4.2 MB',
-    date: '05 Mai, 2024',
-    createdAt: new Date('2024-05-05'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 13,
-    name: 'Mapa de Calor - Infestação de Lagarta',
-    category: 'outro',
-    categoryLabel: 'Outro',
-    type: 'json',
-    size: '5.6 MB',
-    date: '03 Mai, 2024',
-    createdAt: new Date('2024-05-03'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 14,
-    name: 'Planilha de Irrigação - Pivô 01',
-    category: 'clima',
-    categoryLabel: 'Dados Climáticos',
-    type: 'xlsx',
-    size: '0.6 MB',
-    date: '01 Mai, 2024',
-    createdAt: new Date('2024-05-01'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 15,
-    name: 'Certificado de Calibração Balança',
-    category: 'outro',
-    categoryLabel: 'Outro',
-    type: 'pdf',
-    size: '1.1 MB',
-    date: '29 Abr, 2024',
-    createdAt: new Date('2024-04-29'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 16,
-    name: 'Cronograma de Plantio - Inverno',
-    category: 'relatorio_safra',
-    categoryLabel: 'Relatório de Safra',
-    type: 'docx',
-    size: '0.3 MB',
-    date: '27 Abr, 2024',
-    createdAt: new Date('2024-04-27'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 17,
-    name: 'Análise Foliar - Milho Safrinha',
-    category: 'analise_solo',
-    categoryLabel: 'Análise de Solo',
-    type: 'pdf',
-    size: '2.1 MB',
-    date: '25 Abr, 2024',
-    createdAt: new Date('2024-04-25'),
-    owner: 'Eduardo Menezes'
-  },
-  {
-    id: 18,
-    name: 'Catálogo de Peças - Plantadeira Tatu',
-    category: 'maquinario',
-    categoryLabel: 'Manual de Maquinário',
-    type: 'pdf',
-    size: '12.4 MB',
-    date: '23 Abr, 2024',
-    createdAt: new Date('2024-04-23'),
-    owner: 'Eduardo Menezes'
-  }
+  { value: 'md', label: 'Markdown (MD)' },
 ];
 
 const ITEMS_PER_PAGE = 6;
 
 export default function KnowledgeBase() {
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const navigate = useNavigate();
+  const { setIsMobileOpen } = useOutletContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState([]);
   const [activeType, setActiveType] = useState([]);
-  const [activeDate, setActiveDate] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const mainRef = React.useRef(null);
+  const mainRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [docToDelete, setDocToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [toast, setToast] = useState({ show: false, title: '', message: '', type: 'success' });
-  const navigate = useNavigate();
 
-  const filteredDocs = mockDocuments.filter(doc => {
-    const matchesSearch = doc.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = activeCategory.length === 0 || activeCategory.includes('todos') || activeCategory.includes(doc.category);
-    const matchesType = activeType.length === 0 || activeType.includes('todos') ||
-      activeType.includes(doc.type) ||
-      (activeType.includes('xlsx') && doc.type === 'xls');
+  const [docs, setDocs] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
 
-    let matchesDate = true;
-    if (activeDate) {
-      const now = new Date();
-      const docDate = new Date(doc.createdAt);
-      if (activeDate === 'hoje') {
-        matchesDate = docDate.toDateString() === now.toDateString();
-      } else if (activeDate === 'semana') {
-        const weekAgo = new Date();
-        weekAgo.setDate(now.getDate() - 7);
-        matchesDate = docDate >= weekAgo;
-      } else if (activeDate === 'mes') {
-        matchesDate = docDate.getMonth() === now.getMonth() && docDate.getFullYear() === now.getFullYear();
-      } else if (activeDate === 'ano') {
-        matchesDate = docDate.getFullYear() === now.getFullYear();
-      }
+  const fetchDocs = async (page = 1) => {
+    setLoading(true);
+    setFetchError('');
+    try {
+      const params = { page, limit: ITEMS_PER_PAGE };
+      if (searchQuery) params.search = searchQuery;
+      if (activeCategory.length === 1) params.category = activeCategory[0];
+      const data = await documents.list(params);
+      setDocs(data.items ?? data);
+      setTotal(data.total ?? (data.items ?? data).length);
+    } catch (err) {
+      setFetchError(err.message || 'Erro ao carregar documentos.');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return matchesSearch && matchesCategory && matchesType && matchesDate;
-  });
-
-  const totalPages = Math.ceil(filteredDocs.length / ITEMS_PER_PAGE);
-  const paginatedDocs = filteredDocs.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
-
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, activeCategory, activeType, activeDate]);
+  }, [searchQuery, activeCategory, activeType]);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    fetchDocs(currentPage);
+  }, [currentPage, searchQuery, activeCategory]);
+
+  useEffect(() => {
     if (mainRef.current) {
       mainRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [currentPage]);
 
+  const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
+
+  const filteredDocs = activeType.length > 0
+    ? docs.filter(doc => {
+        const ext = (doc.file_type || doc.type || '').toLowerCase();
+        return activeType.includes(ext) || (activeType.includes('xlsx') && ext === 'xls');
+      })
+    : docs;
+
   const clearFilters = () => {
     setSearchQuery('');
     setActiveCategory([]);
     setActiveType([]);
-    setActiveDate('');
   };
 
-  const hasActiveFilters = searchQuery !== '' || activeCategory.length > 0 || activeType.length > 0 || activeDate !== '';
+  const hasActiveFilters = searchQuery !== '' || activeCategory.length > 0 || activeType.length > 0;
 
   const handleDeleteClick = (doc) => {
     setDocToDelete(doc);
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    setToast({
-      show: true,
-      title: 'Documento removido',
-      message: 'O arquivo foi excluído da base de conhecimento.',
-      type: 'success'
-    });
-    setIsDeleteModalOpen(false);
-    setDocToDelete(null);
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await documents.remove(docToDelete.id);
+      setToast({
+        show: true,
+        title: 'Documento removido',
+        message: 'O arquivo foi excluído da base de conhecimento.',
+        type: 'success',
+      });
+      setIsDeleteModalOpen(false);
+      setDocToDelete(null);
+      fetchDocs(currentPage);
+    } catch (err) {
+      setToast({
+        show: true,
+        title: 'Erro ao excluir',
+        message: err.message || 'Não foi possível excluir o documento.',
+        type: 'error',
+      });
+      setIsDeleteModalOpen(false);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const containerVariants = {
@@ -344,11 +158,8 @@ export default function KnowledgeBase() {
   };
 
   return (
-    <div className="h-screen w-screen bg-[#F7F7FF] dark:bg-[#2c3033] flex overflow-hidden transition-colors duration-300">
-      <Sidebar isMobileOpen={isMobileOpen} onCloseMobile={() => setIsMobileOpen(false)} />
-
-      <div className="flex-1 flex flex-col min-w-0 h-full">
-        <Header title="Base de Conhecimento" onOpenMobile={() => setIsMobileOpen(true)} />
+    <>
+      <Header title="Base de Conhecimento" onOpenMobile={() => setIsMobileOpen(true)} />
 
         <main ref={mainRef} className="flex-1 p-4 lg:p-8 overflow-y-auto box-border">
           <div className="max-w-7xl mx-auto w-full space-y-6">
@@ -371,10 +182,10 @@ export default function KnowledgeBase() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: 'Total de Arquivos', value: mockDocuments.length, icon: FileText, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
-                { label: 'Espaço Utilizado', value: '45.8 MB', icon: Database, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
-                { label: 'Total de Consultas', value: '1.240', icon: Search, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
-                { label: 'Saúde da Base', value: '98.2%', icon: CheckCircle2, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
+                { label: 'Total de Arquivos', value: loading ? '—' : total, icon: FileText, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
+                { label: 'Espaço Utilizado', value: '—', icon: Database, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
+                { label: 'Total de Consultas', value: '—', icon: Search, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
+                { label: 'Saúde da Base', value: '—', icon: CheckCircle2, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
               ].map((kpi, index) => (
                 <motion.div
                   key={index}
@@ -407,26 +218,20 @@ export default function KnowledgeBase() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 min-w-0 lg:min-w-[500px]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0 lg:min-w-[340px]">
                   <CustomSelect
                     placeholder="Categorias"
                     value={activeCategory}
                     onChange={setActiveCategory}
-                    options={categories.filter(c => c.id !== 'todos').map(c => ({ value: c.id, label: c.label }))}
+                    options={categoryOptions}
                     multiple
                   />
                   <CustomSelect
                     placeholder="Tipos"
                     value={activeType}
                     onChange={setActiveType}
-                    options={types.filter(t => t.value !== 'todos')}
+                    options={typeOptions}
                     multiple
-                  />
-                  <CustomSelect
-                    placeholder="Todo o período"
-                    value={activeDate}
-                    onChange={setActiveDate}
-                    options={dateFilters}
                   />
                 </div>
               </div>
@@ -434,7 +239,7 @@ export default function KnowledgeBase() {
 
             <div className="flex items-center justify-between min-h-[24px]">
               <div className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                {filteredDocs.length} documentos encontrados
+                {loading ? 'Carregando...' : `${filteredDocs.length} documentos encontrados`}
               </div>
               <AnimatePresence>
                 {hasActiveFilters && (
@@ -452,17 +257,29 @@ export default function KnowledgeBase() {
               </AnimatePresence>
             </div>
 
+            {fetchError && (
+              <div className="flex items-center gap-2 text-red-500 text-sm bg-red-50 dark:bg-red-500/10 p-4 rounded-xl">
+                <AlertCircle size={16} className="shrink-0" />
+                {fetchError}
+              </div>
+            )}
+
             <motion.div
               variants={containerVariants}
               initial="hidden"
               animate="show"
               className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
             >
-              {paginatedDocs.map((doc) => (
-                <DocumentCard key={doc.id} doc={doc} onDelete={() => handleDeleteClick(doc)} variants={itemVariants} />
-              ))}
-
-              {paginatedDocs.length === 0 && (
+              {loading ? (
+                <div className="col-span-full py-20 flex flex-col items-center justify-center text-center gap-3">
+                  <Loader2 size={28} className="animate-spin text-[#EC6608]" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Carregando documentos...</p>
+                </div>
+              ) : filteredDocs.length > 0 ? (
+                filteredDocs.map((doc) => (
+                  <DocumentCard key={doc.id} doc={doc} onDelete={() => handleDeleteClick(doc)} variants={itemVariants} />
+                ))
+              ) : (
                 <div className="col-span-full py-20 flex flex-col items-center justify-center text-center">
                   <h3 className="text-lg font-bold text-[#131E29] dark:text-white">Nenhum documento encontrado</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-xs">
@@ -508,7 +325,6 @@ export default function KnowledgeBase() {
             )}
           </div>
         </main>
-      </div>
 
       <Toast
         show={toast.show}
@@ -549,8 +365,10 @@ export default function KnowledgeBase() {
                 </button>
                 <button
                   onClick={handleConfirmDelete}
-                  className="cursor-pointer px-4 py-1.5 text-xs font-semibold text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors duration-200"
+                  disabled={isDeleting}
+                  className="cursor-pointer px-4 py-1.5 text-xs font-semibold text-white bg-red-500 hover:bg-red-600 disabled:opacity-50 rounded-lg transition-colors duration-200 flex items-center gap-1.5"
                 >
+                  {isDeleting && <Loader2 size={12} className="animate-spin" />}
                   Excluir
                 </button>
               </div>
@@ -558,12 +376,14 @@ export default function KnowledgeBase() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }
 
 function DocumentCard({ doc, onDelete, variants }) {
   const [showOptions, setShowOptions] = useState(false);
+
+  const ext = (doc.file_type || doc.type || '').toLowerCase();
 
   const getFileIcon = (type) => {
     switch (type) {
@@ -573,9 +393,22 @@ function DocumentCard({ doc, onDelete, variants }) {
       case 'csv': return <Database className="text-green-600" />;
       case 'json': return <FileIcon className="text-amber-500" />;
       case 'docx': return <FileText className="text-blue-500" />;
-      default: return <FileIcon className="text-blue-500" />;
+      case 'md': return <FileText className="text-purple-500" />;
+      default: return <FileIcon className="text-gray-400" />;
     }
   };
+
+  const formattedDate = (() => {
+    const raw = doc.indexed_at || doc.created_at || doc.date;
+    if (!raw) return '—';
+    try {
+      return new Date(raw).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch {
+      return raw;
+    }
+  })();
+
+  const categoryLabel = CATEGORY_LABELS[doc.category] ?? doc.category ?? '—';
 
   return (
     <motion.div
@@ -584,7 +417,7 @@ function DocumentCard({ doc, onDelete, variants }) {
     >
       <div className="flex items-start justify-between mb-4">
         <div className="w-12 h-12 rounded-xl bg-gray-50 dark:bg-[#2c3033] flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
-          {getFileIcon(doc.type)}
+          {getFileIcon(ext)}
         </div>
         <div className="relative">
           <button
@@ -631,23 +464,17 @@ function DocumentCard({ doc, onDelete, variants }) {
 
         <div className="flex items-center gap-2">
           <span className="px-2 py-0.5 rounded-md bg-[#EC6608]/10 text-[#EC6608] text-[10px] font-bold uppercase tracking-wider">
-            {doc.categoryLabel}
+            {categoryLabel}
           </span>
-          <span className="text-[10px] text-gray-400 font-medium">
-            {doc.size}
-          </span>
+          {ext && (
+            <span className="text-[10px] text-gray-400 font-medium uppercase">{ext}</span>
+          )}
         </div>
 
         <div className="pt-3 border-t border-gray-50 dark:border-gray-700 flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
             <Calendar size={12} />
-            <span className="text-[10px] font-medium">{doc.date}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-[8px] font-bold text-gray-500 dark:text-gray-400">
-              {doc.owner.split(' ').map(n => n[0]).join('')}
-            </div>
-            <span className="text-[10px] text-gray-500 dark:text-gray-400 font-medium truncate max-w-[80px]">{doc.owner}</span>
+            <span className="text-[10px] font-medium">{formattedDate}</span>
           </div>
         </div>
       </div>

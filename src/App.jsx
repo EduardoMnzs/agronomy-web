@@ -6,6 +6,7 @@ import Users from './pages/Users';
 import IndexDocument from './pages/IndexDocument';
 import KnowledgeBase from './pages/KnowledgeBase';
 import PrivateRoute from './components/PrivateRoute';
+import AppLayout from './components/layout/AppLayout';
 import { session } from './api/api';
 
 function App() {
@@ -25,10 +26,13 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={session.isAuthenticated() ? <Navigate to="/app" replace /> : <Login />} />
-        <Route path="/app" element={<PrivateRoute><Workbench /></PrivateRoute>} />
-        <Route path="/users" element={<PrivateRoute><Users /></PrivateRoute>} />
-        <Route path="/knowledge-base" element={<PrivateRoute><KnowledgeBase /></PrivateRoute>} />
-        <Route path="/index-document" element={<PrivateRoute><IndexDocument /></PrivateRoute>} />
+        <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
+          <Route path="/app" element={<Workbench />} />
+          <Route path="/app/:convId" element={<Workbench />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/knowledge-base" element={<KnowledgeBase />} />
+          <Route path="/index-document" element={<IndexDocument />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
