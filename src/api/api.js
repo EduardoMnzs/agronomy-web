@@ -61,6 +61,11 @@ export const documents = {
       method: 'DELETE',
       headers: authHeader(),
     }),
+
+  stats: () =>
+    request('/knowledge/stats', {
+      headers: authHeader(),
+    }),
 };
 
 export const query = {

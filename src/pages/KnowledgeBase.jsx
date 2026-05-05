@@ -51,6 +51,14 @@ const typeOptions = [
 
 const ITEMS_PER_PAGE = 6;
 
+function formatBytes(bytes) {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  const i = Math.min(units.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)));
+  const value = bytes / 1024 ** i;
+  return `${value >= 10 || i === 0 ? Math.round(value) : value.toFixed(1)} ${units[i]}`;
+}
+
 export default function KnowledgeBase() {
   const navigate = useNavigate();
   const { setIsMobileOpen } = useOutletContext();
@@ -109,6 +117,20 @@ export default function KnowledgeBase() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState('');
+  const [stats, setStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  const fetchStats = async () => {
+    setStatsLoading(true);
+    try {
+      const data = await documents.stats();
+      setStats(data);
+    } catch {
+      setStats(null);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
 
   const fetchDocs = async (page = 1) => {
     setLoading(true);
@@ -134,6 +156,10 @@ export default function KnowledgeBase() {
   useEffect(() => {
     fetchDocs(currentPage);
   }, [currentPage, searchQuery, activeCategory]);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
 
   useEffect(() => {
     if (mainRef.current) {
@@ -176,6 +202,7 @@ export default function KnowledgeBase() {
       setIsDeleteModalOpen(false);
       setDocToDelete(null);
       fetchDocs(currentPage);
+      fetchStats();
     } catch (err) {
       setToast({
         show: true,
@@ -227,10 +254,34 @@ export default function KnowledgeBase() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: 'Total de Arquivos', value: loading ? '—' : total, icon: FileText, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
-                { label: 'Espaço Utilizado', value: '—', icon: Database, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
-                { label: 'Total de Consultas', value: '—', icon: Search, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
-                { label: 'Saúde da Base', value: '—', icon: CheckCircle2, color: 'text-[#EC6608]', bg: 'bg-[#EC6608]/10' },
+                {
+                  label: 'Total de Arquivos',
+                  value: statsLoading && !stats ? '—' : (stats?.total_files ?? (loading ? '—' : total)),
+                  icon: FileText,
+                  color: 'text-[#EC6608]',
+                  bg: 'bg-[#EC6608]/10',
+                },
+                {
+                  label: 'Espaço Utilizado',
+                  value: statsLoading && !stats ? '—' : formatBytes(stats?.storage_used_bytes ?? 0),
+                  icon: Database,
+                  color: 'text-[#EC6608]',
+                  bg: 'bg-[#EC6608]/10',
+                },
+                {
+                  label: 'Total de Consultas',
+                  value: statsLoading && !stats ? '—' : (stats?.total_queries ?? 0).toLocaleString('pt-BR'),
+                  icon: Search,
+                  color: 'text-[#EC6608]',
+                  bg: 'bg-[#EC6608]/10',
+                },
+                {
+                  label: 'Saúde da Base',
+                  value: statsLoading && !stats ? '—' : `${stats?.health_score ?? 0}%`,
+                  icon: CheckCircle2,
+                  color: 'text-[#EC6608]',
+                  bg: 'bg-[#EC6608]/10',
+                },
               ].map((kpi, index) => (
                 <motion.div
                   key={index}
