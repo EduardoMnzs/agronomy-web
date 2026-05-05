@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileUp, File, X, CheckCircle2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import mammoth from 'mammoth';
+import { marked } from 'marked';
 import Sidebar from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
 import CustomSelect from '../components/ui/CustomSelect';
@@ -98,9 +99,22 @@ function DocxPreview({ html }) {
     <div className="w-full h-full overflow-auto p-10 bg-white text-[#131E29] text-left">
       <div
         className="max-w-2xl mx-auto space-y-4"
+        style={{ fontFamily: 'serif', lineHeight: '1.6' }}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    </div>
+  );
+}
+
+function MarkdownPreview({ html }) {
+  return (
+    <div className="w-full h-full overflow-auto p-8 bg-white dark:bg-[#323639] text-left">
+      <div
+        className="max-w-2xl mx-auto prose-md"
         style={{
-          fontFamily: 'serif',
-          lineHeight: '1.6',
+          fontFamily: 'Inter, sans-serif',
+          lineHeight: '1.75',
+          color: 'inherit',
         }}
         dangerouslySetInnerHTML={{ __html: html }}
       />
@@ -116,6 +130,7 @@ export default function IndexDocument() {
   const [sheetData, setSheetData] = useState(null);
   const [jsonData, setJsonData] = useState(null);
   const [docxHtml, setDocxHtml] = useState(null);
+  const [markdownHtml, setMarkdownHtml] = useState(null);
   const [formData, setFormData] = useState({ name: '', category: '', description: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -130,7 +145,7 @@ export default function IndexDocument() {
     if (!f) return false;
     if (f.size > 100 * 1024 * 1024) { setError('O arquivo excede o limite máximo de 100 MB.'); return false; }
     const ext = f.name.split('.').pop().toLowerCase();
-    const valid = ['pdf', 'docx', 'csv', 'xlsx', 'xls', 'json'];
+    const valid = ['pdf', 'docx', 'csv', 'xlsx', 'xls', 'json', 'md'];
     if (!valid.includes(ext)) { setError(`Formato não suportado. Use: ${valid.join(', ').toUpperCase()}`); return false; }
     return true;
   };
@@ -165,6 +180,7 @@ export default function IndexDocument() {
     setSheetData(null);
     setJsonData(null);
     setDocxHtml(null);
+    setMarkdownHtml(null);
 
     const ext = f.name.split('.').pop().toLowerCase();
     if (f.type === 'application/pdf') {
@@ -194,6 +210,17 @@ export default function IndexDocument() {
         }
       };
       reader.readAsArrayBuffer(f);
+    } else if (ext === 'md') {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const html = marked.parse(e.target.result);
+          setMarkdownHtml(html);
+        } catch {
+          setError('Não foi possível ler o arquivo Markdown.');
+        }
+      };
+      reader.readAsText(f);
     }
 
     if (!formData.name) {
@@ -216,6 +243,7 @@ export default function IndexDocument() {
     setSheetData(null);
     setJsonData(null);
     setDocxHtml(null);
+    setMarkdownHtml(null);
     if (filePreviewUrl) { URL.revokeObjectURL(filePreviewUrl); setFilePreviewUrl(null); }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -242,7 +270,7 @@ export default function IndexDocument() {
     }, 3000);
   };
 
-  const hasPreview = filePreviewUrl || sheetData || jsonData || docxHtml;
+  const hasPreview = filePreviewUrl || sheetData || jsonData || docxHtml || markdownHtml;
 
   return (
     <div className="h-screen w-screen bg-[#F7F7FF] dark:bg-[#2c3033] flex overflow-hidden transition-colors duration-300">
@@ -285,7 +313,7 @@ export default function IndexDocument() {
                   onDrop={handleDrop}
                   onClick={() => { if (!file) fileInputRef.current?.click(); }}
                 >
-                  <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept=".pdf,.docx,.csv,.xlsx,.xls,.json" className="hidden" />
+                  <input type="file" ref={fileInputRef} onChange={handleFileSelect} accept=".pdf,.docx,.csv,.xlsx,.xls,.json,.md" className="hidden" />
 
                   {file ? (
                     <>
@@ -311,7 +339,9 @@ export default function IndexDocument() {
 
                       {docxHtml && <DocxPreview html={docxHtml} />}
 
-                      {!filePreviewUrl && !sheetData && !jsonData && !docxHtml && (
+                      {markdownHtml && <MarkdownPreview html={markdownHtml} />}
+
+                      {!filePreviewUrl && !sheetData && !jsonData && !docxHtml && !markdownHtml && (
                         <div className="flex flex-col items-center text-center w-full">
                           <div className="w-20 h-20 rounded-2xl bg-[#EC6608]/10 flex items-center justify-center text-[#EC6608] mb-4">
                             <File size={40} />
@@ -330,7 +360,7 @@ export default function IndexDocument() {
                         <FileUp size={32} />
                       </div>
                       <p className="text-sm font-semibold text-[#131E29] dark:text-white mb-2">Clique ou arraste um arquivo</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">PDF, DOCX, CSV, XLSX, XLS, JSON</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">PDF, DOCX, CSV, XLSX, XLS, JSON, MD</p>
                       <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">Até 100 MB</p>
                     </div>
                   )}
