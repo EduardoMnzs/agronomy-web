@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Menu, Sun, Moon } from 'lucide-react';
+import { Menu, Sun, Moon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useCurrentUser from '../../hooks/useCurrentUser';
 import SearchBar from './SearchBar';
+import NotificationButton from './NotificationButton';
 
 export default function Header({ title = 'Consulta', onOpenMobile, viewMode, setViewMode }) {
   return (
@@ -71,15 +72,6 @@ function ThemeToggle() {
       title={isDark ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
     >
       {isDark ? <Sun size={18} /> : <Moon size={18} />}
-    </button>
-  );
-}
-
-function NotificationButton() {
-  return (
-    <button className="cursor-pointer relative p-2 text-gray-400 hover:text-[#131E29] dark:hover:text-white transition-colors bg-gray-50 dark:bg-[#2c3033] rounded-full">
-      <Bell size={18} />
-      <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-[#323639] transition-colors duration-300" />
     </button>
   );
 }

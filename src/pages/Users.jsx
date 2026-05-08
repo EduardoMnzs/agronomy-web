@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Search, Edit2, Trash2, Mail, Shield, X, RefreshCw, ChevronLeft, ChevronRight, Loader2, Copy, KeyRound } from 'lucide-react';
 import Header from '../components/layout/Header';
@@ -7,6 +7,7 @@ import CustomSelect from '../components/ui/CustomSelect';
 import Toast from '../components/ui/Toast';
 import useCurrentUser from '../hooks/useCurrentUser';
 import { users as usersApi } from '../api/api';
+import { AccessRequestsPanel } from './AccessRequests';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -216,6 +217,15 @@ export default function UsersPage() {
     show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
   };
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('tab') === 'requests' ? 'requests' : 'users';
+  const setActiveTab = (t) => {
+    const next = new URLSearchParams(searchParams);
+    if (t === 'requests') next.set('tab', 'requests');
+    else next.delete('tab');
+    setSearchParams(next, { replace: true });
+  };
+
   return (
     <>
       <Header title="Usuários" onOpenMobile={() => setIsMobileOpen(true)} />
@@ -225,17 +235,28 @@ export default function UsersPage() {
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h1 className="text-2xl font-bold text-[#131E29] dark:text-white">Gerenciamento de Usuários</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Gerencie os acessos e permissões da plataforma.</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Gerencie os acessos, permissões e solicitações de acesso.</p>
             </div>
-            <button
-              onClick={handleNewUser}
-              className="cursor-pointer bg-[#EC6608] hover:bg-[#d95d07] text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm whitespace-nowrap"
-            >
-              <Plus size={16} />
-              Adicionar Usuário
-            </button>
+            {activeTab === 'users' && (
+              <button
+                onClick={handleNewUser}
+                className="cursor-pointer bg-[#EC6608] hover:bg-[#d95d07] text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm whitespace-nowrap"
+              >
+                <Plus size={16} />
+                Adicionar Usuário
+              </button>
+            )}
           </motion.div>
 
+          <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700">
+            <TabButton active={activeTab === 'users'} onClick={() => setActiveTab('users')}>Usuários</TabButton>
+            <TabButton active={activeTab === 'requests'} onClick={() => setActiveTab('requests')}>Solicitações</TabButton>
+          </div>
+
+          {activeTab === 'requests' && <AccessRequestsPanel compact />}
+
+          {activeTab === 'users' && (
+          <>
           <motion.div variants={itemVariants} className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -409,6 +430,8 @@ export default function UsersPage() {
                 <ChevronRight size={20} />
               </button>
             </div>
+          )}
+          </>
           )}
         </motion.div>
       </main>
@@ -662,5 +685,21 @@ export default function UsersPage() {
         type={toast.type}
       />
     </>
+  );
+}
+
+function TabButton({ active, onClick, children }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`cursor-pointer px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors relative ${
+        active
+          ? 'text-[#EC6608]'
+          : 'text-gray-500 dark:text-gray-400 hover:text-[#131E29] dark:hover:text-white'
+      }`}
+    >
+      {children}
+      {active && <span className="absolute left-0 right-0 -bottom-px h-0.5 bg-[#EC6608]" />}
+    </button>
   );
 }

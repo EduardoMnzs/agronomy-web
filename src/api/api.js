@@ -197,6 +197,31 @@ export const users = {
     }),
 };
 
+export const accessRequests = {
+  create: (body) =>
+    request('/access-requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  list: (params = {}) => {
+    const qs = new URLSearchParams();
+    if (params.status) qs.set('status', params.status);
+    if (params.page) qs.set('page', params.page);
+    if (params.limit) qs.set('limit', params.limit);
+    const q = qs.toString();
+    return request(`/access-requests${q ? `?${q}` : ''}`, { headers: authHeader() });
+  },
+  decide: (id, body) =>
+    request(`/access-requests/${id}/decide`, {
+      method: 'POST',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  remove: (id) =>
+    request(`/access-requests/${id}`, { method: 'DELETE', headers: authHeader() }),
+};
+
 export const auth = {
   login: async (username, password, rememberMe) => {
     const body = new URLSearchParams({ username, password, remember_me: rememberMe });
@@ -221,5 +246,17 @@ export const auth = {
         current_password: currentPassword,
         new_password: newPassword,
       }),
+    }),
+  forgotPassword: (email) =>
+    request('/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }),
+  resetPassword: ({ token, newPassword }) =>
+    request('/auth/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, new_password: newPassword }),
     }),
 };

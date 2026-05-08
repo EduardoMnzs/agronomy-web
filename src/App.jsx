@@ -9,6 +9,9 @@ import MyDocuments from './pages/MyDocuments';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import ChangePassword from './pages/ChangePassword';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import RequestAccess from './pages/RequestAccess';
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
 import AppLayout from './components/layout/AppLayout';
@@ -31,6 +34,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={session.isAuthenticated() ? <Navigate to="/app" replace /> : <Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/request-access" element={<RequestAccess />} />
         <Route path="/change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
         <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
           <Route path="/app" element={<Workbench />} />
@@ -40,6 +46,7 @@ function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
+          <Route path="/access-requests" element={<Navigate to="/users?tab=requests" replace />} />
           <Route path="/index-document" element={<AdminRoute><IndexDocument /></AdminRoute>} />
         </Route>
       </Routes>

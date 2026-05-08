@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Loader2, Eye, EyeOff } from 'lucide-react';
 import agronomyLogo from '../assets/images/Agronomy-logo.png';
@@ -169,9 +169,9 @@ export default function Login() {
                   Continuar conectado
                 </label>
               </div>
-              <a href="#" className="text-[11px] font-medium text-[#EC6608] hover:text-[#d95d07] transition-colors">
+              <Link to="/forgot-password" className="text-[11px] font-medium text-[#EC6608] hover:text-[#d95d07] transition-colors">
                 Esqueceu a senha?
-              </a>
+              </Link>
             </div>
 
             <motion.button
@@ -194,7 +194,7 @@ export default function Login() {
           </form>
 
           <p className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
-            Ainda não tem uma conta? <a href="#" className="font-semibold text-[#131E29] dark:text-white hover:text-[#EC6608] dark:hover:text-[#EC6608] transition-colors">Solicitar acesso</a>
+            Ainda não tem uma conta? <Link to="/request-access" className="font-semibold text-[#131E29] dark:text-white hover:text-[#EC6608] dark:hover:text-[#EC6608] transition-colors">Solicitar acesso</Link>
           </p>
         </motion.div>
       </div>
