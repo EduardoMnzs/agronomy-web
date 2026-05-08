@@ -25,7 +25,7 @@ const thinkingSteps = [
   'Elaborando a resposta...',
 ];
 
-export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messages, conversationId, onUserMessage, onAssistantReply }) {
+export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messages, conversationId, onUserMessage, onAssistantReply, onCitationClick }) {
   const { firstName } = useCurrentUser();
   const [inputValue, setInputValue] = useState('');
   const [thinking, setThinking] = useState(false);
@@ -223,7 +223,7 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
                         <div className="w-6 h-6 rounded-full bg-white dark:bg-[#2c3033] border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0 mt-0.5">
                           <img src={agronomyLogo} className="w-3.5 h-3.5 object-contain" />
                         </div>
-                        <MarkdownAnswer text={msg.content} className="text-sm" />
+                        <MarkdownAnswer text={msg.content} className="text-sm" citations={msg.citations} onCitationClick={onCitationClick} />
                       </div>
                     </div>
                   )

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, X, Loader2, AlertCircle, Database } from 'lucide-react';
 import { marked } from 'marked';
@@ -16,10 +16,62 @@ export const CATEGORY_LABELS = {
   outro: 'Outro',
 };
 
-export function SpreadsheetPreview({ sheets }) {
+const HIGHLIGHT_CLASS = 'bg-yellow-200 dark:bg-yellow-500/40 text-[#131E29] dark:text-white rounded px-0.5';
+
+function escapeRegExp(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function escapeHtml(s) {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function normalizeForMatch(s) {
+  return (s || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase();
+}
+
+function findHighlightTokens(raw) {
+  if (!raw) return [];
+  const text = String(raw).trim();
+  if (!text) return [];
+  const candidates = [];
+  const first = text.split(/[\n.;]/)[0].trim();
+  if (first && first.length >= 12) candidates.push(first);
+  const words = text.split(/\s+/).filter((w) => w.length >= 4);
+  const phrase = words.slice(0, 8).join(' ');
+  if (phrase && !candidates.includes(phrase)) candidates.push(phrase);
+  return candidates.slice(0, 3);
+}
+
+export function SpreadsheetPreview({ sheets, highlight }) {
   const [activeSheet, setActiveSheet] = useState(0);
+  const rowRefs = useRef([]);
   if (!sheets || sheets.length === 0) return null;
   const { name, headers, rows } = sheets[activeSheet];
+
+  const normHighlight = normalizeForMatch(highlight || '');
+
+  useEffect(() => {
+    if (!normHighlight) return;
+    const idx = rows.findIndex((row) =>
+      row.some((cell) => normalizeForMatch(String(cell ?? '')).includes(normHighlight.slice(0, 30))),
+    );
+    if (idx >= 0) {
+      setTimeout(() => rowRefs.current[idx]?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 50);
+    }
+  }, [normHighlight, activeSheet, rows]);
+
+  const isRowMatch = (row) =>
+    normHighlight && row.some((cell) => normalizeForMatch(String(cell ?? '')).includes(normHighlight.slice(0, 30)));
+
   return (
     <div className="w-full flex flex-col" style={{ maxHeight: '500px' }}>
       {sheets.length > 1 && (
@@ -53,16 +105,29 @@ export function SpreadsheetPreview({ sheets }) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, ri) => (
-              <tr key={ri} className={ri % 2 === 0 ? 'bg-white dark:bg-[#323639]' : 'bg-gray-50/50 dark:bg-[#2c3033]/40'}>
-                <td className="px-2 py-1.5 text-gray-400 text-right border-r border-gray-100 dark:border-gray-700 select-none">{ri + 1}</td>
-                {headers.map((_, ci) => (
-                  <td key={ci} className="px-3 py-1.5 text-gray-700 dark:text-gray-300 border-r border-gray-100 dark:border-gray-700 whitespace-nowrap">
-                    {row[ci] !== undefined && row[ci] !== null ? String(row[ci]) : ''}
-                  </td>
-                ))}
-              </tr>
-            ))}
+            {rows.map((row, ri) => {
+              const matched = isRowMatch(row);
+              return (
+                <tr
+                  key={ri}
+                  ref={(el) => { rowRefs.current[ri] = el; }}
+                  className={
+                    matched
+                      ? 'bg-yellow-100 dark:bg-yellow-500/20'
+                      : ri % 2 === 0
+                      ? 'bg-white dark:bg-[#323639]'
+                      : 'bg-gray-50/50 dark:bg-[#2c3033]/40'
+                  }
+                >
+                  <td className="px-2 py-1.5 text-gray-400 text-right border-r border-gray-100 dark:border-gray-700 select-none">{ri + 1}</td>
+                  {headers.map((_, ci) => (
+                    <td key={ci} className="px-3 py-1.5 text-gray-700 dark:text-gray-300 border-r border-gray-100 dark:border-gray-700 whitespace-nowrap">
+                      {row[ci] !== undefined && row[ci] !== null ? String(row[ci]) : ''}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
             {rows.length === 0 && (
               <tr><td colSpan={headers.length + 1} className="px-4 py-8 text-center text-sm text-gray-400">Planilha vazia.</td></tr>
             )}
@@ -77,10 +142,77 @@ export function SpreadsheetPreview({ sheets }) {
   );
 }
 
-export default function DocumentPreviewModal({ doc, loading, error, content, onClose }) {
+function HighlightedBlock({ html, highlight, className = '' }) {
+  const containerRef = useRef(null);
+
+  const finalHtml = useMemo(() => {
+    if (!highlight || !html) return html || '';
+    const tokens = findHighlightTokens(highlight);
+    if (!tokens.length) return html;
+    let result = html;
+    for (const token of tokens) {
+      const escaped = escapeRegExp(token);
+      const re = new RegExp(`(?![^<]*>)${escaped}`, 'gi');
+      result = result.replace(re, (m) => `<mark class="${HIGHLIGHT_CLASS}" data-ad-highlight>${m}</mark>`);
+    }
+    return result;
+  }, [html, highlight]);
+
+  useEffect(() => {
+    if (!highlight || !containerRef.current) return;
+    const first = containerRef.current.querySelector('[data-ad-highlight]');
+    if (first) {
+      setTimeout(() => first.scrollIntoView({ block: 'center', behavior: 'smooth' }), 50);
+    }
+  }, [finalHtml, highlight]);
+
+  return (
+    <div
+      ref={containerRef}
+      className={className}
+      dangerouslySetInnerHTML={{ __html: finalHtml }}
+    />
+  );
+}
+
+function HighlightedText({ text, highlight, className = '' }) {
+  const containerRef = useRef(null);
+
+  const html = useMemo(() => {
+    const safe = escapeHtml(text || '');
+    if (!highlight) return safe;
+    const tokens = findHighlightTokens(highlight);
+    if (!tokens.length) return safe;
+    let result = safe;
+    for (const token of tokens) {
+      const escaped = escapeRegExp(escapeHtml(token));
+      const re = new RegExp(escaped, 'gi');
+      result = result.replace(re, (m) => `<mark class="${HIGHLIGHT_CLASS}" data-ad-highlight>${m}</mark>`);
+    }
+    return result;
+  }, [text, highlight]);
+
+  useEffect(() => {
+    if (!highlight || !containerRef.current) return;
+    const first = containerRef.current.querySelector('[data-ad-highlight]');
+    if (first) {
+      setTimeout(() => first.scrollIntoView({ block: 'center', behavior: 'smooth' }), 50);
+    }
+  }, [html, highlight]);
+
+  return (
+    <pre
+      ref={containerRef}
+      className={className}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+}
+
+export function DocumentPreviewBody({ doc, loading, error, content, jumpToPage, highlight, pdfHeight = 600 }) {
   const [blobUrl, setBlobUrl] = useState('');
   const [blobLoading, setBlobLoading] = useState(false);
-  const ext = (doc.file_type || doc.type || '').toLowerCase();
+  const ext = (doc?.file_type || doc?.type || '').toLowerCase();
 
   const mdHtml = useMemo(() => {
     if (ext !== 'md') return '';
@@ -138,6 +270,97 @@ export default function DocumentPreviewModal({ doc, loading, error, content, onC
     return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
   }, [pdfUrl]);
 
+  const pdfSrc = useMemo(() => {
+    if (!blobUrl) return '';
+    const page = Number(jumpToPage);
+    return Number.isFinite(page) && page > 0 ? `${blobUrl}#page=${page}` : blobUrl;
+  }, [blobUrl, jumpToPage]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400 py-10">
+        <Loader2 size={24} className="animate-spin text-[#EC6608]" />
+        <p className="text-xs">Carregando documento...</p>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full gap-3 text-red-500 py-10">
+        <AlertCircle size={22} />
+        <p className="text-xs text-center">{error}</p>
+      </div>
+    );
+  }
+  if (!content) return null;
+
+  return (
+    <>
+      {ext === 'pdf' && pdfUrl && (
+        blobLoading ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-3">
+            <Loader2 size={24} className="animate-spin text-[#EC6608]" />
+            <p className="text-xs text-gray-400">Carregando PDF...</p>
+          </div>
+        ) : pdfSrc ? (
+          <iframe
+            key={pdfSrc}
+            src={pdfSrc}
+            title={doc.name}
+            className="w-full rounded-lg border border-gray-100 dark:border-gray-700"
+            style={{ height: pdfHeight }}
+          />
+        ) : null
+      )}
+      {ext === 'pdf' && !pdfUrl && (
+        <div className="flex flex-col items-center justify-center py-10 gap-2 text-gray-400">
+          <FileText size={32} className="text-gray-300 dark:text-gray-600" />
+          <p className="text-xs text-center">Pré-visualização de PDF não disponível.</p>
+        </div>
+      )}
+      {ext === 'md' && mdHtml && (
+        <HighlightedBlock html={mdHtml} highlight={highlight} className="prose-answer text-xs" />
+      )}
+      {ext === 'json' && jsonText && (
+        <HighlightedText
+          text={jsonText}
+          highlight={highlight}
+          className="text-[11px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-all font-mono bg-gray-50 dark:bg-[#2c3033] p-3 rounded-lg leading-relaxed"
+        />
+      )}
+      {ext === 'csv' && csvSheets && (
+        <div className="rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+          <SpreadsheetPreview sheets={csvSheets} highlight={highlight} />
+        </div>
+      )}
+      {ext === 'csv' && !csvSheets && (
+        <p className="text-xs text-gray-400 p-3">Não foi possível renderizar o CSV.</p>
+      )}
+      {['txt', 'docx'].includes(ext) && plainText && (
+        <HighlightedText
+          text={plainText}
+          highlight={highlight}
+          className="text-[11px] text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono bg-gray-50 dark:bg-[#2c3033] p-3 rounded-lg leading-relaxed"
+        />
+      )}
+      {['xlsx', 'xls'].includes(ext) && (
+        <div className="flex flex-col items-center justify-center py-10 gap-2 text-gray-400">
+          <Database size={32} className="text-gray-300 dark:text-gray-600" />
+          <p className="text-xs text-center">Planilhas não possuem pré-visualização.</p>
+        </div>
+      )}
+      {!['pdf', 'md', 'json', 'csv', 'txt', 'docx', 'xlsx', 'xls'].includes(ext) && (
+        <div className="flex flex-col items-center justify-center py-10 gap-2 text-gray-400">
+          <FileText size={32} className="text-gray-300 dark:text-gray-600" />
+          <p className="text-xs text-center">Pré-visualização indisponível.</p>
+        </div>
+      )}
+    </>
+  );
+}
+
+export default function DocumentPreviewModal({ doc, loading, error, content, onClose, jumpToPage, highlight }) {
+  const ext = (doc.file_type || doc.type || '').toLowerCase();
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -160,7 +383,10 @@ export default function DocumentPreviewModal({ doc, loading, error, content, onC
             <FileText size={18} className="text-[#EC6608] shrink-0" />
             <div className="min-w-0">
               <h3 className="text-sm font-semibold text-[#131E29] dark:text-white truncate">{doc.name}</h3>
-              <p className="text-[10px] text-gray-400 uppercase font-medium mt-0.5">{CATEGORY_LABELS[doc.category] ?? doc.category} · {ext}</p>
+              <p className="text-[10px] text-gray-400 uppercase font-medium mt-0.5">
+                {CATEGORY_LABELS[doc.category] ?? doc.category} · {ext}
+                {jumpToPage ? <span className="ml-2 text-[#EC6608]">· pág. {jumpToPage}</span> : null}
+              </p>
             </div>
           </div>
           <button
@@ -172,73 +398,15 @@ export default function DocumentPreviewModal({ doc, loading, error, content, onC
         </div>
 
         <div className="flex-1 overflow-auto p-5 min-h-0">
-          {loading && (
-            <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400">
-              <Loader2 size={28} className="animate-spin text-[#EC6608]" />
-              <p className="text-sm">Carregando documento...</p>
-            </div>
-          )}
-          {error && !loading && (
-            <div className="flex flex-col items-center justify-center h-full gap-3 text-red-500">
-              <AlertCircle size={28} />
-              <p className="text-sm">{error}</p>
-            </div>
-          )}
-          {!loading && !error && content && (
-            <div>
-              {ext === 'pdf' && pdfUrl && (
-                blobLoading ? (
-                  <div className="flex flex-col items-center justify-center py-16 gap-3">
-                    <Loader2 size={28} className="animate-spin text-[#EC6608]" />
-                    <p className="text-sm text-gray-400">Carregando PDF...</p>
-                  </div>
-                ) : blobUrl ? (
-                  <iframe
-                    src={blobUrl}
-                    title={doc.name}
-                    className="w-full rounded-lg border border-gray-100 dark:border-gray-700"
-                    style={{ height: '600px' }}
-                  />
-                ) : null
-              )}
-              {ext === 'pdf' && !pdfUrl && (
-                <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
-                  <FileText size={40} className="text-gray-300 dark:text-gray-600" />
-                  <p className="text-sm text-center">Pré-visualização de PDF não disponível. Use a opção Baixar para acessar o arquivo.</p>
-                </div>
-              )}
-              {ext === 'md' && mdHtml && (
-                <div className="prose-answer" dangerouslySetInnerHTML={{ __html: mdHtml }} />
-              )}
-              {ext === 'json' && jsonText && (
-                <pre className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-all font-mono bg-gray-50 dark:bg-[#2c3033] p-4 rounded-xl leading-relaxed">{jsonText}</pre>
-              )}
-              {ext === 'csv' && csvSheets && (
-                <div className="rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700" style={{ fontSize: '100%' }}>
-                  <SpreadsheetPreview sheets={csvSheets} />
-                </div>
-              )}
-              {ext === 'csv' && !csvSheets && (
-                <p className="text-xs text-gray-400 p-4">Não foi possível renderizar o CSV.</p>
-              )}
-              {['txt', 'docx'].includes(ext) && plainText && (
-                <pre className="text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono bg-gray-50 dark:bg-[#2c3033] p-4 rounded-xl leading-relaxed">{plainText}</pre>
-              )}
-              {['xlsx', 'xls'].includes(ext) && (
-                <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
-                  <Database size={40} className="text-gray-300 dark:text-gray-600" />
-                  <p className="text-sm text-center font-medium text-gray-500 dark:text-gray-400">Planilhas não possuem pré-visualização.</p>
-                  <p className="text-xs text-center max-w-xs">Use a opção <strong>Baixar</strong> para abrir no Excel ou Google Sheets.</p>
-                </div>
-              )}
-              {!['pdf', 'md', 'json', 'csv', 'txt', 'docx', 'xlsx', 'xls'].includes(ext) && (
-                <div className="flex flex-col items-center justify-center py-16 gap-3 text-gray-400">
-                  <FileText size={40} className="text-gray-300 dark:text-gray-600" />
-                  <p className="text-sm text-center">Pré-visualização não disponível para este tipo de arquivo.</p>
-                </div>
-              )}
-            </div>
-          )}
+          <DocumentPreviewBody
+            doc={doc}
+            loading={loading}
+            error={error}
+            content={content}
+            jumpToPage={jumpToPage}
+            highlight={highlight}
+            pdfHeight={600}
+          />
         </div>
       </motion.div>
     </motion.div>

@@ -6,7 +6,7 @@ import { query as queryApi, myDocuments as myDocsApi } from '../../api/api';
 import MarkdownAnswer from '../ui/MarkdownAnswer';
 import useCurrentUser from '../../hooks/useCurrentUser';
 
-export default function FocusView({ onAdvancedClick, messages, conversationId, onUserMessage, onAssistantReply }) {
+export default function FocusView({ onAdvancedClick, messages, conversationId, onUserMessage, onAssistantReply, onCitationClick }) {
   const { firstName } = useCurrentUser();
   const [inputValue, setInputValue] = useState('');
   const [activeChip, setActiveChip] = useState('todos');
@@ -121,7 +121,7 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
                       <div className="absolute inset-0 rounded-full border border-gray-100 dark:border-gray-700"></div>
                       <img src={agronomyLogo} alt="Agronomy Logo" className="w-5 h-5 object-contain relative z-10" />
                     </div>
-                    <MarkdownAnswer text={msg.content} className="text-[15px]" />
+                    <MarkdownAnswer text={msg.content} className="text-[15px]" citations={msg.citations} onCitationClick={onCitationClick} />
                   </div>
                 </motion.div>
               )
