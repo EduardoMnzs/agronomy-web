@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Sprout, FlaskConical, Droplets, Layers } from 'lucide-react';
-import { documents as docsApi } from '../../api/api';
-
-const mockMyDocs = [
-  { id: 'my-1', name: 'analise_solo_talhao_7.pdf' },
-  { id: 'my-2', name: 'historico_chuvas_2024.xlsx' },
-];
+import { documents as docsApi, myDocuments as myDocsApi } from '../../api/api';
 
 const contextData = [
   { icon: Sprout,      label: 'Cultura',  value: 'Soja' },
@@ -38,18 +33,24 @@ function SectionLabel({ label }) {
 
 export default function LeftColumn({ selectedIds, onSelectionChange }) {
   const [knowledgeDocs, setKnowledgeDocs] = useState([]);
+  const [myDocs, setMyDocs] = useState([]);
 
   useEffect(() => {
-    docsApi.list().then((data) => {
-      const items = data?.items ?? data ?? [];
+    Promise.all([
+      docsApi.list().catch(() => null),
+      myDocsApi.list().catch(() => []),
+    ]).then(([kbData, mine]) => {
+      const items = kbData?.items ?? kbData ?? [];
       const ready = items.filter((d) => d.status === 'done');
+      const myReady = (mine ?? []).filter((d) => d.status === 'done');
       setKnowledgeDocs(ready);
+      setMyDocs(myReady);
       const allIds = [
         ...ready.map((d) => d.id),
-        ...mockMyDocs.map((d) => d.id),
+        ...myReady.map((d) => `user_${d.id}`),
       ];
       onSelectionChange(allIds);
-    }).catch(() => {});
+    });
   }, []);
 
   const toggle = (id) => {
@@ -58,8 +59,11 @@ export default function LeftColumn({ selectedIds, onSelectionChange }) {
     );
   };
 
-  const allDocs = [...knowledgeDocs, ...mockMyDocs];
-  const selectAll = () => onSelectionChange(allDocs.map((d) => d.id));
+  const allIds = [
+    ...knowledgeDocs.map((d) => d.id),
+    ...myDocs.map((d) => `user_${d.id}`),
+  ];
+  const selectAll = () => onSelectionChange(allIds);
   const clearAll = () => onSelectionChange([]);
 
   return (
@@ -129,12 +133,15 @@ export default function LeftColumn({ selectedIds, onSelectionChange }) {
           <div>
             <SectionLabel label="Meus documentos" />
             <div className="flex flex-col gap-2">
-              {mockMyDocs.map((doc) => (
+              {myDocs.length === 0 && (
+                <p className="text-xs text-gray-400 dark:text-gray-500">Nenhum documento pessoal.</p>
+              )}
+              {myDocs.map((doc) => (
                 <DocCheckbox
                   key={doc.id}
-                  id={doc.id}
+                  id={`user_${doc.id}`}
                   name={doc.name}
-                  checked={selectedIds.includes(doc.id)}
+                  checked={selectedIds.includes(`user_${doc.id}`)}
                   onChange={toggle}
                 />
               ))}

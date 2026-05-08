@@ -79,8 +79,14 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
     onUserMessage(question);
 
     try {
-      const knowledgeIds = activeChip === 'sessao' ? [] : selectedKnowledgeIds.filter((id) => Number.isInteger(id) || /^\d+$/.test(id));
-      const result = await queryApi.submit({ question, knowledgeIds, conversationId });
+      const knowledgeIds = activeChip === 'sessao'
+        ? []
+        : selectedKnowledgeIds.filter((id) => Number.isInteger(id) || /^\d+$/.test(id)).map(Number);
+      const myDocumentIds = selectedKnowledgeIds
+        .filter((id) => typeof id === 'string' && id.startsWith('user_'))
+        .map((id) => Number(id.slice(5)))
+        .filter((n) => Number.isFinite(n));
+      const result = await queryApi.submit({ question, knowledgeIds, myDocumentIds, conversationId });
       onAssistantReply(question, result);
     } catch (err) {
       setError(err.message || 'Erro ao consultar.');

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, LayoutGrid, Loader2, Mic, ArrowDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import agronomyLogo from '../../assets/images/Agronomy-logo.png';
-import { query as queryApi } from '../../api/api';
+import { query as queryApi, myDocuments as myDocsApi } from '../../api/api';
 import MarkdownAnswer from '../ui/MarkdownAnswer';
 import useCurrentUser from '../../hooks/useCurrentUser';
 
@@ -16,6 +16,16 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
   const bottomRef = useRef(null);
   const scrollRef = useRef(null);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const [myDocIds, setMyDocIds] = useState([]);
+
+  useEffect(() => {
+    myDocsApi.list()
+      .then((docs) => {
+        const ready = (docs ?? []).filter((d) => d.status === 'done').map((d) => d.id);
+        setMyDocIds(ready);
+      })
+      .catch(() => setMyDocIds([]));
+  }, []);
 
   const chips = [
     { id: 'todos', label: 'Todos os docs' },
@@ -63,7 +73,7 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
     onUserMessage(question);
 
     try {
-      const result = await queryApi.submit({ question, conversationId });
+      const result = await queryApi.submit({ question, myDocumentIds: myDocIds, conversationId });
       onAssistantReply(question, result);
     } catch (err) {
       setError(err.message || 'Erro ao consultar.');

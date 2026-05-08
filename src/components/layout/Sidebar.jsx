@@ -4,15 +4,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, PanelLeftClose, PanelLeftOpen, Settings, LogOut, SquarePen,
-  Folder, Book, Upload, Users, FilePlus, MoreHorizontal,
+  Folder, Book, Upload, Users, MoreHorizontal,
   Pin, Pencil, Trash2,
 } from 'lucide-react';
 import agronomyLogo from '../../assets/images/Agronomy-logo.png';
 import { auth, conversations as convsApi } from '../../api/api';
-
-const mockDocuments = [
-  { id: 'my-1', name: 'analise_solo_talhao_7.pdf' },
-];
+import useCurrentUser from '../../hooks/useCurrentUser';
 
 export default function Sidebar({ isMobileOpen, onCloseMobile, onSelectConversation, onNewConversation, activeConversationId, newConversationEntry, onConversationEntryAdded }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -96,6 +93,7 @@ export default function Sidebar({ isMobileOpen, onCloseMobile, onSelectConversat
 function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleCollapse, conversations, handlePin, handleRename, handleDelete, handleClearAll, onSelectConversation, onNewConversation, activeConversationId }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAdmin } = useCurrentUser();
   const collapsed = forceExpanded ? false : isCollapsed;
 
   const containerVariants = {
@@ -145,24 +143,16 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
         animate="show"
         className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-5"
       >
-        {!collapsed && (
-          <motion.div variants={itemVariants}>
-            <Section label="Documentos" collapsed={collapsed}>
-              {mockDocuments.slice(0, 2).map((doc) => (
-                <SidebarItem key={doc.id} icon={Folder} label={doc.name} collapsed={collapsed} truncate />
-              ))}
-              {mockDocuments.length < 2 && (
-                <SidebarItem icon={FilePlus} label="Adicionar documento" collapsed={collapsed} muted onClick={() => navigate('/index-document')} />
-              )}
-            </Section>
-          </motion.div>
-        )}
-
         <motion.div variants={itemVariants}>
-          <Section label="Administração" collapsed={collapsed}>
+          <Section label={isAdmin ? 'Administração' : 'Biblioteca'} collapsed={collapsed}>
             <SidebarItem icon={Book} label="Base de conhecimento" collapsed={collapsed} active={location.pathname === '/knowledge-base'} onClick={() => { navigate('/knowledge-base'); onCloseMobile(); }} />
-            <SidebarItem icon={Upload} label="Indexar documento" collapsed={collapsed} active={location.pathname === '/index-document'} onClick={() => { navigate('/index-document'); onCloseMobile(); }} />
-            <SidebarItem icon={Users} label="Usuários" collapsed={collapsed} active={location.pathname === '/users'} onClick={() => { navigate('/users'); onCloseMobile(); }} />
+            <SidebarItem icon={Folder} label="Meus documentos" collapsed={collapsed} active={location.pathname === '/my-documents'} onClick={() => { navigate('/my-documents'); onCloseMobile(); }} />
+            {isAdmin && (
+              <>
+                <SidebarItem icon={Upload} label="Indexar documento" collapsed={collapsed} active={location.pathname === '/index-document'} onClick={() => { navigate('/index-document'); onCloseMobile(); }} />
+                <SidebarItem icon={Users} label="Usuários" collapsed={collapsed} active={location.pathname === '/users'} onClick={() => { navigate('/users'); onCloseMobile(); }} />
+              </>
+            )}
           </Section>
         </motion.div>
         {!collapsed && (

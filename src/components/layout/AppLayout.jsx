@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, useSearchParams, Outlet } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, Outlet, Navigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { conversations as convsApi } from '../../api/api';
+import useCurrentUser from '../../hooks/useCurrentUser';
 
 export default function AppLayout() {
   const navigate = useNavigate();
   const { convId: convIdParam } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { data: currentUser, loading: userLoading } = useCurrentUser();
 
   const [conversationId, setConversationId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -77,6 +79,14 @@ export default function AppLayout() {
     setCitations([]);
     navigate('/app');
   };
+
+  if (userLoading) {
+    return null;
+  }
+
+  if (currentUser?.status === 'pending') {
+    return <Navigate to="/change-password" replace />;
+  }
 
   return (
     <div className="h-screen w-screen bg-[#F7F7FF] dark:bg-[#2c3033] flex overflow-hidden transition-colors duration-300">

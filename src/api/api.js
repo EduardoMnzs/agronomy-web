@@ -69,7 +69,7 @@ export const documents = {
 };
 
 export const query = {
-  submit: ({ question, knowledgeIds, documentIds, userData, conversationId }) =>
+  submit: ({ question, knowledgeIds, documentIds, myDocumentIds, userData, conversationId }) =>
     request('/query', {
       method: 'POST',
       headers: { ...authHeader(), 'Content-Type': 'application/json' },
@@ -77,9 +77,27 @@ export const query = {
         question,
         knowledge_ids: knowledgeIds?.length ? knowledgeIds : undefined,
         document_ids: documentIds?.length ? documentIds : undefined,
+        my_document_ids: myDocumentIds?.length ? myDocumentIds : undefined,
         user_data: userData,
         conversation_id: conversationId ?? undefined,
       }),
+    }),
+};
+
+export const myDocuments = {
+  list: () => request('/my-documents', { headers: authHeader() }),
+  get: (id) => request(`/my-documents/${id}`, { headers: authHeader() }),
+  getStatus: (id) => request(`/my-documents/${id}/status`, { headers: authHeader() }),
+  upload: (formData) =>
+    request('/my-documents', {
+      method: 'POST',
+      headers: authHeader(),
+      body: formData,
+    }),
+  remove: (id) =>
+    request(`/my-documents/${id}`, {
+      method: 'DELETE',
+      headers: authHeader(),
     }),
 };
 
@@ -99,6 +117,36 @@ export const user = {
   me: () => request('/users/me', { headers: authHeader() }),
 };
 
+export const users = {
+  list: (params = {}) => {
+    const qs = new URLSearchParams();
+    if (params.search) qs.set('search', params.search);
+    if (params.role) qs.set('role', params.role);
+    if (params.status) qs.set('status', params.status);
+    if (params.page) qs.set('page', params.page);
+    if (params.limit) qs.set('limit', params.limit);
+    const q = qs.toString();
+    return request(`/users${q ? `?${q}` : ''}`, { headers: authHeader() });
+  },
+  create: (body) =>
+    request('/users', {
+      method: 'POST',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  update: (id, body) =>
+    request(`/users/${id}`, {
+      method: 'PATCH',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  remove: (id) =>
+    request(`/users/${id}`, {
+      method: 'DELETE',
+      headers: authHeader(),
+    }),
+};
+
 export const auth = {
   login: async (username, password, rememberMe) => {
     const body = new URLSearchParams({ username, password, remember_me: rememberMe });
@@ -115,4 +163,13 @@ export const auth = {
   logout: () => {
     session.clear();
   },
+  changePassword: ({ currentPassword, newPassword }) =>
+    request('/auth/change-password', {
+      method: 'POST',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    }),
 };

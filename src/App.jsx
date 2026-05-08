@@ -5,7 +5,10 @@ import Login from './pages/Login';
 import Users from './pages/Users';
 import IndexDocument from './pages/IndexDocument';
 import KnowledgeBase from './pages/KnowledgeBase';
+import MyDocuments from './pages/MyDocuments';
+import ChangePassword from './pages/ChangePassword';
 import PrivateRoute from './components/PrivateRoute';
+import AdminRoute from './components/AdminRoute';
 import AppLayout from './components/layout/AppLayout';
 import { session } from './api/api';
 
@@ -26,12 +29,14 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={session.isAuthenticated() ? <Navigate to="/app" replace /> : <Login />} />
+        <Route path="/change-password" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
         <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
           <Route path="/app" element={<Workbench />} />
           <Route path="/app/:convId" element={<Workbench />} />
-          <Route path="/users" element={<Users />} />
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
-          <Route path="/index-document" element={<IndexDocument />} />
+          <Route path="/my-documents" element={<MyDocuments />} />
+          <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
+          <Route path="/index-document" element={<AdminRoute><IndexDocument /></AdminRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>
