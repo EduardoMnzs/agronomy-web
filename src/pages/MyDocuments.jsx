@@ -258,9 +258,6 @@ export default function MyDocuments() {
             </div>
           ) : docs.length === 0 ? (
             <div className="py-20 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-gray-50 dark:bg-[#2c3033] rounded-2xl flex items-center justify-center mb-4 border border-gray-100 dark:border-gray-700">
-                <FileUp className="w-8 h-8 text-gray-400" />
-              </div>
               <h3 className="text-base font-semibold text-[#131E29] dark:text-white">Nenhum documento ainda</h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 max-w-sm">
                 Adicione arquivos pessoais (análises de solo, históricos, laudos) para usar nas suas consultas.

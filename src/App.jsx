@@ -6,6 +6,7 @@ import Users from './pages/Users';
 import IndexDocument from './pages/IndexDocument';
 import KnowledgeBase from './pages/KnowledgeBase';
 import MyDocuments from './pages/MyDocuments';
+import Settings from './pages/Settings';
 import ChangePassword from './pages/ChangePassword';
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
@@ -35,6 +36,7 @@ function App() {
           <Route path="/app/:convId" element={<Workbench />} />
           <Route path="/knowledge-base" element={<KnowledgeBase />} />
           <Route path="/my-documents" element={<MyDocuments />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
           <Route path="/index-document" element={<AdminRoute><IndexDocument /></AdminRoute>} />
         </Route>

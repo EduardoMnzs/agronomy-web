@@ -117,6 +117,16 @@ export const user = {
   me: () => request('/users/me', { headers: authHeader() }),
 };
 
+export const appSettings = {
+  get: () => request('/settings', { headers: authHeader() }),
+  update: (values) =>
+    request('/settings', {
+      method: 'PUT',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values }),
+    }),
+};
+
 export const users = {
   list: (params = {}) => {
     const qs = new URLSearchParams();
