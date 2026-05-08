@@ -115,6 +115,13 @@ export const conversations = {
 
 export const user = {
   me: () => request('/users/me', { headers: authHeader() }),
+  getProfile: () => request('/users/me/profile', { headers: authHeader() }),
+  updateProfile: (body) =>
+    request('/users/me/profile', {
+      method: 'PATCH',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
 };
 
 export const appSettings = {

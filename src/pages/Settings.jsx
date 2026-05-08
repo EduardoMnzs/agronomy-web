@@ -7,8 +7,9 @@ import {
 import Header from '../components/layout/Header';
 import CustomSelect from '../components/ui/CustomSelect';
 import Toast from '../components/ui/Toast';
-import { appSettings } from '../api/api';
+import { appSettings, user as userApi } from '../api/api';
 import useCurrentUser from '../hooks/useCurrentUser';
+import { BR_STATES, MAIN_CROPS, PLANTING_SYSTEMS, PREFERRED_UNITS } from '../constants/agronomy';
 
 const PROVIDERS = [
   { value: 'openai', label: 'OpenAI' },
@@ -192,6 +193,9 @@ export default function SettingsPage() {
   const [toast, setToast] = useState({ show: false, title: '', message: '', type: 'success' });
   const [confirmOpen, setConfirmOpen] = useState(false);
 
+  const [profile, setProfile] = useState(null);
+  const [profileDirty, setProfileDirty] = useState({});
+
   const [theme, setTheme] = useState(() =>
     document.documentElement.classList.contains('dark') ? 'dark' : 'light'
   );
@@ -204,12 +208,16 @@ export default function SettingsPage() {
   };
 
   const fetchSettings = useCallback(async () => {
-    if (!isAdmin) { setLoading(false); return; }
     setLoading(true);
     try {
-      const data = await appSettings.get();
-      setRemote(data.settings ?? {});
-      setDirty({});
+      const prof = await userApi.getProfile();
+      setProfile(prof ?? {});
+      setProfileDirty({});
+      if (isAdmin) {
+        const data = await appSettings.get();
+        setRemote(data.settings ?? {});
+        setDirty({});
+      }
     } catch (err) {
       setToast({ show: true, title: 'Erro', message: err.message || 'Falha ao carregar.', type: 'error' });
     } finally {
@@ -218,6 +226,10 @@ export default function SettingsPage() {
   }, [isAdmin]);
 
   useEffect(() => { fetchSettings(); }, [fetchSettings]);
+
+  const getProfile = (k) => (k in profileDirty ? profileDirty[k] : (profile?.[k] ?? ''));
+  const setProfileValue = (k, v) => setProfileDirty((prev) => ({ ...prev, [k]: v }));
+  const hasProfileDirty = Object.keys(profileDirty).length > 0;
 
   const getValue = (key) => {
     if (key in dirty) return dirty[key];
@@ -244,15 +256,21 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // undefined => clear field (send ""); value => set
-      const payload = {};
-      for (const [k, v] of Object.entries(dirty)) {
-        if (v === undefined || v === null) payload[k] = '';
-        else payload[k] = v;
+      if (isAdmin && Object.keys(dirty).length > 0) {
+        const payload = {};
+        for (const [k, v] of Object.entries(dirty)) {
+          if (v === undefined || v === null) payload[k] = '';
+          else payload[k] = v;
+        }
+        const data = await appSettings.update(payload);
+        setRemote(data.settings ?? {});
+        setDirty({});
       }
-      const data = await appSettings.update(payload);
-      setRemote(data.settings ?? {});
-      setDirty({});
+      if (Object.keys(profileDirty).length > 0) {
+        const prof = await userApi.updateProfile(profileDirty);
+        setProfile(prof ?? {});
+        setProfileDirty({});
+      }
       setConfirmOpen(false);
       setToast({ show: true, title: 'Configurações salvas', message: 'As alterações já estão em vigor.', type: 'success' });
     } catch (err) {
@@ -264,17 +282,91 @@ export default function SettingsPage() {
 
   const provider = getValue('LLM_PROVIDER') || 'openai';
   const providerFields = PROVIDER_KEY_FIELDS[provider] || [];
-  const hasDirty = Object.keys(dirty).length > 0;
+  const hasDirty = Object.keys(dirty).length > 0 || hasProfileDirty;
+  const totalDirtyCount = Object.keys(dirty).length + Object.keys(profileDirty).length;
 
   const tabs = [
+    { id: 'profile', label: 'Perfil', adminOnly: false },
     { id: 'appearance', label: 'Aparência', adminOnly: false },
     { id: 'provider', label: 'Provedor', adminOnly: true },
     { id: 'rag', label: 'Comportamento RAG', adminOnly: true },
   ];
   const visibleTabs = tabs.filter((t) => !t.adminOnly || isAdmin);
-  const [activeTab, setActiveTab] = useState('appearance');
+  const [activeTab, setActiveTab] = useState('profile');
 
   const renderTab = () => {
+    if (activeTab === 'profile') {
+      return (
+        <motion.div key="profile" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }} className="space-y-4">
+          <TabHeader
+            title="Perfil agronômico"
+            description="Esses dados são enviados como contexto ao assistente em cada consulta. Deixe em branco se não souber."
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Estado</label>
+              <CustomSelect
+                fullWidth
+                placeholder="Selecione..."
+                value={getProfile('state') || ''}
+                onChange={(v) => setProfileValue('state', v)}
+                options={BR_STATES}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Município</label>
+              <input
+                type="text"
+                value={getProfile('city')}
+                onChange={(e) => setProfileValue('city', e.target.value)}
+                placeholder="ex: Campo Grande"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none"
+              />
+            </div>
+          </div>
+          {profile?.biome && (
+            <p className="text-[11px] text-gray-500 dark:text-gray-400">
+              Bioma estimado: <span className="font-semibold text-[#EC6608]">{profile.biome}</span>
+            </p>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Cultura principal</label>
+              <CustomSelect
+                fullWidth
+                placeholder="Selecione..."
+                value={getProfile('main_crop') || ''}
+                onChange={(v) => setProfileValue('main_crop', v)}
+                options={MAIN_CROPS}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sistema de plantio</label>
+              <CustomSelect
+                fullWidth
+                placeholder="Selecione..."
+                value={getProfile('planting_system') || ''}
+                onChange={(v) => setProfileValue('planting_system', v)}
+                options={PLANTING_SYSTEMS}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Unidades preferidas</label>
+            <CustomSelect
+              fullWidth
+              placeholder="Selecione..."
+              value={getProfile('preferred_units') || ''}
+              onChange={(v) => setProfileValue('preferred_units', v)}
+              options={PREFERRED_UNITS}
+            />
+          </div>
+        </motion.div>
+      );
+    }
+
     if (activeTab === 'appearance') {
       return (
         <motion.div key="appearance" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.15 }}>
@@ -440,7 +532,7 @@ if (activeTab === 'rag') {
       </main>
 
       <AnimatePresence>
-        {isAdmin && hasDirty && (
+        {hasDirty && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -449,10 +541,10 @@ if (activeTab === 'rag') {
             className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl p-2 shadow-lg"
           >
             <span className="text-xs text-gray-600 dark:text-gray-300 pl-2 pr-1">
-              {Object.keys(dirty).length} alteração{Object.keys(dirty).length === 1 ? '' : 's'} pendente{Object.keys(dirty).length === 1 ? '' : 's'}
+              {totalDirtyCount} alteração{totalDirtyCount === 1 ? '' : 's'} pendente{totalDirtyCount === 1 ? '' : 's'}
             </span>
             <button
-              onClick={() => setDirty({})}
+              onClick={() => { setDirty({}); setProfileDirty({}); }}
               disabled={saving}
               className="cursor-pointer px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg disabled:opacity-50"
             >
@@ -490,7 +582,7 @@ if (activeTab === 'rag') {
             >
               <h3 className="text-sm font-semibold text-[#131E29] dark:text-white mb-2">Salvar configurações?</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-5">
-                {Object.keys(dirty).length} alteraç{Object.keys(dirty).length === 1 ? 'ão' : 'ões'} ser{Object.keys(dirty).length === 1 ? 'á' : 'ão'} aplicada{Object.keys(dirty).length === 1 ? '' : 's'} imediatamente. As próximas consultas já usarão os novos valores.
+                {totalDirtyCount} alteraç{totalDirtyCount === 1 ? 'ão' : 'ões'} ser{totalDirtyCount === 1 ? 'á' : 'ão'} aplicada{totalDirtyCount === 1 ? '' : 's'} imediatamente. As próximas consultas já usarão os novos valores.
               </p>
               <div className="flex gap-2 justify-end">
                 <button

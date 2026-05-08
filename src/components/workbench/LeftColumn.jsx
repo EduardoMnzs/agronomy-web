@@ -1,15 +1,39 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sprout, FlaskConical, Droplets, Layers } from 'lucide-react';
-import { documents as docsApi, myDocuments as myDocsApi } from '../../api/api';
+import { Sprout, Layers, MapPin, Ruler, Tractor } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { documents as docsApi, myDocuments as myDocsApi, user as userApi } from '../../api/api';
+import { BR_STATES, MAIN_CROPS, PLANTING_SYSTEMS, PREFERRED_UNITS } from '../../constants/agronomy';
 
-const contextData = [
-  { icon: Sprout,      label: 'Cultura',  value: 'Soja' },
-  { icon: Layers,      label: 'Região',   value: 'MS — Cerrado' },
-  { icon: FlaskConical,label: 'pH',       value: '4.8' },
-  { icon: Droplets,    label: 'V%',       value: '32' },
-  { icon: Layers,      label: 'CTC',      value: '8.5' },
-];
+const LABEL_MAPS = {
+  state: Object.fromEntries(BR_STATES.map((s) => [s.value, s.label])),
+  main_crop: Object.fromEntries(MAIN_CROPS.map((s) => [s.value, s.label])),
+  planting_system: Object.fromEntries(PLANTING_SYSTEMS.map((s) => [s.value, s.label])),
+  preferred_units: Object.fromEntries(PREFERRED_UNITS.map((s) => [s.value, s.label])),
+};
+
+function buildContextData(profile) {
+  if (!profile) return [];
+  const out = [];
+  if (profile.state) {
+    const label = LABEL_MAPS.state[profile.state] || profile.state;
+    const region = profile.city ? `${profile.city} — ${profile.state}` : label;
+    out.push({ icon: MapPin, label: 'Região', value: region });
+  }
+  if (profile.biome) {
+    out.push({ icon: Layers, label: 'Bioma', value: profile.biome });
+  }
+  if (profile.main_crop) {
+    out.push({ icon: Sprout, label: 'Cultura', value: LABEL_MAPS.main_crop[profile.main_crop] || profile.main_crop });
+  }
+  if (profile.planting_system) {
+    out.push({ icon: Tractor, label: 'Plantio', value: LABEL_MAPS.planting_system[profile.planting_system] || profile.planting_system });
+  }
+  if (profile.preferred_units) {
+    out.push({ icon: Ruler, label: 'Unidades', value: LABEL_MAPS.preferred_units[profile.preferred_units] || profile.preferred_units });
+  }
+  return out;
+}
 
 const Card = ({ children, className = '' }) => (
   <motion.div
@@ -34,17 +58,20 @@ function SectionLabel({ label }) {
 export default function LeftColumn({ selectedIds, onSelectionChange }) {
   const [knowledgeDocs, setKnowledgeDocs] = useState([]);
   const [myDocs, setMyDocs] = useState([]);
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     Promise.all([
       docsApi.list().catch(() => null),
       myDocsApi.list().catch(() => []),
-    ]).then(([kbData, mine]) => {
+      userApi.getProfile().catch(() => null),
+    ]).then(([kbData, mine, prof]) => {
       const items = kbData?.items ?? kbData ?? [];
       const ready = items.filter((d) => d.status === 'done');
       const myReady = (mine ?? []).filter((d) => d.status === 'done');
       setKnowledgeDocs(ready);
       setMyDocs(myReady);
+      setProfile(prof);
       const allIds = [
         ...ready.map((d) => d.id),
         ...myReady.map((d) => `user_${d.id}`),
@@ -52,6 +79,8 @@ export default function LeftColumn({ selectedIds, onSelectionChange }) {
       onSelectionChange(allIds);
     });
   }, []);
+
+  const contextData = buildContextData(profile);
 
   const toggle = (id) => {
     onSelectionChange(
@@ -77,22 +106,33 @@ export default function LeftColumn({ selectedIds, onSelectionChange }) {
       className="flex flex-col gap-[14px] h-full overflow-hidden"
     >
       <Card className="shrink-0">
-        <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 transition-colors duration-300">
-          Contexto
-        </h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider transition-colors duration-300">
+            Contexto
+          </h2>
+          <Link to="/settings" className="text-[10px] text-gray-400 hover:text-[#EC6608] transition-colors">
+            Editar
+          </Link>
+        </div>
+        {contextData.length === 0 ? (
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
+            Defina sua região, cultura e sistema de plantio em <Link to="/settings" className="text-[#EC6608] font-semibold hover:underline">Configurações</Link> para que o assistente use esses dados automaticamente.
+          </p>
+        ) : (
         <div className="space-y-2">
           {contextData.map(({ icon: Icon, label, value }) => (
-            <div key={label} className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
+            <div key={label} className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 shrink-0">
                 <Icon size={12} className="shrink-0" />
                 <span className="text-[11px]">{label}</span>
               </div>
-              <span className="text-[11px] font-semibold text-[#131E29] dark:text-white font-mono">
+              <span className="text-[11px] font-semibold text-[#131E29] dark:text-white text-right truncate">
                 {value}
               </span>
             </div>
           ))}
         </div>
+        )}
       </Card>
 
       <Card className="flex-1 overflow-hidden">
