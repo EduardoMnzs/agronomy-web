@@ -54,8 +54,14 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
     { id: 'contexto', label: 'Contexto' },
   ];
 
+  const scrollThreadToBottom = (behavior = 'smooth') => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior });
+  };
+
   useEffect(() => {
-    if (!showScrollBtn) bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (!showScrollBtn) scrollThreadToBottom();
   }, [messages, thinking]);
 
   useEffect(() => {
@@ -202,14 +208,14 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
         </div>
       </Card>
 
-      <Card className="flex-1 overflow-hidden">
+      <Card className="flex-1 overflow-hidden max-h-[60vh] lg:max-h-none">
         <AnimatePresence mode="wait">
           {status === 'answered' || status === 'thinking' ? (
-            <motion.div key="thread" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex flex-col h-full relative">
+            <motion.div key="thread" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex flex-col h-full min-h-0 relative">
               <div className="flex justify-between items-center mb-4 pb-3 border-b border-gray-100 dark:border-[#2c3033] shrink-0 transition-colors duration-300">
                 <h2 className="text-sm font-semibold text-[#131E29] dark:text-white transition-colors duration-300">Resposta</h2>
               </div>
-              <div ref={scrollRef} className="flex-1 overflow-y-auto pr-2 -mr-2 space-y-4 transition-colors duration-300">
+              <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto pr-2 -mr-2 space-y-4 transition-colors duration-300">
                 {messages.map((msg, i) => (
                   msg.role === 'user' ? (
                     <div key={i} className="flex justify-end">
@@ -254,7 +260,7 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 6 }}
                     transition={{ duration: 0.15 }}
-                    onClick={() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                    onClick={() => scrollThreadToBottom()}
                     className="cursor-pointer absolute bottom-2 inset-x-0 mx-auto w-fit flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-600 shadow-md text-xs font-medium text-gray-600 dark:text-gray-300 hover:border-[#EC6608] hover:text-[#EC6608] transition-colors z-10 whitespace-nowrap"
                   >
                     <ArrowDown size={13} />

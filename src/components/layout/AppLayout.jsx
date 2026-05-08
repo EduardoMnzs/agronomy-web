@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams, Outlet, Navigate } from 'react
 import Sidebar from './Sidebar';
 import { conversations as convsApi } from '../../api/api';
 import useCurrentUser from '../../hooks/useCurrentUser';
+import { DocPreviewProvider } from '../../hooks/DocPreviewContext';
 
 export default function AppLayout() {
   const navigate = useNavigate();
@@ -42,10 +43,14 @@ export default function AppLayout() {
     if (convId) {
       setSearchParams({}, { replace: true });
       loadConversation(convId);
-    } else if (convIdParam && !conversationId) {
-      loadConversation(convIdParam);
     }
   }, []);
+
+  useEffect(() => {
+    if (convIdParam && convIdParam !== conversationId) {
+      loadConversation(convIdParam);
+    }
+  }, [convIdParam]);
 
   const onUserMessage = (text) => {
     setMessages((prev) => [...prev, { role: 'user', content: text }]);
@@ -89,6 +94,7 @@ export default function AppLayout() {
   }
 
   return (
+    <DocPreviewProvider>
     <div className="h-screen w-screen bg-[#F7F7FF] dark:bg-[#2c3033] flex overflow-hidden transition-colors duration-300">
       <Sidebar
         isMobileOpen={isMobileOpen}
@@ -103,5 +109,6 @@ export default function AppLayout() {
         <Outlet context={{ setIsMobileOpen, conversationId, messages, citations, onUserMessage, onAssistantReply, resetConversation }} />
       </div>
     </div>
+    </DocPreviewProvider>
   );
 }

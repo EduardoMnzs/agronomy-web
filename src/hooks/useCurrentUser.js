@@ -34,5 +34,18 @@ export default function useCurrentUser() {
   const role = data?.role ?? '';
   const isAdmin = role === 'admin';
 
-  return { data, loading, firstName, initials, role, isAdmin };
+  const refresh = async () => {
+    try {
+      const me = await userApi.me();
+      cached = me;
+      notify();
+    } catch {}
+  };
+
+  const updateLocal = (next) => {
+    cached = next;
+    notify();
+  };
+
+  return { data, loading, firstName, initials, role, isAdmin, refresh, updateLocal };
 }

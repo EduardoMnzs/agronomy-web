@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, Menu, Sun, Moon } from 'lucide-react';
+import { Bell, Menu, Sun, Moon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import useCurrentUser from '../../hooks/useCurrentUser';
+import SearchBar from './SearchBar';
 
 export default function Header({ title = 'Consulta', onOpenMobile, viewMode, setViewMode }) {
   return (
@@ -29,7 +31,7 @@ function HeaderLeft({ title, onOpenMobile }) {
 function HeaderRight({ viewMode, setViewMode }) {
   return (
     <div className="flex items-center gap-3 md:gap-6">
-      <SearchInput />
+      <SearchBar />
       <div className="flex items-center gap-3">
         <ThemeToggle />
         <NotificationButton />
@@ -73,19 +75,6 @@ function ThemeToggle() {
   );
 }
 
-function SearchInput() {
-  return (
-    <div className="relative hidden md:block">
-      <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-      <input
-        type="text"
-        placeholder="Pesquisar..."
-        className="pl-10 pr-4 py-2 text-xs border border-gray-200 dark:border-[#2c3033] rounded-full focus:outline-none focus:border-[#EC6608] focus:ring-2 focus:ring-[#EC6608]/10 transition-all bg-gray-50 dark:bg-[#2c3033] text-[#131E29] dark:text-white placeholder-gray-400 w-48 lg:w-64"
-      />
-    </div>
-  );
-}
-
 function NotificationButton() {
   return (
     <button className="cursor-pointer relative p-2 text-gray-400 hover:text-[#131E29] dark:hover:text-white transition-colors bg-gray-50 dark:bg-[#2c3033] rounded-full">
@@ -96,19 +85,28 @@ function NotificationButton() {
 }
 
 function UserInfo() {
+  const navigate = useNavigate();
   const { data, initials, role } = useCurrentUser();
   const displayName = data?.full_name ?? data?.name ?? data?.username ?? '—';
-  const displayRole = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'Usuário';
+  const displayEmail = data?.email ?? '—';
 
   return (
-    <div className="flex items-center gap-2 md:gap-3 pl-1 md:pl-2">
+    <button
+      onClick={() => navigate('/profile')}
+      title="Abrir perfil"
+      className="cursor-pointer flex items-center gap-2 md:gap-3 pl-1 md:pl-2 hover:opacity-80 transition-opacity"
+    >
       <div className="text-right hidden sm:block">
         <p className="text-xs font-bold text-[#131E29] dark:text-white leading-none transition-colors duration-300">{displayName}</p>
-        <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium transition-colors duration-300">{displayRole}</p>
+        <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium transition-colors duration-300">{displayEmail}</p>
       </div>
-      <div className="w-9 h-9 rounded-full bg-[#EC6608] text-white flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0">
-        {initials || '?'}
+      <div className="w-9 h-9 rounded-full bg-[#EC6608] text-white flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0 overflow-hidden">
+        {data?.avatar_url ? (
+          <img src={data.avatar_url} alt={displayName} className="w-full h-full object-cover" />
+        ) : (
+          initials || '?'
+        )}
       </div>
-    </div>
+    </button>
   );
 }

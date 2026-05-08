@@ -115,6 +115,32 @@ export const conversations = {
 
 export const user = {
   me: () => request('/users/me', { headers: authHeader() }),
+  updateMe: (body) =>
+    request('/users/me', {
+      method: 'PATCH',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  changePassword: ({ currentPassword, newPassword }) =>
+    request('/users/me/password', {
+      method: 'POST',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    }),
+  uploadAvatar: (formData) =>
+    request('/users/me/avatar', {
+      method: 'POST',
+      headers: authHeader(),
+      body: formData,
+    }),
+  deleteAvatar: () =>
+    request('/users/me/avatar', {
+      method: 'DELETE',
+      headers: authHeader(),
+    }),
   getProfile: () => request('/users/me/profile', { headers: authHeader() }),
   updateProfile: (body) =>
     request('/users/me/profile', {
@@ -122,6 +148,13 @@ export const user = {
       headers: { ...authHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     }),
+};
+
+export const search = {
+  run: (q) => {
+    const qs = new URLSearchParams({ q }).toString();
+    return request(`/search?${qs}`, { headers: authHeader() });
+  },
 };
 
 export const appSettings = {
