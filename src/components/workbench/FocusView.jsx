@@ -28,10 +28,10 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
   }, []);
 
   const chips = [
-    { id: 'todos', label: 'Todos os docs' },
-    { id: 'base', label: 'Só base' },
-    { id: 'sessao', label: 'Só sessão' },
-    { id: 'contexto', label: 'Contexto' },
+    { id: 'todos', label: 'Todos os docs', scope: 'all' },
+    { id: 'base', label: 'Só base', scope: 'kb' },
+    { id: 'sessao', label: 'Só sessão', scope: 'mine' },
+    { id: 'contexto', label: 'Contexto', scope: 'selection' },
   ];
 
   const suggestions = [
@@ -73,7 +73,8 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
     onUserMessage(question);
 
     try {
-      const result = await queryApi.submit({ question, myDocumentIds: myDocIds, conversationId });
+      const scope = chips.find((c) => c.id === activeChip)?.scope ?? 'all';
+      const result = await queryApi.submit({ question, scope, myDocumentIds: myDocIds, conversationId });
       onAssistantReply(question, result);
     } catch (err) {
       setError(err.message || 'Erro ao consultar.');
