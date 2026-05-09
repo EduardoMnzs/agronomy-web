@@ -192,8 +192,8 @@ export default function ProfilePage() {
                   <Mail size={13} /> {me.email}
                 </div>
                 <div className="flex items-center gap-2 mt-3 justify-center sm:justify-start flex-wrap">
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${status.cls}`}>
-                    <CheckCircle2 size={11} /> {status.label}
+                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${status.cls}`}>
+                    {status.label}
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#EC6608]/10 text-[#EC6608] border border-[#EC6608]/20">
                     <Shield size={11} /> {ROLE_LABEL[me.role] ?? me.role}
@@ -224,7 +224,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InfoRow icon={Mail} label="E-mail" value={me.email} />
               <InfoRow icon={Shield} label="Função" value={ROLE_LABEL[me.role] ?? me.role} />
-              <InfoRow icon={CheckCircle2} label="Status" value={status.label} />
+              <InfoRow icon={null} label="Status" value={status.label} />
               <InfoRow icon={Calendar} label="Conta criada em" value={formatDate(me.created_at)} />
               <InfoRow icon={Calendar} label="Último acesso" value={formatDate(me.last_active_at)} />
               <InfoRow icon={KeyRound} label="ID" value={`#${me.id}`} />
@@ -297,9 +297,11 @@ export default function ProfilePage() {
 function InfoRow({ icon: Icon, label, value }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-[#2c3033] flex items-center justify-center shrink-0 mt-0.5">
-        <Icon size={14} className="text-gray-400" />
-      </div>
+      {Icon && (
+        <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-[#2c3033] flex items-center justify-center shrink-0 mt-0.5">
+          <Icon size={14} className="text-gray-400" />
+        </div>
+      )}
       <div className="min-w-0 flex-1">
         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{label}</p>
         <p className="text-sm text-[#131E29] dark:text-white truncate">{value}</p>
