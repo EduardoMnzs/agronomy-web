@@ -3,6 +3,7 @@ name: Build & Push Docker Image
 on:
   push:
     branches: [main]
+    tags: ["v*"]
 
 jobs:
   build-and-push:
@@ -23,19 +24,30 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Docker metadata (tags & labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: eduardomnzs/agronomy-web
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=sha-,format=short
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            VITE_API_URL=${{ secrets.VITE_API_URL || 'https://agronomy-api.gaek.com.br' }}
-          tags: |
-            eduardomnzs/agronomy-web:latest
-            eduardomnzs/agronomy-web:sha-${{ github.sha }}
+            VITE_API_URL=${{ vars.VITE_API_URL || 'https://agronomy-api.gaek.com.br' }}
           cache-from: type=registry,ref=eduardomnzs/agronomy-web:buildcache
           cache-to: type=registry,ref=eduardomnzs/agronomy-web:buildcache,mode=max
 
       - name: Trigger Portainer redeploy
-        if: ${{ secrets.PORTAINER_WEBHOOK_URL_FRONTEND != '' }}
-        run: curl -fsSL -X POST "${{ secrets.PORTAINER_WEBHOOK_URL_FRONTEND }}"
+        if: ${{ env.PORTAINER_WEBHOOK_URL != '' }}
+        env:
+          PORTAINER_WEBHOOK_URL: ${{ secrets.PORTAINER_WEBHOOK_URL }}
+        run: curl -fsSL -X POST "$PORTAINER_WEBHOOK_URL"
