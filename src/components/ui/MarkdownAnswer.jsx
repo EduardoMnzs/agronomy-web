@@ -1,5 +1,6 @@
 import { useMemo, useRef, useEffect } from 'react';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 marked.use({ breaks: true, gfm: true });
 
@@ -10,7 +11,7 @@ export default function MarkdownAnswer({ text, className = '', citations, onCita
 
   const html = useMemo(() => {
     if (!text) return '';
-    const rendered = marked.parse(text);
+    const rendered = DOMPurify.sanitize(marked.parse(text));
     if (!citations || citations.length === 0) return rendered;
     return rendered.replace(CITE_RE, (match, n) => {
       const ref = Number(n);

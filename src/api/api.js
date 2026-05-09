@@ -16,10 +16,10 @@ async function request(path, options = {}) {
 }
 
 export const session = {
-  get: () => localStorage.getItem('access_token'),
-  set: (token) => localStorage.setItem('access_token', token),
-  clear: () => localStorage.removeItem('access_token'),
-  isAuthenticated: () => !!localStorage.getItem('access_token'),
+  get: () => sessionStorage.getItem('access_token'),
+  set: (token) => sessionStorage.setItem('access_token', token),
+  clear: () => sessionStorage.removeItem('access_token'),
+  isAuthenticated: () => !!sessionStorage.getItem('access_token'),
 };
 
 function authHeader() {

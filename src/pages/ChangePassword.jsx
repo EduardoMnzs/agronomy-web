@@ -43,7 +43,7 @@ export default function ChangePassword() {
       await auth.changePassword({ currentPassword, newPassword });
       setSuccess(true);
       setTimeout(() => {
-        window.location.href = '/app';
+        navigate('/app');
       }, 1500);
     } catch (err) {
       setError(err.message || 'Erro ao alterar senha.');

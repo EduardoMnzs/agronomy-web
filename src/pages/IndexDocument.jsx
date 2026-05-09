@@ -5,6 +5,7 @@ import { FileUp, File, X, AlertCircle, Loader2 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import mammoth from 'mammoth';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import Header from '../components/layout/Header';
 import CustomSelect from '../components/ui/CustomSelect';
 import Toast from '../components/ui/Toast';
@@ -101,7 +102,7 @@ function DocxPreview({ html }) {
       <div
         className="max-w-2xl mx-auto space-y-4"
         style={{ fontFamily: 'serif', lineHeight: '1.6' }}
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
       />
     </div>
   );
@@ -117,7 +118,7 @@ function MarkdownPreview({ html }) {
           lineHeight: '1.75',
           color: 'inherit',
         }}
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(html) }}
       />
     </div>
   );

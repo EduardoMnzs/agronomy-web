@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FileText, X, Loader2, AlertCircle, Database } from 'lucide-react';
 import { marked } from 'marked';
 import * as XLSX from 'xlsx';
+import DOMPurify from 'dompurify';
 
 marked.use({ breaks: true, gfm: true });
 
@@ -146,10 +147,11 @@ function HighlightedBlock({ html, highlight, className = '' }) {
   const containerRef = useRef(null);
 
   const finalHtml = useMemo(() => {
-    if (!highlight || !html) return html || '';
+    const cleanHtml = DOMPurify.sanitize(html || '');
+    if (!highlight || !cleanHtml) return cleanHtml;
     const tokens = findHighlightTokens(highlight);
-    if (!tokens.length) return html;
-    let result = html;
+    if (!tokens.length) return cleanHtml;
+    let result = cleanHtml;
     for (const token of tokens) {
       const escaped = escapeRegExp(token);
       const re = new RegExp(`(?![^<]*>)${escaped}`, 'gi');

@@ -103,11 +103,15 @@ export default function UsersPage() {
 
   const generatePassword = () => {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-    let password = '';
-    for (let i = 0; i < 12; i++) {
-      password += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
+    const values = new Uint32Array(12);
+    crypto.getRandomValues(values);
+    const password = Array.from(values, (v) => chars[v % chars.length]).join('');
     setFormData((prev) => ({ ...prev, password }));
+  };
+
+  const closeUserModal = () => {
+    setIsUserModalOpen(false);
+    setFormData((prev) => ({ ...prev, password: '' }));
   };
 
   const handleNewUser = () => {
@@ -171,7 +175,7 @@ export default function UsersPage() {
           type: 'success',
         });
       }
-      setIsUserModalOpen(false);
+      closeUserModal();
       fetchUsers();
     } catch (err) {
       if (err.status === 409) {
@@ -451,7 +455,7 @@ export default function UsersPage() {
                   {editingUser ? 'Editar Usuário' : 'Novo Usuário'}
                 </h2>
                 <button
-                  onClick={() => setIsUserModalOpen(false)}
+                  onClick={closeUserModal}
                   className="cursor-pointer p-1.5 text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg transition-colors"
                 >
                   <X size={20} />
@@ -612,7 +616,7 @@ export default function UsersPage() {
                 <div className="pt-4 flex items-center justify-end gap-3 border-t border-gray-100 dark:border-white/5">
                   <button
                     type="button"
-                    onClick={() => setIsUserModalOpen(false)}
+                    onClick={closeUserModal}
                     disabled={submitting}
                     className="cursor-pointer px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg transition-colors disabled:opacity-50"
                   >

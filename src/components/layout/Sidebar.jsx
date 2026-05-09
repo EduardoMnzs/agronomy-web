@@ -195,7 +195,7 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
 
       <div className="p-3 border-t border-gray-100 dark:border-white/5 space-y-1">
         <SidebarItem icon={Settings} label="Configurações" collapsed={collapsed} active={location.pathname === '/settings'} onClick={() => { navigate('/settings'); onCloseMobile(); }} />
-        <SidebarItem icon={LogOut} label="Sair" collapsed={collapsed} danger onClick={() => { auth.logout(); window.location.href = '/login'; }} />
+        <SidebarItem icon={LogOut} label="Sair" collapsed={collapsed} danger onClick={() => { auth.logout(); navigate('/login'); }} />
       </div>
 
       <div className={`bg-gray-50 dark:bg-[#2c3033] border-t border-gray-100 dark:border-white/5 flex-shrink-0 overflow-hidden whitespace-nowrap transition-[padding,height,background-color,border-color] duration-300 ${collapsed ? 'py-0 h-0' : 'p-4'}`}>
