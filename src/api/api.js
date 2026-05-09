@@ -69,12 +69,13 @@ export const documents = {
 };
 
 export const query = {
-  submit: ({ question, knowledgeIds, documentIds, myDocumentIds, userData, conversationId }) =>
+  submit: ({ question, scope, knowledgeIds, documentIds, myDocumentIds, userData, conversationId }) =>
     request('/query', {
       method: 'POST',
       headers: { ...authHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({
         question,
+        scope: scope ?? undefined,
         knowledge_ids: knowledgeIds?.length ? knowledgeIds : undefined,
         document_ids: documentIds?.length ? documentIds : undefined,
         my_document_ids: myDocumentIds?.length ? myDocumentIds : undefined,

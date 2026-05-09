@@ -48,10 +48,10 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
   };
 
   const chips = [
-    { id: 'todos', label: 'Todos os docs' },
-    { id: 'base', label: 'Só base' },
-    { id: 'sessao', label: 'Só sessão' },
-    { id: 'contexto', label: 'Contexto' },
+    { id: 'todos', label: 'Todos os docs', scope: 'all' },
+    { id: 'base', label: 'Só base', scope: 'kb' },
+    { id: 'sessao', label: 'Só sessão', scope: 'mine' },
+    { id: 'contexto', label: 'Contexto', scope: 'selection' },
   ];
 
   const scrollThreadToBottom = (behavior = 'smooth') => {
@@ -85,14 +85,15 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
     onUserMessage(question);
 
     try {
-      const knowledgeIds = activeChip === 'sessao'
-        ? []
-        : selectedKnowledgeIds.filter((id) => Number.isInteger(id) || /^\d+$/.test(id)).map(Number);
+      const scope = chips.find((c) => c.id === activeChip)?.scope ?? 'all';
+      const knowledgeIds = selectedKnowledgeIds
+        .filter((id) => Number.isInteger(id) || /^\d+$/.test(id))
+        .map(Number);
       const myDocumentIds = selectedKnowledgeIds
         .filter((id) => typeof id === 'string' && id.startsWith('user_'))
         .map((id) => Number(id.slice(5)))
         .filter((n) => Number.isFinite(n));
-      const result = await queryApi.submit({ question, knowledgeIds, myDocumentIds, conversationId });
+      const result = await queryApi.submit({ question, scope, knowledgeIds, myDocumentIds, conversationId });
       onAssistantReply(question, result);
     } catch (err) {
       setError(err.message || 'Erro ao consultar.');
