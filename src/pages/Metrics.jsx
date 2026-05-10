@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Loader2, AlertCircle, ThumbsUp, ThumbsDown, MessageSquare, Activity, Clock, AlertTriangle } from 'lucide-react';
+import { Loader2, AlertCircle, ThumbsUp, ThumbsDown, MessageSquare, Search, Clock, AlertTriangle, User as UserIcon } from 'lucide-react';
 import Header from '../components/layout/Header';
 import { metrics as metricsApi } from '../api/api';
 
@@ -39,16 +39,19 @@ function DailyChart({ daily }) {
   }
   const max = Math.max(...daily.map((d) => d.total), 1);
   return (
-    <div className="flex items-end gap-1.5 h-40">
+    <div className="flex items-end gap-1.5 h-56">
       {daily.map((d, i) => {
         const heightPct = (d.total / max) * 100;
         const errorPct = d.total ? (d.errors / d.total) * 100 : 0;
         return (
-          <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
-            <div className="w-full flex flex-col justify-end h-full relative">
+          <div key={i} className="flex-1 flex flex-col items-center gap-1.5 group min-w-0">
+            <span className={`text-[10px] font-mono transition-opacity ${d.total > 0 ? 'text-gray-500 dark:text-gray-300' : 'text-gray-300 dark:text-gray-600'}`}>
+              {d.total}
+            </span>
+            <div className="w-full flex flex-col justify-end flex-1 relative">
               <div
-                className="bg-[#EC6608] rounded-t-sm transition-all relative overflow-hidden"
-                style={{ height: `${heightPct}%`, minHeight: d.total > 0 ? '2px' : 0 }}
+                className="bg-[#EC6608] rounded-t-sm transition-all relative overflow-hidden hover:bg-[#d95d07]"
+                style={{ height: `${heightPct}%`, minHeight: d.total > 0 ? '3px' : 0 }}
                 title={`${d.date}: ${d.total} consultas (${d.errors} erros)`}
               >
                 {errorPct > 0 && (
@@ -59,9 +62,77 @@ function DailyChart({ daily }) {
                 )}
               </div>
             </div>
-            <span className="text-[9px] text-gray-400 font-mono">
+            <span className="text-[9px] text-gray-400 font-mono whitespace-nowrap">
               {d.date.slice(5)}
             </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function FeedbackList({ feedbacks }) {
+  if (!feedbacks || feedbacks.length === 0) {
+    return <p className="text-xs text-gray-400 text-center py-6">Nenhum feedback registrado no período.</p>;
+  }
+  const formatDate = (iso) => {
+    if (!iso) return '';
+    try {
+      const d = new Date(iso);
+      return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return iso;
+    }
+  };
+  return (
+    <div className="space-y-2">
+      {feedbacks.map((f) => {
+        const positive = f.rating === 1;
+        return (
+          <div
+            key={f.log_id}
+            className={`border rounded-lg p-3 transition-colors ${
+              positive
+                ? 'border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5'
+                : 'border-red-200 dark:border-red-500/20 bg-red-50/50 dark:bg-red-500/5'
+            }`}
+          >
+            <div className="flex items-start gap-2.5">
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
+                  positive
+                    ? 'bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-400'
+                    : 'bg-red-100 text-red-600 dark:bg-red-500/20 dark:text-red-400'
+                }`}
+                title={positive ? 'Resposta útil' : 'Resposta ruim'}
+              >
+                {positive ? <ThumbsUp size={13} /> : <ThumbsDown size={13} />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap mb-1">
+                  <span className="text-xs font-semibold text-[#131E29] dark:text-white flex items-center gap-1">
+                    <UserIcon size={11} className="text-gray-400" />
+                    {f.user_name || 'Usuário desconhecido'}
+                  </span>
+                  {f.user_email && (
+                    <span className="text-[10px] text-gray-400 font-mono">{f.user_email}</span>
+                  )}
+                  <span className="text-[10px] text-gray-400 ml-auto">{formatDate(f.feedback_at)}</span>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-300 line-clamp-2 italic">
+                  “{f.question}”
+                </p>
+                {f.feedback_text && (
+                  <div className="mt-2 pt-2 border-t border-gray-200/60 dark:border-gray-700/40">
+                    <p className="text-xs text-gray-700 dark:text-gray-200 flex items-start gap-1.5">
+                      <MessageSquare size={11} className="text-gray-400 mt-0.5 shrink-0" />
+                      <span>{f.feedback_text}</span>
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         );
       })}
@@ -160,7 +231,7 @@ export default function Metrics() {
             <>
               <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <KpiCard
-                  icon={Activity}
+                  icon={Search}
                   label="Consultas"
                   value={data.total_queries}
                   hint={`em ${data.range_days} ${data.range_days === 1 ? 'dia' : 'dias'}`}
@@ -225,6 +296,18 @@ export default function Metrics() {
                   </div>
                 </motion.div>
               )}
+
+              <motion.div variants={itemVariants} className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl p-5 shadow-sm">
+                <div className="flex items-center justify-between mb-4 gap-3">
+                  <h3 className="text-sm font-semibold text-[#131E29] dark:text-white">Feedbacks recebidos</h3>
+                  {data.feedbacks?.length > 0 && (
+                    <span className="text-[10px] text-gray-400 font-mono">
+                      mostrando {data.feedbacks.length} {data.feedbacks.length === 1 ? 'registro' : 'registros'}
+                    </span>
+                  )}
+                </div>
+                <FeedbackList feedbacks={data.feedbacks ?? []} />
+              </motion.div>
             </>
           ) : null}
         </motion.div>
