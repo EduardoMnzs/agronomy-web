@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import agronomyLogo from '../../assets/images/Agronomy-logo.png';
 import { query as queryApi } from '../../api/api';
 import MarkdownAnswer from '../ui/MarkdownAnswer';
+import MessageFeedback from '../ui/MessageFeedback';
 
 const Card = ({ children, className = '' }) => (
   <motion.div
@@ -230,7 +231,10 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
                         <div className="w-6 h-6 rounded-full bg-white dark:bg-[#2c3033] border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0 mt-0.5">
                           <img src={agronomyLogo} className="w-3.5 h-3.5 object-contain" />
                         </div>
-                        <MarkdownAnswer text={msg.content} className="text-sm" citations={msg.citations} onCitationClick={onCitationClick} />
+                        <div className="flex-1 min-w-0">
+                          <MarkdownAnswer text={msg.content} className="text-sm" citations={msg.citations} onCitationClick={onCitationClick} />
+                          <MessageFeedback logId={msg.query_log_id} />
+                        </div>
                       </div>
                     </div>
                   )

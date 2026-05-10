@@ -65,7 +65,12 @@ export default function AppLayout() {
       const fresh = newSources.filter((c) => !existing.has(`${c.doc_name}:${c.page}`));
       return [...prev, ...fresh];
     });
-    setMessages((prev) => [...prev, { role: 'assistant', content: result.answer, citations: newSources }]);
+    setMessages((prev) => [...prev, {
+      role: 'assistant',
+      content: result.answer,
+      citations: newSources,
+      query_log_id: result.query_log_id ?? null,
+    }]);
     if (id) {
       setNewConversationEntry({
         id,

@@ -7,6 +7,7 @@ import {
 import Header from '../components/layout/Header';
 import CustomSelect from '../components/ui/CustomSelect';
 import Toast from '../components/ui/Toast';
+import MetricsTab from '../components/settings/MetricsTab';
 import { appSettings, user as userApi } from '../api/api';
 import useCurrentUser from '../hooks/useCurrentUser';
 import { BR_STATES, MAIN_CROPS, PLANTING_SYSTEMS, PREFERRED_UNITS } from '../constants/agronomy';
@@ -290,6 +291,7 @@ export default function SettingsPage() {
     { id: 'appearance', label: 'Aparência', adminOnly: false },
     { id: 'provider', label: 'Provedor', adminOnly: true },
     { id: 'rag', label: 'Comportamento RAG', adminOnly: true },
+    { id: 'metrics', label: 'Métricas', adminOnly: true },
   ];
   const visibleTabs = tabs.filter((t) => !t.adminOnly || isAdmin);
   const [activeTab, setActiveTab] = useState('profile');
@@ -478,6 +480,10 @@ if (activeTab === 'rag') {
           </div>
         </motion.div>
       );
+    }
+
+    if (activeTab === 'metrics') {
+      return <MetricsTab key="metrics" />;
     }
 
     return null;

@@ -83,6 +83,19 @@ export const query = {
         conversation_id: conversationId ?? undefined,
       }),
     }),
+  feedback: (logId, { rating, feedbackText } = {}) =>
+    request(`/query/${logId}/feedback`, {
+      method: 'POST',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rating, feedback_text: feedbackText || null }),
+    }),
+};
+
+export const metrics = {
+  get: (days = 7) =>
+    request(`/admin/metrics?days=${encodeURIComponent(days)}`, {
+      headers: authHeader(),
+    }),
 };
 
 export const myDocuments = {

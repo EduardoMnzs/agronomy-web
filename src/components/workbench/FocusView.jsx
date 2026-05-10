@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import agronomyLogo from '../../assets/images/Agronomy-logo.png';
 import { query as queryApi, myDocuments as myDocsApi } from '../../api/api';
 import MarkdownAnswer from '../ui/MarkdownAnswer';
+import MessageFeedback from '../ui/MessageFeedback';
 import useCurrentUser from '../../hooks/useCurrentUser';
 
 export default function FocusView({ onAdvancedClick, messages, conversationId, onUserMessage, onAssistantReply, onCitationClick }) {
@@ -122,7 +123,10 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
                       <div className="absolute inset-0 rounded-full border border-gray-100 dark:border-gray-700"></div>
                       <img src={agronomyLogo} alt="Agronomy Logo" className="w-5 h-5 object-contain relative z-10" />
                     </div>
-                    <MarkdownAnswer text={msg.content} className="text-[15px]" citations={msg.citations} onCitationClick={onCitationClick} />
+                    <div className="flex-1 min-w-0">
+                      <MarkdownAnswer text={msg.content} className="text-[15px]" citations={msg.citations} onCitationClick={onCitationClick} />
+                      <MessageFeedback logId={msg.query_log_id} />
+                    </div>
                   </div>
                 </motion.div>
               )
