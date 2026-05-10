@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Workbench from './pages/Workbench';
 import Login from './pages/Login';
 import Users from './pages/Users';
+import Metrics from './pages/Metrics';
 import IndexDocument from './pages/IndexDocument';
 import KnowledgeBase from './pages/KnowledgeBase';
 import MyDocuments from './pages/MyDocuments';
@@ -48,6 +49,7 @@ function App() {
           <Route path="/users" element={<AdminRoute><Users /></AdminRoute>} />
           <Route path="/access-requests" element={<Navigate to="/users?tab=requests" replace />} />
           <Route path="/index-document" element={<AdminRoute><IndexDocument /></AdminRoute>} />
+          <Route path="/metrics" element={<AdminRoute><Metrics /></AdminRoute>} />
         </Route>
       </Routes>
     </BrowserRouter>

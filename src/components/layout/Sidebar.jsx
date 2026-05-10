@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, PanelLeftClose, PanelLeftOpen, Settings, LogOut, SquarePen,
-  Folder, Book, Upload, Users, MoreHorizontal,
+  Folder, Book, Upload, Users, BarChart3, MoreHorizontal,
   Pin, Pencil, Trash2,
 } from 'lucide-react';
 import agronomyLogo from '../../assets/images/Agronomy-logo.png';
@@ -151,6 +151,7 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
               <>
                 <SidebarItem icon={Upload} label="Indexar documento" collapsed={collapsed} active={location.pathname === '/index-document'} onClick={() => { navigate('/index-document'); onCloseMobile(); }} />
                 <SidebarItem icon={Users} label="Usuários" collapsed={collapsed} active={location.pathname === '/users'} onClick={() => { navigate('/users'); onCloseMobile(); }} />
+                <SidebarItem icon={BarChart3} label="Métricas" collapsed={collapsed} active={location.pathname === '/metrics'} onClick={() => { navigate('/metrics'); onCloseMobile(); }} />
               </>
             )}
           </Section>
