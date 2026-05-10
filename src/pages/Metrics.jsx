@@ -12,16 +12,15 @@ const RANGE_OPTIONS = [
   { value: 90, label: '90 dias' },
 ];
 
-function KpiCard({ icon: Icon, label, value, hint, accent = 'orange' }) {
-  const colors = {
-    orange: 'text-[#EC6608] bg-[#EC6608]/10',
-    green: 'text-green-600 bg-green-100 dark:bg-green-500/10',
-    red: 'text-red-600 bg-red-100 dark:bg-red-500/10',
-    gray: 'text-gray-500 bg-gray-100 dark:bg-white/5',
-  };
+function KpiCard({ icon: Icon, label, value, hint, delay = 0 }) {
   return (
-    <div className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex items-start gap-3 shadow-sm">
-      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${colors[accent]}`}>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: 'easeOut', delay }}
+      className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex items-start gap-3 shadow-sm"
+    >
+      <div className="w-10 h-10 rounded-lg flex items-center justify-center text-[#EC6608] bg-[#EC6608]/10">
         <Icon size={18} />
       </div>
       <div className="flex-1 min-w-0">
@@ -29,30 +28,52 @@ function KpiCard({ icon: Icon, label, value, hint, accent = 'orange' }) {
         <p className="text-2xl font-bold text-[#131E29] dark:text-white mt-0.5">{value}</p>
         {hint && <p className="text-[11px] text-gray-400 mt-0.5">{hint}</p>}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function DailyChart({ daily }) {
+function Panel({ children, className = '', delay = 0 }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut', delay }}
+      className={`bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl p-5 shadow-sm ${className}`}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function formatDayBR(iso) {
+  // "2026-05-10" → "10/05"
+  if (!iso || iso.length < 10) return iso || '';
+  const [, mm, dd] = iso.split('-');
+  return `${dd}/${mm}`;
+}
+
+function DailyChart({ daily, baseDelay = 0 }) {
   if (!daily || daily.length === 0) {
     return <p className="text-xs text-gray-400 text-center py-8">Sem dados no período.</p>;
   }
   const max = Math.max(...daily.map((d) => d.total), 1);
   return (
-    <div className="flex items-end gap-1.5 h-56">
+    <div className="flex gap-1.5 h-56 w-full">
       {daily.map((d, i) => {
         const heightPct = (d.total / max) * 100;
         const errorPct = d.total ? (d.errors / d.total) * 100 : 0;
         return (
-          <div key={i} className="flex-1 flex flex-col items-center gap-1.5 group min-w-0">
-            <span className={`text-[10px] font-mono transition-opacity ${d.total > 0 ? 'text-gray-500 dark:text-gray-300' : 'text-gray-300 dark:text-gray-600'}`}>
-              {d.total}
-            </span>
-            <div className="w-full flex flex-col justify-end flex-1 relative">
-              <div
-                className="bg-[#EC6608] rounded-t-sm transition-all relative overflow-hidden hover:bg-[#d95d07]"
-                style={{ height: `${heightPct}%`, minHeight: d.total > 0 ? '3px' : 0 }}
-                title={`${d.date}: ${d.total} consultas (${d.errors} erros)`}
+          <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0 h-full">
+            <div className="flex-1 w-full flex flex-col justify-end items-center">
+              <span className={`text-[10px] font-mono leading-none mb-0.5 ${d.total > 0 ? 'text-gray-600 dark:text-gray-200 font-semibold' : 'text-gray-300 dark:text-gray-600'}`}>
+                {d.total}
+              </span>
+              <motion.div
+                initial={{ height: 0 }}
+                animate={{ height: `${heightPct}%`, minHeight: d.total > 0 ? 4 : 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut', delay: baseDelay + i * 0.03 }}
+                className="w-full bg-[#EC6608] rounded-t-sm relative overflow-hidden hover:bg-[#d95d07] transition-colors"
+                title={`${formatDayBR(d.date)}: ${d.total} consultas${d.errors ? ` (${d.errors} erros)` : ''}`}
               >
                 {errorPct > 0 && (
                   <div
@@ -60,10 +81,10 @@ function DailyChart({ daily }) {
                     style={{ height: `${errorPct}%` }}
                   />
                 )}
-              </div>
+              </motion.div>
             </div>
-            <span className="text-[9px] text-gray-400 font-mono whitespace-nowrap">
-              {d.date.slice(5)}
+            <span className="text-[10px] text-gray-400 font-mono whitespace-nowrap leading-none">
+              {formatDayBR(d.date)}
             </span>
           </div>
         );
@@ -72,7 +93,7 @@ function DailyChart({ daily }) {
   );
 }
 
-function FeedbackList({ feedbacks }) {
+function FeedbackList({ feedbacks, baseDelay = 0 }) {
   if (!feedbacks || feedbacks.length === 0) {
     return <p className="text-xs text-gray-400 text-center py-6">Nenhum feedback registrado no período.</p>;
   }
@@ -87,11 +108,14 @@ function FeedbackList({ feedbacks }) {
   };
   return (
     <div className="space-y-2">
-      {feedbacks.map((f) => {
+      {feedbacks.map((f, idx) => {
         const positive = f.rating === 1;
         return (
-          <div
+          <motion.div
             key={f.log_id}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut', delay: baseDelay + Math.min(idx * 0.04, 0.4) }}
             className={`border rounded-lg p-3 transition-colors ${
               positive
                 ? 'border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5'
@@ -133,7 +157,7 @@ function FeedbackList({ feedbacks }) {
                 )}
               </div>
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </div>
@@ -163,12 +187,6 @@ function ModelsList({ models }) {
   );
 }
 
-const containerVariants = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.08 } } };
-const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
-};
-
 export default function Metrics() {
   const { setIsMobileOpen } = useOutletContext();
   const [days, setDays] = useState(7);
@@ -192,8 +210,8 @@ export default function Metrics() {
       <Header title="Métricas" onOpenMobile={() => setIsMobileOpen(true)} />
 
       <main className="flex-1 p-4 lg:p-8 overflow-y-auto box-border">
-        <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-7xl mx-auto w-full flex flex-col gap-6">
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="max-w-7xl mx-auto w-full flex flex-col gap-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h1 className="text-2xl font-bold text-[#131E29] dark:text-white">Métricas de uso</h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -215,7 +233,7 @@ export default function Metrics() {
                 </button>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16 gap-2 text-gray-400">
@@ -229,38 +247,39 @@ export default function Metrics() {
             </div>
           ) : data ? (
             <>
-              <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 <KpiCard
+                  delay={0}
                   icon={Search}
                   label="Consultas"
                   value={data.total_queries}
                   hint={`em ${data.range_days} ${data.range_days === 1 ? 'dia' : 'dias'}`}
                 />
                 <KpiCard
+                  delay={0.06}
                   icon={Clock}
                   label="Latência p50 / p95"
                   value={data.p50_latency_ms != null ? `${data.p50_latency_ms} / ${data.p95_latency_ms ?? '—'}` : '—'}
                   hint={data.avg_latency_ms != null ? `média ${Math.round(data.avg_latency_ms)} ms` : 'sem dados'}
-                  accent="gray"
                 />
                 <KpiCard
+                  delay={0.12}
                   icon={AlertTriangle}
                   label="Taxa de erro"
                   value={`${(data.error_rate * 100).toFixed(1)}%`}
                   hint={`sucesso ${(data.success_rate * 100).toFixed(1)}%`}
-                  accent={data.error_rate > 0.05 ? 'red' : 'green'}
                 />
                 <KpiCard
+                  delay={0.18}
                   icon={MessageSquare}
                   label="Feedbacks"
                   value={data.feedback_total}
                   hint={`${data.feedback_positive} 👍 · ${data.feedback_negative} 👎`}
-                  accent={data.feedback_total > 0 && data.feedback_positive >= data.feedback_negative ? 'green' : 'gray'}
                 />
-              </motion.div>
+              </div>
 
-              <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl p-5 shadow-sm">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <Panel delay={0.35}>
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-semibold text-[#131E29] dark:text-white">Consultas por dia</h3>
                     <span className="text-[10px] text-gray-400 flex items-center gap-1.5">
@@ -268,18 +287,18 @@ export default function Metrics() {
                       <span className="w-2 h-2 rounded-sm bg-red-500 ml-2" /> erros
                     </span>
                   </div>
-                  <DailyChart daily={data.daily} />
-                </div>
+                  <DailyChart daily={data.daily} baseDelay={0.45} />
+                </Panel>
 
-                <div className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl p-5 shadow-sm">
+                <Panel delay={0.55}>
                   <h3 className="text-sm font-semibold text-[#131E29] dark:text-white mb-4">Modelos mais usados</h3>
                   <ModelsList models={data.top_models} />
-                </div>
-              </motion.div>
+                </Panel>
+              </div>
 
               {data.feedback_total > 0 && (
-                <motion.div variants={itemVariants} className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl p-5 shadow-sm">
-                  <h3 className="text-sm font-semibold text-[#131E29] dark:text-white mb-4">Distribuição de feedback</h3>
+                <Panel delay={0.75}>
+                  <h3 className="text-sm font-semibold text-[#131E29] dark:text-white mb-4">Distribuição de Feedback</h3>
                   <div className="flex h-3 rounded-full overflow-hidden bg-gray-200 dark:bg-[#1f2123]">
                     <div
                       className="bg-green-500 transition-all"
@@ -294,23 +313,23 @@ export default function Metrics() {
                     <span className="flex items-center gap-1.5"><ThumbsUp size={12} className="text-green-600" /> {data.feedback_positive} úteis</span>
                     <span className="flex items-center gap-1.5">{data.feedback_negative} ruins <ThumbsDown size={12} className="text-red-600" /></span>
                   </div>
-                </motion.div>
+                </Panel>
               )}
 
-              <motion.div variants={itemVariants} className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl p-5 shadow-sm">
+              <Panel delay={0.9}>
                 <div className="flex items-center justify-between mb-4 gap-3">
-                  <h3 className="text-sm font-semibold text-[#131E29] dark:text-white">Feedbacks recebidos</h3>
+                  <h3 className="text-sm font-semibold text-[#131E29] dark:text-white">Lista de Feedbacks</h3>
                   {data.feedbacks?.length > 0 && (
                     <span className="text-[10px] text-gray-400 font-mono">
-                      mostrando {data.feedbacks.length} {data.feedbacks.length === 1 ? 'registro' : 'registros'}
+                      {data.feedbacks.length} {data.feedbacks.length === 1 ? 'registro' : 'registros'}
                     </span>
                   )}
                 </div>
-                <FeedbackList feedbacks={data.feedbacks ?? []} />
-              </motion.div>
+                <FeedbackList feedbacks={data.feedbacks ?? []} baseDelay={1.0} />
+              </Panel>
             </>
           ) : null}
-        </motion.div>
+        </div>
       </main>
     </>
   );
