@@ -1,6 +1,7 @@
-import { FileText, X } from 'lucide-react';
+import { useState } from 'react';
+import { FileText, X, Maximize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DocumentPreviewBody, CATEGORY_LABELS } from '../ui/DocumentPreview';
+import DocumentPreviewModal, { DocumentPreviewBody, CATEGORY_LABELS } from '../ui/DocumentPreview';
 
 const Card = ({ children, className = '' }) => (
   <motion.div
@@ -24,6 +25,7 @@ function EmptyState({ icon: Icon, text }) {
 }
 
 export default function RightColumn({ citations, onCitationClick, preview }) {
+  const [maximized, setMaximized] = useState(false);
   const hasCitations = citations && citations.length > 0;
   const {
     activeCitation,
@@ -37,6 +39,7 @@ export default function RightColumn({ citations, onCitationClick, preview }) {
   const ext = (previewDoc?.file_type || '').toLowerCase();
 
   return (
+    <>
     <motion.div
       initial="hidden"
       animate="show"
@@ -65,6 +68,13 @@ export default function RightColumn({ citations, onCitationClick, preview }) {
                   ) : null}
                 </p>
               </div>
+              <button
+                onClick={() => setMaximized(true)}
+                title="Expandir para tela cheia"
+                className="cursor-pointer p-1 rounded-md text-gray-400 hover:text-[#131E29] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors shrink-0"
+              >
+                <Maximize2 size={13} />
+              </button>
               <button
                 onClick={closePreview}
                 title="Fechar pré-visualização"
@@ -173,5 +183,20 @@ export default function RightColumn({ citations, onCitationClick, preview }) {
         </AnimatePresence>
       </Card>
     </motion.div>
+
+    <AnimatePresence>
+      {maximized && previewDoc && (
+        <DocumentPreviewModal
+          doc={previewDoc}
+          loading={previewLoading}
+          error={previewError}
+          content={previewContent}
+          jumpToPage={activeCitation?.page}
+          highlight={activeCitation?.section}
+          onClose={() => setMaximized(false)}
+        />
+      )}
+    </AnimatePresence>
+    </>
   );
 }
