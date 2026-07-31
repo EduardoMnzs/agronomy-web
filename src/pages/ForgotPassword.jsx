@@ -27,7 +27,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen w-full bg-[#F7F7FF] dark:bg-[#1f2123] flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#EC6608]/20 dark:bg-[#EC6608]/10 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-brand/20 dark:bg-brand/10 blur-[120px] pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -51,7 +51,7 @@ export default function ForgotPassword() {
               Se houver uma conta com esse e-mail, enviaremos um link para redefinir sua senha.
               Verifique sua caixa de entrada.
             </p>
-            <Link to="/login" className="inline-flex items-center gap-1.5 text-sm text-[#EC6608] font-semibold hover:underline">
+            <Link to="/login" className="inline-flex items-center gap-1.5 text-sm text-brand font-semibold hover:underline">
               <ArrowLeft size={14} /> Voltar ao login
             </Link>
           </div>
@@ -74,7 +74,7 @@ export default function ForgotPassword() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="voce@fazenda.com"
-                    className="w-full pl-9 pr-3 py-2.5 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none"
+                    className="w-full pl-9 pr-3 py-2.5 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none"
                   />
                 </div>
               </div>
@@ -88,14 +88,14 @@ export default function ForgotPassword() {
               <button
                 type="submit"
                 disabled={loading || !email}
-                className="cursor-pointer w-full bg-[#EC6608] hover:bg-[#d95d07] text-white px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm disabled:opacity-60 flex items-center justify-center gap-2"
+                className="cursor-pointer w-full bg-brand hover:bg-brand-dark text-white px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {loading && <Loader2 size={14} className="animate-spin" />}
                 Enviar link
               </button>
 
               <div className="pt-2 text-center">
-                <Link to="/login" className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#EC6608]">
+                <Link to="/login" className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-brand">
                   <ArrowLeft size={12} /> Voltar ao login
                 </Link>
               </div>

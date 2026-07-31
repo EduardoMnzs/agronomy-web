@@ -119,7 +119,7 @@ function SidebarInner({ isCollapsed, forceExpanded, onCloseMobile, onToggleColla
           <div className="text-xl tracking-tight leading-none whitespace-nowrap text-[#131E29] dark:text-white">
             <span className="font-bold">AGRONO</span><span className="font-light">MY</span>
           </div>
-          <p className="text-[10px] text-[#EC6608] font-mono uppercase tracking-[0.2em] mt-1">Knowledge</p>
+          <p className="text-[10px] text-brand font-mono uppercase tracking-[0.2em] mt-1">Knowledge</p>
         </div>
         <button onClick={onCloseMobile} className={`flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-[#131E29] dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors flex-shrink-0 lg:hidden ${collapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
           <X size={16} />
@@ -228,8 +228,8 @@ function SidebarItem({ icon: Icon, label, collapsed, accent, active, muted, dang
       title={collapsed ? label : undefined}
       className={`cursor-pointer w-full flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 text-sm
         ${collapsed ? 'justify-center' : 'gap-2.5'}
-        ${accent ? 'bg-[#EC6608] text-white hover:bg-[#d95d07] font-semibold shadow-sm' : ''}
-        ${active ? 'bg-[#EC6608]/10 dark:bg-[#EC6608]/20 text-[#EC6608] font-medium' : ''}
+        ${accent ? 'bg-brand text-white hover:bg-brand-dark font-semibold shadow-sm' : ''}
+        ${active ? 'bg-brand/10 dark:bg-brand/20 text-brand font-medium' : ''}
         ${muted ? 'text-gray-400 dark:text-white/30 hover:bg-gray-50 dark:hover:bg-white/5 border border-dashed border-gray-200 dark:border-white/10' : ''}
         ${danger ? 'text-red-500/80 dark:text-red-400/80 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600' : ''}
         ${!accent && !active && !muted && !danger ? 'text-gray-500 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-[#131E29] dark:hover:text-white' : ''}`}
@@ -298,7 +298,7 @@ function ConversationItem({ conv, collapsed, active, onPin, onRename, onDelete, 
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, x: -20 }}
         transition={{ duration: 0.2 }}
-        className={`relative group flex items-center gap-1.5 px-2 py-2 rounded-lg transition-colors duration-200 cursor-pointer ${active ? 'bg-[#EC6608]/10 dark:bg-[#EC6608]/15' : 'hover:bg-gray-50 dark:hover:bg-white/5'}`}
+        className={`relative group flex items-center gap-1.5 px-2 py-2 rounded-lg transition-colors duration-200 cursor-pointer ${active ? 'bg-brand/10 dark:bg-brand/15' : 'hover:bg-gray-50 dark:hover:bg-white/5'}`}
         onClick={() => !renaming && onSelect?.(conv.id)}
       >
         {renaming ? (
@@ -308,16 +308,16 @@ function ConversationItem({ conv, collapsed, active, onPin, onRename, onDelete, 
             onChange={(e) => setDraft(e.target.value)}
             onBlur={commitRename}
             onKeyDown={(e) => { if (e.key === 'Enter') commitRename(); if (e.key === 'Escape') setRenaming(false); }}
-            className="flex-1 text-xs bg-transparent border-b border-[#EC6608] outline-none text-[#131E29] dark:text-white"
+            className="flex-1 text-xs bg-transparent border-b border-brand outline-none text-[#131E29] dark:text-white"
             onClick={(e) => e.stopPropagation()}
           />
         ) : (
-          <span className={`flex-1 text-xs truncate ${active ? 'text-[#EC6608] font-medium' : 'text-gray-600 dark:text-white/70'}`}>{conv.title}</span>
+          <span className={`flex-1 text-xs truncate ${active ? 'text-brand font-medium' : 'text-gray-600 dark:text-white/70'}`}>{conv.title}</span>
         )}
 
         {conv.pinned ? (
           <span className="relative flex-shrink-0 w-6 h-6 flex items-center justify-center">
-            <Pin size={11} className={`text-[#EC6608] transition-opacity absolute ${menuOpen ? 'opacity-0' : 'group-hover:opacity-0'}`} />
+            <Pin size={11} className={`text-brand transition-opacity absolute ${menuOpen ? 'opacity-0' : 'group-hover:opacity-0'}`} />
             <button
               ref={btnRef}
               onClick={(e) => { e.stopPropagation(); openMenu(); }}

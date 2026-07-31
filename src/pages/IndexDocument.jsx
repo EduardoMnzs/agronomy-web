@@ -8,6 +8,7 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import Header from '../components/layout/Header';
 import CustomSelect from '../components/ui/CustomSelect';
+import TagInput from '../components/ui/TagInput';
 import Toast from '../components/ui/Toast';
 import { documents } from '../api/api';
 
@@ -28,7 +29,7 @@ function SpreadsheetPreview({ sheets }) {
               type="button"
               onClick={() => setActiveSheet(i)}
               className={`cursor-pointer whitespace-nowrap px-3 py-1.5 text-xs rounded-t-md font-medium border-b-2 transition-colors ${i === activeSheet
-                ? 'border-[#EC6608] text-[#EC6608] bg-[#EC6608]/5'
+                ? 'border-brand text-brand bg-brand/5'
                 : 'border-transparent text-gray-500 hover:text-[#131E29] dark:hover:text-white'
                 }`}
             >
@@ -133,7 +134,7 @@ export default function IndexDocument() {
   const [jsonData, setJsonData] = useState(null);
   const [docxHtml, setDocxHtml] = useState(null);
   const [markdownHtml, setMarkdownHtml] = useState(null);
-  const [formData, setFormData] = useState({ name: '', category: '', description: '' });
+  const [formData, setFormData] = useState({ name: '', category: '', description: '', tags: [] });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
@@ -276,6 +277,8 @@ export default function IndexDocument() {
       fd.append('name', formData.name);
       fd.append('category', formData.category);
       if (formData.description) fd.append('description', formData.description);
+      // Multipart só transporta strings — o backend aceita JSON ou CSV.
+      if (formData.tags.length) fd.append('tags', JSON.stringify(formData.tags));
 
       const doc = await documents.index(fd);
 
@@ -291,7 +294,7 @@ export default function IndexDocument() {
             setSuccess(false);
             setIndexingStatus('idle');
             removeFile();
-            setFormData({ name: '', category: '', description: '' });
+            setFormData({ name: '', category: '', description: '', tags: [] });
           }, 3000);
           return;
         }
@@ -343,10 +346,10 @@ export default function IndexDocument() {
                 <div
                   className={`relative flex flex-col items-center justify-center border-2 border-dashed rounded-2xl transition-all bg-white dark:bg-[#323639] overflow-hidden
                     ${isDragging
-                      ? 'border-[#EC6608] bg-[#EC6608]/5 dark:bg-[#EC6608]/10 p-8 h-[450px]'
+                      ? 'border-brand bg-brand/5 dark:bg-brand/10 p-8 h-[450px]'
                       : file
                         ? hasPreview ? 'border-gray-200 dark:border-gray-700 p-0 h-[450px]' : 'border-gray-200 dark:border-gray-700 p-8 h-[450px]'
-                        : 'cursor-pointer border-gray-300 dark:border-gray-600 hover:border-[#EC6608]/50 hover:bg-gray-50 dark:hover:bg-[#40454a] p-8 h-[450px]'
+                        : 'cursor-pointer border-gray-300 dark:border-gray-600 hover:border-brand/50 hover:bg-gray-50 dark:hover:bg-[#40454a] p-8 h-[450px]'
                     }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
@@ -383,12 +386,12 @@ export default function IndexDocument() {
 
                       {!filePreviewUrl && !sheetData && !jsonData && !docxHtml && !markdownHtml && (
                         <div className="flex flex-col items-center text-center w-full">
-                          <div className="w-20 h-20 rounded-2xl bg-[#EC6608]/10 flex items-center justify-center text-[#EC6608] mb-4">
+                          <div className="w-20 h-20 rounded-2xl bg-brand/10 flex items-center justify-center text-brand mb-4">
                             <File size={40} />
                           </div>
                           <p className="text-sm font-semibold text-[#131E29] dark:text-white truncate w-full max-w-[200px]" title={file.name}>{file.name}</p>
                           <p className="text-xs text-gray-500 mt-1">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
-                          <p className="text-xs text-[#EC6608] mt-4 font-medium px-4 py-2 bg-[#EC6608]/5 rounded-lg border border-[#EC6608]/10">
+                          <p className="text-xs text-brand mt-4 font-medium px-4 py-2 bg-brand/5 rounded-lg border border-brand/10">
                             Visualização não disponível para este formato.
                           </p>
                         </div>
@@ -425,7 +428,7 @@ export default function IndexDocument() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="Ex: Análise de Solo - Fazenda Esperança"
-                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-xl text-sm text-[#131E29] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none transition-all"
+                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-xl text-sm text-[#131E29] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none transition-all"
                     />
                   </div>
 
@@ -452,6 +455,19 @@ export default function IndexDocument() {
 
                   <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Tags <span className="text-xs text-gray-400 font-normal">(Opcional)</span>
+                    </label>
+                    <TagInput
+                      value={formData.tags}
+                      onChange={(tags) => setFormData({ ...formData, tags })}
+                    />
+                    <p className="text-xs text-gray-400">
+                      Rótulos livres para filtrar a base — ex.: cultivar, safra, região.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Descrição <span className="text-xs text-gray-400 font-normal">(Opcional)</span>
                     </label>
                     <textarea
@@ -459,7 +475,7 @@ export default function IndexDocument() {
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       placeholder="Adicione notas relevantes sobre o conteúdo deste documento para facilitar as buscas da IA..."
                       rows={4}
-                      className="w-full px-4 py-3 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-xl text-sm text-[#131E29] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none transition-all resize-none"
+                      className="w-full px-4 py-3 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-xl text-sm text-[#131E29] dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none transition-all resize-none"
                     />
                   </div>
 
@@ -467,7 +483,7 @@ export default function IndexDocument() {
                     <button
                       type="submit"
                       disabled={!file || !formData.category || isSubmitting}
-                      className="cursor-pointer bg-[#EC6608] hover:bg-[#d95d07] disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm"
+                      className="cursor-pointer bg-brand hover:bg-brand-dark disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm"
                     >
                       {isSubmitting ? (
                         <>

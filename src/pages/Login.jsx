@@ -33,7 +33,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen w-full bg-[#F7F7FF] dark:bg-[#1f2123] flex relative overflow-hidden transition-colors duration-300">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#EC6608]/20 dark:bg-[#EC6608]/10 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-brand/20 dark:bg-brand/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 dark:bg-blue-500/5 blur-[120px] pointer-events-none" />
 
       <div className="hidden lg:flex lg:w-1/2 relative bg-[#0a0a0b] items-center justify-center p-12 overflow-hidden">
@@ -60,7 +60,7 @@ export default function Login() {
             </div>
 
             <h1 className="text-4xl font-bold text-white leading-[1.15] mb-5">
-              A inteligência do campo <br /><span className="text-[#EC6608]">ao seu alcance.</span>
+              A inteligência do campo <br /><span className="text-brand">ao seu alcance.</span>
             </h1>
             <p className="text-base text-gray-400 leading-relaxed max-w-md">
               Acesse a base de conhecimento avançada, analise dados da safra e tome decisões com precisão suportada por IA.
@@ -115,7 +115,7 @@ export default function Login() {
               <label className="text-xs font-medium text-gray-700 dark:text-gray-300">E-mail</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Mail size={16} className="text-gray-400 group-focus-within:text-[#EC6608] transition-colors" />
+                  <Mail size={16} className="text-gray-400 group-focus-within:text-brand transition-colors" />
                 </div>
                 <input
                   type="email"
@@ -123,7 +123,7 @@ export default function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="exemplo@agronomy.com"
-                  className="w-full pl-10 pr-3 py-2.5 text-sm bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-700 rounded-lg text-[#131E29] dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#EC6608] focus:ring-2 focus:ring-[#EC6608]/20 transition-all shadow-sm"
+                  className="w-full pl-10 pr-3 py-2.5 text-sm bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-700 rounded-lg text-[#131E29] dark:text-white placeholder-gray-400 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all shadow-sm"
                 />
               </div>
             </div>
@@ -132,7 +132,7 @@ export default function Login() {
               <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Senha</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                  <Lock size={16} className="text-gray-400 group-focus-within:text-[#EC6608] transition-colors" />
+                  <Lock size={16} className="text-gray-400 group-focus-within:text-brand transition-colors" />
                 </div>
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -140,12 +140,12 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 text-sm bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-700 rounded-lg text-[#131E29] dark:text-white placeholder-gray-400 focus:outline-none focus:border-[#EC6608] focus:ring-2 focus:ring-[#EC6608]/20 transition-all shadow-sm"
+                  className="w-full pl-10 pr-10 py-2.5 text-sm bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-700 rounded-lg text-[#131E29] dark:text-white placeholder-gray-400 focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all shadow-sm"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="cursor-pointer absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-[#EC6608] transition-colors"
+                  className="cursor-pointer absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-brand transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -163,13 +163,13 @@ export default function Login() {
                   id="remember"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-700 dark:bg-[#2c3033] accent-[#EC6608] focus:ring-[#EC6608]/30 transition-colors cursor-pointer"
+                  className="w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-700 dark:bg-[#2c3033] accent-brand focus:ring-brand/30 transition-colors cursor-pointer"
                 />
                 <label htmlFor="remember" className="text-xs font-medium text-gray-600 dark:text-gray-400 cursor-pointer hover:text-[#131E29] dark:hover:text-white transition-colors">
                   Continuar conectado
                 </label>
               </div>
-              <Link to="/forgot-password" className="text-[11px] font-medium text-[#EC6608] hover:text-[#d95d07] transition-colors">
+              <Link to="/forgot-password" className="text-[11px] font-medium text-brand hover:text-brand-dark transition-colors">
                 Esqueceu a senha?
               </Link>
             </div>
@@ -179,7 +179,7 @@ export default function Login() {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={isLoading || !email || !password}
-              className="cursor-pointer w-full mt-6 py-2.5 px-4 bg-[#EC6608] hover:bg-[#d95d07] text-white rounded-lg font-semibold text-sm flex items-center justify-center gap-2 shadow-[0_4px_14px_0_rgba(236,102,8,0.39)] disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 group"
+              className="cursor-pointer w-full mt-6 py-2.5 px-4 bg-brand hover:bg-brand-dark text-white rounded-lg font-semibold text-sm flex items-center justify-center gap-2 shadow-[0_4px_14px_0_rgba(236,102,8,0.39)] disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 group"
             >
               {isLoading ? (
                 <>
@@ -194,7 +194,7 @@ export default function Login() {
           </form>
 
           <p className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
-            Ainda não tem uma conta? <Link to="/request-access" className="font-semibold text-[#131E29] dark:text-white hover:text-[#EC6608] dark:hover:text-[#EC6608] transition-colors">Solicitar acesso</Link>
+            Ainda não tem uma conta? <Link to="/request-access" className="font-semibold text-[#131E29] dark:text-white hover:text-brand dark:hover:text-brand transition-colors">Solicitar acesso</Link>
           </p>
         </motion.div>
       </div>

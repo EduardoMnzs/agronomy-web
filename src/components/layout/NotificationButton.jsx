@@ -97,7 +97,7 @@ export default function NotificationButton() {
             <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
               <h3 className="text-sm font-bold text-[#131E29] dark:text-white">Notificações</h3>
               {count > 0 && (
-                <span className="text-[10px] font-bold text-white bg-[#EC6608] px-1.5 py-0.5 rounded-full">{count}</span>
+                <span className="text-[10px] font-bold text-white bg-brand px-1.5 py-0.5 rounded-full">{count}</span>
               )}
             </div>
 
@@ -114,7 +114,7 @@ export default function NotificationButton() {
                   onClick={handleItemClick}
                   className="cursor-pointer w-full px-4 py-3 flex items-start gap-3 text-left hover:bg-gray-50 dark:hover:bg-white/5 border-b border-gray-50 dark:border-gray-700/50 last:border-b-0 transition-colors"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#EC6608]/10 text-[#EC6608] flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-brand/10 text-brand flex items-center justify-center shrink-0">
                     <UserPlus size={14} />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -132,7 +132,7 @@ export default function NotificationButton() {
             {isAdmin && count > 0 && (
               <button
                 onClick={handleItemClick}
-                className="cursor-pointer w-full px-4 py-2.5 text-xs font-semibold text-[#EC6608] hover:bg-[#EC6608]/5 border-t border-gray-100 dark:border-gray-700 flex items-center justify-center gap-1.5"
+                className="cursor-pointer w-full px-4 py-2.5 text-xs font-semibold text-brand hover:bg-brand/5 border-t border-gray-100 dark:border-gray-700 flex items-center justify-center gap-1.5"
               >
                 <Inbox size={12} /> Ver todas as solicitações
               </button>

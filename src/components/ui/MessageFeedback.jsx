@@ -76,7 +76,7 @@ export default function MessageFeedback({ logId, initialRating, initialText }) {
           <button
             type="button"
             onClick={() => setExpanded(true)}
-            className="cursor-pointer ml-auto text-[10px] text-gray-400 hover:text-[#EC6608] underline transition-colors"
+            className="cursor-pointer ml-auto text-[10px] text-gray-400 hover:text-brand underline transition-colors"
           >
             {text ? 'editar comentário' : 'adicionar comentário'}
           </button>
@@ -98,7 +98,7 @@ export default function MessageFeedback({ logId, initialRating, initialText }) {
               maxLength={2000}
               rows={2}
               placeholder="Conte o que poderia ser melhor (opcional)..."
-              className="w-full text-xs px-2 py-1.5 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:border-[#EC6608] rounded-md outline-none resize-none text-[#131E29] dark:text-white placeholder-gray-400"
+              className="w-full text-xs px-2 py-1.5 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:border-brand rounded-md outline-none resize-none text-[#131E29] dark:text-white placeholder-gray-400"
             />
             <div className="flex items-center justify-end gap-2 mt-1">
               <button
@@ -115,7 +115,7 @@ export default function MessageFeedback({ logId, initialRating, initialText }) {
                   setExpanded(false);
                 }}
                 disabled={submitting}
-                className="cursor-pointer text-[10px] font-semibold text-white bg-[#EC6608] hover:bg-[#d95d07] px-2 py-1 rounded-md transition-colors disabled:opacity-60"
+                className="cursor-pointer text-[10px] font-semibold text-white bg-brand hover:bg-brand-dark px-2 py-1 rounded-md transition-colors disabled:opacity-60"
               >
                 enviar
               </button>

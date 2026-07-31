@@ -84,7 +84,7 @@ export function SpreadsheetPreview({ sheets, highlight }) {
               onClick={() => setActiveSheet(i)}
               className={`cursor-pointer whitespace-nowrap px-3 py-1.5 text-xs rounded-t-md font-medium border-b-2 transition-colors ${
                 i === activeSheet
-                  ? 'border-[#EC6608] text-[#EC6608] bg-[#EC6608]/5'
+                  ? 'border-brand text-brand bg-brand/5'
                   : 'border-transparent text-gray-500 hover:text-[#131E29] dark:hover:text-white'
               }`}
             >
@@ -281,7 +281,7 @@ export function DocumentPreviewBody({ doc, loading, error, content, jumpToPage, 
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-3 text-gray-400 py-10">
-        <Loader2 size={24} className="animate-spin text-[#EC6608]" />
+        <Loader2 size={24} className="animate-spin text-brand" />
         <p className="text-xs">Carregando documento...</p>
       </div>
     );
@@ -301,7 +301,7 @@ export function DocumentPreviewBody({ doc, loading, error, content, jumpToPage, 
       {ext === 'pdf' && pdfUrl && (
         blobLoading ? (
           <div className="flex flex-col items-center justify-center py-10 gap-3">
-            <Loader2 size={24} className="animate-spin text-[#EC6608]" />
+            <Loader2 size={24} className="animate-spin text-brand" />
             <p className="text-xs text-gray-400">Carregando PDF...</p>
           </div>
         ) : pdfSrc ? (
@@ -382,12 +382,12 @@ export default function DocumentPreviewModal({ doc, loading, error, content, onC
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <FileText size={18} className="text-[#EC6608] shrink-0" />
+            <FileText size={18} className="text-brand shrink-0" />
             <div className="min-w-0">
               <h3 className="text-sm font-semibold text-[#131E29] dark:text-white truncate">{doc.name}</h3>
               <p className="text-[10px] text-gray-400 uppercase font-medium mt-0.5">
                 {CATEGORY_LABELS[doc.category] ?? doc.category} · {ext}
-                {jumpToPage ? <span className="ml-2 text-[#EC6608]">· pág. {jumpToPage}</span> : null}
+                {jumpToPage ? <span className="ml-2 text-brand">· pág. {jumpToPage}</span> : null}
               </p>
             </div>
           </div>
