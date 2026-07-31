@@ -40,7 +40,7 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen w-full bg-[#F7F7FF] dark:bg-[#1f2123] flex items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-[#EC6608]/20 dark:bg-[#EC6608]/10 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-brand/20 dark:bg-brand/10 blur-[120px] pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -82,14 +82,14 @@ export default function ResetPassword() {
               <button
                 type="submit"
                 disabled={loading || !token || !p1 || !p2}
-                className="cursor-pointer w-full bg-[#EC6608] hover:bg-[#d95d07] text-white px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm disabled:opacity-60 flex items-center justify-center gap-2"
+                className="cursor-pointer w-full bg-brand hover:bg-brand-dark text-white px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {loading && <Loader2 size={14} className="animate-spin" />}
                 Redefinir senha
               </button>
 
               <div className="pt-2 text-center">
-                <Link to="/login" className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#EC6608]">
+                <Link to="/login" className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-brand">
                   <ArrowLeft size={12} /> Voltar ao login
                 </Link>
               </div>
@@ -114,13 +114,13 @@ function PasswordField({ label, value, onChange, show, onToggle, hint, autoFocus
           disabled={disabled}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full pl-9 pr-10 py-2.5 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none disabled:opacity-60"
+          className="w-full pl-9 pr-10 py-2.5 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none disabled:opacity-60"
         />
         <button
           type="button"
           onClick={onToggle}
           tabIndex={-1}
-          className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#EC6608]"
+          className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand"
         >
           {show ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>

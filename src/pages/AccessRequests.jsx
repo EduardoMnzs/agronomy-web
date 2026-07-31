@@ -94,7 +94,7 @@ export function AccessRequestsPanel({ compact = false }) {
 
       {loading ? (
         <div className="py-16 flex flex-col items-center gap-3">
-          <Loader2 size={24} className="animate-spin text-[#EC6608]" />
+          <Loader2 size={24} className="animate-spin text-brand" />
           <p className="text-sm text-gray-500 dark:text-gray-400">Carregando...</p>
         </div>
       ) : items.length === 0 ? (
@@ -250,7 +250,7 @@ function RequestCard({ req, onDecide, onDelete }) {
           {req.status === 'pending' && (
             <button
               onClick={onDecide}
-              className="cursor-pointer bg-[#EC6608] hover:bg-[#d95d07] text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5"
+              className="cursor-pointer bg-brand hover:bg-brand-dark text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5"
             >
               Decidir
             </button>
@@ -365,7 +365,7 @@ function DecideModal({ req, onClose, onDone }) {
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Explicação que será enviada por e-mail"
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none resize-none"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none resize-none"
               />
             </div>
           )}
@@ -433,12 +433,12 @@ function ApproveResultModal({ result, onClose }) {
           <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Senha temporária</p>
           <div className="flex items-center justify-between gap-2">
             <code className="text-sm font-mono text-[#131E29] dark:text-white">{result.temporary_password}</code>
-            <button onClick={copy} className="cursor-pointer text-xs text-[#EC6608] font-semibold hover:underline">Copiar</button>
+            <button onClick={copy} className="cursor-pointer text-xs text-brand font-semibold hover:underline">Copiar</button>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="cursor-pointer w-full bg-[#EC6608] hover:bg-[#d95d07] text-white px-5 py-2 rounded-lg text-sm font-semibold"
+          className="cursor-pointer w-full bg-brand hover:bg-brand-dark text-white px-5 py-2 rounded-lg text-sm font-semibold"
         >
           Entendi
         </button>

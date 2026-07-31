@@ -110,13 +110,13 @@ export default function LeftColumn({ selectedIds, onSelectionChange }) {
           <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider transition-colors duration-300">
             Contexto
           </h2>
-          <Link to="/settings" className="text-[10px] text-gray-400 hover:text-[#EC6608] transition-colors">
+          <Link to="/settings" className="text-[10px] text-gray-400 hover:text-brand transition-colors">
             Editar
           </Link>
         </div>
         {contextData.length === 0 ? (
           <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
-            Defina sua região, cultura e sistema de plantio em <Link to="/settings" className="text-[#EC6608] font-semibold hover:underline">Configurações</Link> para que o assistente use esses dados automaticamente.
+            Defina sua região, cultura e sistema de plantio em <Link to="/settings" className="text-brand font-semibold hover:underline">Configurações</Link> para que o assistente use esses dados automaticamente.
           </p>
         ) : (
         <div className="space-y-2">
@@ -141,7 +141,7 @@ export default function LeftColumn({ selectedIds, onSelectionChange }) {
             Documentos
           </h2>
           <div className="flex items-center gap-2">
-            <button onClick={selectAll} className="cursor-pointer text-[10px] text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608] transition-colors">
+            <button onClick={selectAll} className="cursor-pointer text-[10px] text-gray-400 hover:text-brand dark:hover:text-brand transition-colors">
               Tudo
             </button>
             <span className="text-gray-300 dark:text-gray-600 text-[10px]">|</span>
@@ -200,9 +200,9 @@ function DocCheckbox({ id, name, checked, onChange }) {
         type="checkbox"
         checked={checked}
         onChange={() => onChange(id)}
-        className="mt-[3px] w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-[#2c3033] accent-[#EC6608] transition-colors duration-300 cursor-pointer"
+        className="mt-[3px] w-3.5 h-3.5 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-[#2c3033] accent-brand transition-colors duration-300 cursor-pointer"
       />
-      <span className="text-xs text-[#131E29] dark:text-gray-200 group-hover:text-[#EC6608] truncate transition-colors duration-300 leading-relaxed">
+      <span className="text-xs text-[#131E29] dark:text-gray-200 group-hover:text-brand truncate transition-colors duration-300 leading-relaxed">
         {name}
       </span>
     </label>

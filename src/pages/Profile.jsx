@@ -47,7 +47,7 @@ export default function ProfilePage() {
       <>
         <Header title="Perfil" onOpenMobile={() => setIsMobileOpen(true)} />
         <main className="flex-1 flex items-center justify-center">
-          <Loader2 size={28} className="animate-spin text-[#EC6608]" />
+          <Loader2 size={28} className="animate-spin text-brand" />
         </main>
       </>
     );
@@ -127,7 +127,7 @@ export default function ProfilePage() {
           >
             <div className="flex flex-col sm:flex-row sm:items-center gap-6">
               <div className="relative group mx-auto sm:mx-0">
-                <div className="w-28 h-28 rounded-full bg-[#EC6608] text-white flex items-center justify-center text-3xl font-bold shadow-md overflow-hidden">
+                <div className="w-28 h-28 rounded-full bg-brand text-white flex items-center justify-center text-3xl font-bold shadow-md overflow-hidden">
                   {me.avatar_url ? (
                     <img src={me.avatar_url} alt={me.full_name} className="w-full h-full object-cover" />
                   ) : (
@@ -138,7 +138,7 @@ export default function ProfilePage() {
                   onClick={() => fileRef.current?.click()}
                   disabled={avatarSaving}
                   title="Alterar foto"
-                  className="cursor-pointer absolute bottom-0 right-0 w-9 h-9 rounded-full bg-white dark:bg-[#2c3033] border-2 border-white dark:border-[#323639] shadow-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-[#EC6608] transition-colors disabled:opacity-60"
+                  className="cursor-pointer absolute bottom-0 right-0 w-9 h-9 rounded-full bg-white dark:bg-[#2c3033] border-2 border-white dark:border-[#323639] shadow-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-brand transition-colors disabled:opacity-60"
                 >
                   {avatarSaving ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}
                 </button>
@@ -160,12 +160,12 @@ export default function ProfilePage() {
                       onChange={(e) => setNameDraft(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter') handleSaveName(); if (e.key === 'Escape') setEditingName(false); }}
                       autoFocus
-                      className="text-xl font-bold bg-transparent border-b-2 border-[#EC6608] outline-none text-[#131E29] dark:text-white w-full max-w-sm"
+                      className="text-xl font-bold bg-transparent border-b-2 border-brand outline-none text-[#131E29] dark:text-white w-full max-w-sm"
                     />
                     <button
                       onClick={handleSaveName}
                       disabled={savingName}
-                      className="cursor-pointer p-1.5 rounded-md text-[#EC6608] hover:bg-[#EC6608]/10 disabled:opacity-60"
+                      className="cursor-pointer p-1.5 rounded-md text-brand hover:bg-brand/10 disabled:opacity-60"
                     >
                       {savingName ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                     </button>
@@ -182,7 +182,7 @@ export default function ProfilePage() {
                     <button
                       onClick={() => { setNameDraft(me.full_name); setEditingName(true); }}
                       title="Editar nome"
-                      className="cursor-pointer p-1.5 rounded-md text-gray-400 hover:text-[#EC6608] hover:bg-[#EC6608]/10 transition-colors"
+                      className="cursor-pointer p-1.5 rounded-md text-gray-400 hover:text-brand hover:bg-brand/10 transition-colors"
                     >
                       <Pencil size={14} />
                     </button>
@@ -195,7 +195,7 @@ export default function ProfilePage() {
                   <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${status.cls}`}>
                     {status.label}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#EC6608]/10 text-[#EC6608] border border-[#EC6608]/20">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-brand/10 text-brand border border-brand/20">
                     <Shield size={11} /> {ROLE_LABEL[me.role] ?? me.role}
                   </span>
                 </div>
@@ -316,13 +316,13 @@ function ActionCard({ icon: Icon, title, description, onClick, as, to }) {
   return (
     <Tag
       {...props}
-      className="cursor-pointer text-left flex items-start gap-3 p-4 border border-gray-200 dark:border-gray-700 hover:border-[#EC6608] hover:bg-[#EC6608]/5 dark:hover:bg-[#EC6608]/10 rounded-xl transition-colors group"
+      className="cursor-pointer text-left flex items-start gap-3 p-4 border border-gray-200 dark:border-gray-700 hover:border-brand hover:bg-brand/5 dark:hover:bg-brand/10 rounded-xl transition-colors group"
     >
-      <div className="w-9 h-9 rounded-lg bg-[#EC6608]/10 text-[#EC6608] flex items-center justify-center shrink-0">
+      <div className="w-9 h-9 rounded-lg bg-brand/10 text-brand flex items-center justify-center shrink-0">
         <Icon size={16} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-[#131E29] dark:text-white group-hover:text-[#EC6608]">{title}</p>
+        <p className="text-sm font-semibold text-[#131E29] dark:text-white group-hover:text-brand">{title}</p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>
       </div>
     </Tag>
@@ -359,7 +359,7 @@ function ConfirmModal({ title, description, confirmLabel, confirmVariant, loadin
             onClick={onConfirm}
             disabled={loading}
             className={`cursor-pointer px-4 py-2 text-xs font-semibold text-white rounded-lg disabled:opacity-60 flex items-center gap-2 ${
-              confirmVariant === 'danger' ? 'bg-red-500 hover:bg-red-600' : 'bg-[#EC6608] hover:bg-[#d95d07]'
+              confirmVariant === 'danger' ? 'bg-red-500 hover:bg-red-600' : 'bg-brand hover:bg-brand-dark'
             }`}
           >
             {loading && <Loader2 size={12} className="animate-spin" />}
@@ -440,7 +440,7 @@ function PasswordModal({ onClose, onSuccess }) {
             <button
               type="submit"
               disabled={saving || !current || !next || !confirm}
-              className="cursor-pointer bg-[#EC6608] hover:bg-[#d95d07] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-60 flex items-center gap-2"
+              className="cursor-pointer bg-brand hover:bg-brand-dark text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-60 flex items-center gap-2"
             >
               {saving && <Loader2 size={14} className="animate-spin" />}
               Alterar
@@ -463,13 +463,13 @@ function PasswordInput({ label, value, onChange, show, onToggle, hint, autoFocus
           autoFocus={autoFocus}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full pl-3 pr-10 py-2.5 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none"
+          className="w-full pl-3 pr-10 py-2.5 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none"
         />
         <button
           type="button"
           onClick={onToggle}
           tabIndex={-1}
-          className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#EC6608]"
+          className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand"
         >
           {show ? <EyeOff size={16} /> : <Eye size={16} />}
         </button>

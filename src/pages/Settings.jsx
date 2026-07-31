@@ -81,7 +81,7 @@ function SecretField({ label, value, onChange, preview, hasValue, source, placeh
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="cursor-pointer px-3 py-2 text-xs font-semibold text-[#EC6608] bg-[#EC6608]/10 hover:bg-[#EC6608]/20 rounded-lg transition-colors"
+            className="cursor-pointer px-3 py-2 text-xs font-semibold text-brand bg-brand/10 hover:bg-brand/20 rounded-lg transition-colors"
           >
             {hasValue ? 'Alterar' : 'Definir'}
           </button>
@@ -99,14 +99,14 @@ function SecretField({ label, value, onChange, preview, hasValue, source, placeh
           value={value ?? ''}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full pl-3 pr-20 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none font-mono"
+          className="w-full pl-3 pr-20 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none font-mono"
           autoFocus
         />
         <div className="absolute inset-y-0 right-2 flex items-center gap-0.5">
           <button
             type="button"
             onClick={() => setVisible((v) => !v)}
-            className="cursor-pointer p-1.5 text-gray-400 hover:text-[#EC6608] transition-colors"
+            className="cursor-pointer p-1.5 text-gray-400 hover:text-brand transition-colors"
           >
             {visible ? <EyeOff size={14} /> : <Eye size={14} />}
           </button>
@@ -138,7 +138,7 @@ function TextField({ label, value, onChange, placeholder, help, source, suggesti
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         list={suggestions && suggestions.length ? listId : undefined}
-        className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none font-mono"
+        className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none font-mono"
       />
       {suggestions && suggestions.length > 0 && (
         <datalist id={listId}>
@@ -157,7 +157,7 @@ function ToggleField({ label, value, onChange, help }) {
         type="checkbox"
         checked={!!value}
         onChange={(e) => onChange(e.target.checked)}
-        className="mt-0.5 w-4 h-4 accent-[#EC6608] cursor-pointer"
+        className="mt-0.5 w-4 h-4 accent-brand cursor-pointer"
       />
       <div className="flex-1">
         <p className="text-sm font-medium text-[#131E29] dark:text-white">{label}</p>
@@ -177,7 +177,7 @@ function NumberField({ label, value, onChange, min, max }) {
         max={max}
         value={value ?? ''}
         onChange={(e) => onChange(e.target.value === '' ? '' : Number(e.target.value))}
-        className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none"
+        className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none"
       />
     </div>
   );
@@ -320,13 +320,13 @@ export default function SettingsPage() {
                 value={getProfile('city')}
                 onChange={(e) => setProfileValue('city', e.target.value)}
                 placeholder="ex: Campo Grande"
-                className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none"
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none"
               />
             </div>
           </div>
           {profile?.biome && (
             <p className="text-[11px] text-gray-500 dark:text-gray-400">
-              Bioma estimado: <span className="font-semibold text-[#EC6608]">{profile.biome}</span>
+              Bioma estimado: <span className="font-semibold text-brand">{profile.biome}</span>
             </p>
           )}
 
@@ -375,7 +375,7 @@ export default function SettingsPage() {
             <button
               onClick={() => applyTheme('light')}
               className={`cursor-pointer flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium border-2 transition-colors ${
-                theme === 'light' ? 'border-[#EC6608] bg-[#EC6608]/5 text-[#EC6608]' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-[#EC6608]/50'
+                theme === 'light' ? 'border-brand bg-brand/5 text-brand' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-brand/50'
               }`}
             >
               <Sun size={16} /> Claro
@@ -383,7 +383,7 @@ export default function SettingsPage() {
             <button
               onClick={() => applyTheme('dark')}
               className={`cursor-pointer flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium border-2 transition-colors ${
-                theme === 'dark' ? 'border-[#EC6608] bg-[#EC6608]/5 text-[#EC6608]' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-[#EC6608]/50'
+                theme === 'dark' ? 'border-brand bg-brand/5 text-brand' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-brand/50'
               }`}
             >
               <Moon size={16} /> Escuro
@@ -407,7 +407,7 @@ export default function SettingsPage() {
     if (loading) {
       return (
         <div className="py-16 flex flex-col items-center justify-center gap-3">
-          <Loader2 size={24} className="animate-spin text-[#EC6608]" />
+          <Loader2 size={24} className="animate-spin text-brand" />
           <p className="text-sm text-gray-500 dark:text-gray-400">Carregando...</p>
         </div>
       );
@@ -506,7 +506,7 @@ if (activeTab === 'rag') {
                     onClick={() => setActiveTab(t.id)}
                     className={`cursor-pointer relative px-4 py-2.5 text-sm font-medium rounded-t-lg whitespace-nowrap transition-colors ${
                       active
-                        ? 'text-[#EC6608] bg-[#EC6608]/5 dark:bg-[#EC6608]/10'
+                        ? 'text-brand bg-brand/5 dark:bg-brand/10'
                         : 'text-gray-500 dark:text-gray-400 hover:text-[#131E29] dark:hover:text-white hover:bg-gray-50 dark:hover:bg-white/5'
                     }`}
                   >
@@ -514,7 +514,7 @@ if (activeTab === 'rag') {
                     {active && (
                       <motion.span
                         layoutId="settings-tab-underline"
-                        className="absolute left-0 right-0 -bottom-px h-0.5 bg-[#EC6608]"
+                        className="absolute left-0 right-0 -bottom-px h-0.5 bg-brand"
                       />
                     )}
                   </button>
@@ -553,7 +553,7 @@ if (activeTab === 'rag') {
             <button
               onClick={() => setConfirmOpen(true)}
               disabled={saving}
-              className="cursor-pointer bg-[#EC6608] hover:bg-[#d95d07] text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors shadow-sm disabled:opacity-50 flex items-center gap-1.5"
+              className="cursor-pointer bg-brand hover:bg-brand-dark text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors shadow-sm disabled:opacity-50 flex items-center gap-1.5"
             >
               <Save size={13} />
               Salvar
@@ -595,7 +595,7 @@ if (activeTab === 'rag') {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="cursor-pointer px-4 py-2 text-xs font-semibold text-white bg-[#EC6608] hover:bg-[#d95d07] rounded-lg transition-colors disabled:opacity-60 flex items-center gap-2"
+                  className="cursor-pointer px-4 py-2 text-xs font-semibold text-white bg-brand hover:bg-brand-dark rounded-lg transition-colors disabled:opacity-60 flex items-center gap-2"
                 >
                   {saving && <Loader2 size={12} className="animate-spin" />}
                   Salvar

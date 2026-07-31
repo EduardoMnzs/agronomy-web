@@ -137,7 +137,7 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
                 <div className="flex items-start gap-4">
                   <div className="relative w-9 h-9 rounded-full bg-white dark:bg-[#323639] flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
                     <div className="absolute inset-0 rounded-full border-2 border-gray-100 dark:border-[#2c3033]"></div>
-                    <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#EC6608] animate-spin"></div>
+                    <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-brand animate-spin"></div>
                     <img src={agronomyLogo} alt="Agronomy Logo" className="w-5 h-5 object-contain animate-pulse relative z-10" />
                   </div>
                   <div className="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 mt-2">
@@ -166,7 +166,7 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
               exit={{ opacity: 0, y: 8 }}
               transition={{ duration: 0.15 }}
               onClick={() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' })}
-              className="cursor-pointer absolute bottom-32 left-1/2 -translate-x-1/2 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-600 shadow-md text-gray-500 dark:text-gray-400 hover:border-[#EC6608] hover:text-[#EC6608] transition-colors"
+              className="cursor-pointer absolute bottom-32 left-1/2 -translate-x-1/2 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-600 shadow-md text-gray-500 dark:text-gray-400 hover:border-brand hover:text-brand transition-colors"
             >
               <ArrowDown size={15} />
             </motion.button>
@@ -177,7 +177,7 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
           <div className="absolute inset-0 bg-gradient-to-t from-[#F7F7FF] via-[#F7F7FF]/80 to-transparent transition-opacity duration-300 dark:opacity-0" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#2c3033] via-[#2c3033]/80 to-transparent transition-opacity duration-300 opacity-0 dark:opacity-100" />
           <div className="relative max-w-[800px] mx-auto pointer-events-auto">
-            <div className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-3xl shadow-lg p-2.5 flex items-center gap-2 transition-all duration-300 focus-within:border-[#EC6608]/50 focus-within:ring-2 focus-within:ring-[#EC6608]/10">
+            <div className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-3xl shadow-lg p-2.5 flex items-center gap-2 transition-all duration-300 focus-within:border-brand/50 focus-within:ring-2 focus-within:ring-brand/10">
               <input
                 type="text"
                 value={inputValue}
@@ -187,7 +187,7 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
                 className="flex-1 bg-transparent px-4 py-2 outline-none text-base text-[#131E29] dark:text-white placeholder:text-gray-400 disabled:opacity-50"
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleConsultar(); } }}
               />
-              <button onClick={onAdvancedClick} title="Visualização Avançada" className="cursor-pointer p-2 text-gray-400 hover:text-[#EC6608] hover:bg-orange-50 dark:hover:bg-[#EC6608]/10 rounded-full transition-colors duration-300">
+              <button onClick={onAdvancedClick} title="Visualização Avançada" className="cursor-pointer p-2 text-gray-400 hover:text-brand hover:bg-brand/5 dark:hover:bg-brand/10 rounded-full transition-colors duration-300">
                 <LayoutGrid className="w-5 h-5" />
               </button>
               <motion.button
@@ -197,8 +197,8 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
                 onClick={() => handleConsultar()}
                 className={`cursor-pointer w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors shadow-sm
                   ${thinking ? 'bg-gray-200 dark:bg-[#2c3033] text-gray-500 cursor-not-allowed' :
-                    inputValue.trim() ? 'bg-[#EC6608] text-white hover:bg-[#d95d07]' :
-                    'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608]'
+                    inputValue.trim() ? 'bg-brand text-white hover:bg-brand-dark' :
+                    'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-brand dark:hover:text-brand'
                   }`}
               >
                 <AnimatePresence mode="wait">
@@ -236,14 +236,14 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
           <div className="sticky top-0 z-20 w-full pt-4 pb-2 bg-[#F7F7FF] dark:bg-[#2c3033] transition-colors duration-300 sm:relative sm:pt-0 sm:pb-0 sm:bg-transparent">
             <motion.div variants={itemVariants} className="text-left mb-6 w-full">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#131E29] dark:text-white mb-2 transition-colors duration-300">
-                Olá, <span className="text-[#EC6608]">{firstName}</span> 👋
+                Olá, <span className="text-brand">{firstName}</span> 👋
               </h1>
               <p className="text-base text-gray-500 dark:text-gray-400 transition-colors duration-300">
                 O que podemos analisar na safra hoje?
               </p>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="w-full bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-4 mb-6 focus-within:border-[#EC6608]/50 focus-within:ring-2 focus-within:ring-[#EC6608]/10 transition-all duration-300">
+            <motion.div variants={itemVariants} className="w-full bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm p-4 mb-6 focus-within:border-brand/50 focus-within:ring-2 focus-within:ring-brand/10 transition-all duration-300">
               <input
                 type="text"
                 value={inputValue}
@@ -261,10 +261,10 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
                   ))}
                 </div>
                 <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                  <button onClick={onAdvancedClick} title="Visualização Avançada" className="cursor-pointer p-2 text-gray-400 hover:text-[#EC6608] hover:bg-orange-50 dark:hover:bg-[#EC6608]/10 rounded-full transition-colors duration-300">
+                  <button onClick={onAdvancedClick} title="Visualização Avançada" className="cursor-pointer p-2 text-gray-400 hover:text-brand hover:bg-brand/5 dark:hover:bg-brand/10 rounded-full transition-colors duration-300">
                     <LayoutGrid className="w-5 h-5" />
                   </button>
-                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleConsultar()} className={`cursor-pointer w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors shadow-sm ${inputValue.trim() ? 'bg-[#EC6608] text-white hover:bg-[#d95d07]' : 'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608]'}`}>
+                  <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => handleConsultar()} className={`cursor-pointer w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors shadow-sm ${inputValue.trim() ? 'bg-brand text-white hover:bg-brand-dark' : 'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-brand dark:hover:text-brand'}`}>
                     <AnimatePresence mode="wait">
                       {inputValue.trim() ? (
                         <motion.div key="send" initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
@@ -284,7 +284,7 @@ export default function FocusView({ onAdvancedClick, messages, conversationId, o
 
           <motion.div variants={itemVariants} className="w-full md:max-w-[90%] grid grid-cols-1 sm:grid-cols-2 gap-2 mt-5 mx-auto">
             {suggestions.map((text, i) => (
-              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} key={i} onClick={() => handleConsultar(text)} className="cursor-pointer text-left text-xs p-3.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#EC6608] dark:hover:border-[#EC6608] hover:bg-orange-50/50 dark:hover:bg-[#EC6608]/10 transition-colors duration-300 text-gray-600 dark:text-gray-300 shadow-sm bg-white dark:bg-[#323639]">
+              <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} key={i} onClick={() => handleConsultar(text)} className="cursor-pointer text-left text-xs p-3.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-brand dark:hover:border-brand hover:bg-brand/5 dark:hover:bg-brand/10 transition-colors duration-300 text-gray-600 dark:text-gray-300 shadow-sm bg-white dark:bg-[#323639]">
                 {text}
               </motion.button>
             ))}

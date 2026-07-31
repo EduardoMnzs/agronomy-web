@@ -131,7 +131,7 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
             className="pt-2 px-2 shrink-0"
           >
             <h2 className="text-xl font-bold text-[#131E29] dark:text-white transition-colors duration-300">
-              Olá, <span className="text-[#EC6608]">{firstName}</span> 👋
+              Olá, <span className="text-brand">{firstName}</span> 👋
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5 transition-colors duration-300">
               O que podemos analisar na safra hoje?
@@ -140,7 +140,7 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
         )}
       </AnimatePresence>
 
-      <Card className="shrink-0 relative group focus-within:border-[#EC6608]/50 dark:focus-within:border-[#EC6608]/50 transition-colors duration-300">
+      <Card className="shrink-0 relative group focus-within:border-brand/50 dark:focus-within:border-brand/50 transition-colors duration-300">
         <textarea
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
@@ -173,7 +173,7 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
               whileTap={!thinking ? { scale: 0.95 } : {}}
               onClick={onFocusClick}
               title="Modo Foco"
-              className="cursor-pointer p-2 text-gray-400 hover:text-[#EC6608] hover:bg-orange-50 dark:hover:bg-[#EC6608]/10 rounded-full transition-colors duration-300"
+              className="cursor-pointer p-2 text-gray-400 hover:text-brand hover:bg-brand/5 dark:hover:bg-brand/10 rounded-full transition-colors duration-300"
             >
               <Target className="w-4 h-4" />
             </motion.button>
@@ -186,8 +186,8 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
                 ${thinking
                   ? 'bg-gray-100 dark:bg-[#2c3033] text-gray-400 dark:text-gray-500 cursor-not-allowed'
                   : inputValue.trim()
-                    ? 'bg-[#EC6608] text-white hover:bg-[#d95d07] shadow-sm'
-                    : 'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-[#EC6608] dark:hover:text-[#EC6608]'
+                    ? 'bg-brand text-white hover:bg-brand-dark shadow-sm'
+                    : 'bg-gray-100 dark:bg-[#2c3033] text-gray-500 dark:text-gray-400 hover:text-brand dark:hover:text-brand'
                 }`}
             >
               <AnimatePresence mode="wait">
@@ -266,7 +266,7 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
                     exit={{ opacity: 0, y: 6 }}
                     transition={{ duration: 0.15 }}
                     onClick={() => scrollThreadToBottom()}
-                    className="cursor-pointer absolute bottom-2 inset-x-0 mx-auto w-fit flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-600 shadow-md text-xs font-medium text-gray-600 dark:text-gray-300 hover:border-[#EC6608] hover:text-[#EC6608] transition-colors z-10 whitespace-nowrap"
+                    className="cursor-pointer absolute bottom-2 inset-x-0 mx-auto w-fit flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-[#2c3033] border border-gray-200 dark:border-gray-600 shadow-md text-xs font-medium text-gray-600 dark:text-gray-300 hover:border-brand hover:text-brand transition-colors z-10 whitespace-nowrap"
                   >
                     <ArrowDown size={13} />
                     Ir para o final
@@ -290,7 +290,7 @@ export default function CenterColumn({ onFocusClick, selectedKnowledgeIds, messa
                   'Comparar cultivares BRS 1010 IPRO e M 5917 IPRO.',
                   'Impacto do estresse hídrico no enchimento de grãos?',
                 ].map((text, i) => (
-                  <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} key={i} onClick={() => handleConsultar(text)} className="cursor-pointer text-left text-xs p-3.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-[#EC6608] dark:hover:border-[#EC6608] hover:bg-orange-50/50 dark:hover:bg-[#EC6608]/10 transition-colors duration-300 text-gray-600 dark:text-gray-300 shadow-sm">
+                  <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} key={i} onClick={() => handleConsultar(text)} className="cursor-pointer text-left text-xs p-3.5 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-brand dark:hover:border-brand hover:bg-brand/5 dark:hover:bg-brand/10 transition-colors duration-300 text-gray-600 dark:text-gray-300 shadow-sm">
                     {text}
                   </motion.button>
                 ))}

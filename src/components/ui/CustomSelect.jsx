@@ -54,12 +54,12 @@ const CustomSelect = ({ options, value, onChange, placeholder, fullWidth, multip
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`${fullWidth ? 'cursor-pointer w-full border-gray-200 dark:border-transparent text-[#131E29] dark:text-white' : 'cursor-pointer w-full sm:w-[160px] border-transparent text-gray-700 dark:text-gray-300'} flex items-center justify-between bg-gray-50 dark:bg-[#2c3033] focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] hover:border-[#EC6608]/50 rounded-lg px-3 py-2.5 text-sm outline-none transition-all text-left shadow-sm border`}
+        className={`${fullWidth ? 'cursor-pointer w-full border-gray-200 dark:border-transparent text-[#131E29] dark:text-white' : 'cursor-pointer w-full sm:w-[160px] border-transparent text-gray-700 dark:text-gray-300'} flex items-center justify-between bg-gray-50 dark:bg-[#2c3033] focus:bg-white dark:focus:bg-[#323639] focus:border-brand hover:border-brand/50 rounded-lg px-3 py-2.5 text-sm outline-none transition-all text-left shadow-sm border`}
       >
         <span className="truncate">{getDisplayValue()}</span>
         <div className="flex items-center gap-1.5">
           {multiple && Array.isArray(value) && value.length > 0 && (
-            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#EC6608] text-white text-[10px] font-bold shadow-sm">
+            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-brand text-white text-[10px] font-bold shadow-sm">
               {value.length}
             </span>
           )}
@@ -80,7 +80,7 @@ const CustomSelect = ({ options, value, onChange, placeholder, fullWidth, multip
               <button
                 type="button"
                 onClick={() => { onChange(''); setIsOpen(false); }}
-                className={`cursor-pointer w-full text-left px-3 py-2 text-sm transition-colors ${!value ? 'bg-gray-50 dark:bg-[#2c3033] text-[#EC6608] font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#2c3033]'}`}
+                className={`cursor-pointer w-full text-left px-3 py-2 text-sm transition-colors ${!value ? 'bg-gray-50 dark:bg-[#2c3033] text-brand font-medium' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#2c3033]'}`}
               >
                 {placeholder}
               </button>
@@ -92,7 +92,7 @@ const CustomSelect = ({ options, value, onChange, placeholder, fullWidth, multip
                   key={option.value}
                   type="button"
                   onClick={() => handleToggle(option.value)}
-                  className={`cursor-pointer w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${selected ? 'bg-[#EC6608]/5 dark:bg-[#EC6608]/10 text-[#EC6608] font-semibold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#2c3033]'}`}
+                  className={`cursor-pointer w-full text-left px-3 py-2 text-sm transition-colors flex items-center justify-between ${selected ? 'bg-brand/5 dark:bg-brand/10 text-brand font-semibold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#2c3033]'}`}
                 >
                   <span className="truncate">{option.label}</span>
                   {selected && <Check size={14} strokeWidth={3} />}

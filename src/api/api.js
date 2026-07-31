@@ -1,9 +1,28 @@
 const BASE_URL = import.meta.env.VITE_API_URL;
 
+function redirectToLogin() {
+  // Full-page replace: clears in-memory state and doesn't stack history.
+  if (typeof window === 'undefined') return;
+  if (window.location.pathname.startsWith('/login')) return;
+  window.location.replace('/login');
+}
+
 async function request(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, options);
 
   if (!res.ok) {
+    // Expired / invalid token on an authenticated request → log out and bounce.
+    // We detect "authenticated" by the presence of the Authorization header,
+    // which is only attached via `authHeader()` and therefore never present on
+    // public endpoints (login, forgot-password, request-access, etc.).
+    const sentAuth = options.headers && (
+      options.headers.Authorization || options.headers.authorization
+    );
+    if (res.status === 401 && sentAuth) {
+      session.clear();
+      redirectToLogin();
+    }
+
     const data = await res.json().catch(() => ({}));
     const message = data.detail || `Erro ${res.status}`;
     const err = new Error(message);
@@ -47,7 +66,11 @@ export const documents = {
   list: (params = {}) => {
     const qs = new URLSearchParams();
     if (params.search) qs.set('search', params.search);
-    if (params.category) qs.set('category', params.category);
+    // category e tags são repetíveis (?category=solo&category=insumos) para o
+    // FastAPI receber como lista.
+    if (Array.isArray(params.category)) params.category.forEach((c) => qs.append('category', c));
+    else if (params.category) qs.set('category', params.category);
+    if (params.tags?.length) params.tags.forEach((t) => qs.append('tags', t));
     if (params.page) qs.set('page', params.page);
     if (params.limit) qs.set('limit', params.limit);
     const q = qs.toString();
@@ -55,6 +78,18 @@ export const documents = {
       headers: authHeader(),
     });
   },
+
+  tags: () =>
+    request('/knowledge/tags', {
+      headers: authHeader(),
+    }),
+
+  update: (id, payload) =>
+    request(`/knowledge/${id}`, {
+      method: 'PATCH',
+      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }),
 
   remove: (id) =>
     request(`/knowledge/${id}`, {

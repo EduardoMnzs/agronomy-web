@@ -92,7 +92,7 @@ function UserInfo() {
         <p className="text-xs font-bold text-[#131E29] dark:text-white leading-none transition-colors duration-300">{displayName}</p>
         <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium transition-colors duration-300">{displayEmail}</p>
       </div>
-      <div className="w-9 h-9 rounded-full bg-[#EC6608] text-white flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0 overflow-hidden">
+      <div className="w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shadow-sm flex-shrink-0 overflow-hidden">
         {data?.avatar_url ? (
           <img src={data.avatar_url} alt={displayName} className="w-full h-full object-cover" />
         ) : (

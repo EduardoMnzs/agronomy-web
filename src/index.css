@@ -3,12 +3,28 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Cor da marca em um único lugar. Trocar aqui reflete em toda a UI — os JSX
+ * usam os utilitários `text-brand`, `bg-brand/10`, `border-brand`,
+ * `hover:bg-brand-dark`, nunca o hex direto.
+ *
+ * `--brand-primary-rgb` existe porque `rgb(var(--x) / 0.08)` permite compor
+ * opacidade em CSS puro (fundos de destaque no markdown), onde não há
+ * utilitário Tailwind disponível.
+ */
+:root {
+  --brand-primary: #EC6608;
+  --brand-primary-dark: #d95d07;
+  --brand-primary-rgb: 236 102 8;
+}
+
 @theme {
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
   --color-navy: #131E29;
-  --color-orange-cta: #EC6608;
+  --color-brand: var(--brand-primary);
+  --color-brand-dark: var(--brand-primary-dark);
   --color-green-badge: #4B920D;
   --color-offwhite: #F7F7FF;
 }
@@ -95,7 +111,7 @@ html.dark body {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.8rem;
   background: #F3F4F6;
-  color: #EC6608;
+  color: var(--brand-primary);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
 }
@@ -115,7 +131,7 @@ html.dark body {
 }
 
 .prose-md blockquote {
-  border-left: 3px solid #EC6608;
+  border-left: 3px solid var(--brand-primary);
   padding-left: 1rem;
   color: #6B7280;
   font-style: italic;
@@ -123,7 +139,7 @@ html.dark body {
 }
 
 .prose-md a {
-  color: #EC6608;
+  color: var(--brand-primary);
   text-decoration: underline;
 }
 
@@ -176,7 +192,7 @@ html.dark body {
 
 .dark .prose-md code {
   background: #2c3033;
-  color: #EC6608;
+  color: var(--brand-primary);
 }
 
 .dark .prose-md pre {
@@ -241,14 +257,14 @@ html.dark body {
 .prose-answer code {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.8rem;
-  background: #FFF3E8;
-  color: #EC6608;
+  background: rgb(var(--brand-primary-rgb) / 0.08);
+  color: var(--brand-primary);
   padding: 0.1rem 0.4rem;
   border-radius: 4px;
 }
 .dark .prose-answer code {
-  background: rgba(236, 102, 8, 0.15);
-  color: #EC6608;
+  background: rgb(var(--brand-primary-rgb) / 0.15);
+  color: var(--brand-primary);
 }
 
 .prose-answer pre {
@@ -301,11 +317,11 @@ html.dark body {
   margin-bottom: 0.2rem;
 }
 .prose-answer li::marker {
-  color: #EC6608;
+  color: var(--brand-primary);
 }
 
 .prose-answer blockquote {
-  border-left: 3px solid #EC6608;
+  border-left: 3px solid var(--brand-primary);
   padding-left: 1rem;
   margin: 0.75rem 0;
   color: #6B7280;
@@ -316,12 +332,12 @@ html.dark body {
 }
 
 .prose-answer a {
-  color: #EC6608;
+  color: var(--brand-primary);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 .prose-answer a:hover {
-  color: #d95d07;
+  color: var(--brand-primary-dark);
 }
 
 .prose-answer hr {
@@ -340,15 +356,15 @@ html.dark body {
   font-size: 0.8rem;
 }
 .prose-answer th {
-  background: #FFF3E8;
-  color: #EC6608;
+  background: rgb(var(--brand-primary-rgb) / 0.08);
+  color: var(--brand-primary);
   font-weight: 600;
   padding: 0.4rem 0.75rem;
   border: 1px solid #E5E7EB;
   text-align: left;
 }
 .dark .prose-answer th {
-  background: rgba(236, 102, 8, 0.1);
+  background: rgb(var(--brand-primary-rgb) / 0.12);
   border-color: #4B5563;
 }
 .prose-answer td {
@@ -367,11 +383,20 @@ html.dark body {
   background: rgba(44, 48, 51, 0.4);
 }
 
+/* Tabelas largas em markdown: rolam dentro de si mesmas em vez de
+   estourar a largura do container do preview. */
+.prose-md table,
+.prose-answer table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 /* Citation superscripts like [1] */
 .prose-answer sup {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #EC6608;
+  color: var(--brand-primary);
   vertical-align: super;
   line-height: 0;
   margin-left: 1px;

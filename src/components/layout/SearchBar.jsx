@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { search as searchApi } from '../../api/api';
 import { useDocPreview } from '../../hooks/DocPreviewContext';
+import useDebounced from '../../hooks/useDebounced';
 
 const FILE_COLORS = {
   pdf: 'text-red-500',
@@ -19,15 +20,6 @@ const FILE_COLORS = {
 
 const ROLE_LABEL = { admin: 'Administrador', user: 'Usuário' };
 
-function useDebounced(value, delay) {
-  const [v, setV] = useState(value);
-  useEffect(() => {
-    const t = setTimeout(() => setV(value), delay);
-    return () => clearTimeout(t);
-  }, [value, delay]);
-  return v;
-}
-
 export default function SearchBar() {
   const navigate = useNavigate();
   const [q, setQ] = useState('');
@@ -38,7 +30,7 @@ export default function SearchBar() {
   const rootRef = useRef(null);
   const { openDocument } = useDocPreview();
 
-  const debounced = useDebounced(q, 250);
+  const debounced = useDebounced(q, 350);
 
   useEffect(() => {
     const term = debounced.trim();
@@ -133,9 +125,11 @@ export default function SearchBar() {
         onFocus={() => setOpen(true)}
         onKeyDown={onKeyDown}
         placeholder="Pesquisar conversas, documentos…"
-        className="pl-10 pr-8 py-2 text-xs border border-gray-200 dark:border-[#2c3033] rounded-full focus:outline-none focus:border-[#EC6608] focus:ring-2 focus:ring-[#EC6608]/10 transition-all bg-gray-50 dark:bg-[#2c3033] text-[#131E29] dark:text-white placeholder-gray-400 w-64 lg:w-80"
+        className="pl-10 pr-8 py-2 text-xs border border-gray-200 dark:border-[#2c3033] rounded-full focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all bg-gray-50 dark:bg-[#2c3033] text-[#131E29] dark:text-white placeholder-gray-400 w-64 lg:w-80"
       />
-      {loading && (
+      {/* Só mostra o spinner quando ainda não há resultados na tela — evita
+          piscar em cima de uma lista já renderizada a cada nova tecla. */}
+      {loading && !results && (
         <Loader2 size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 animate-spin" />
       )}
 
@@ -243,7 +237,7 @@ export default function SearchBar() {
                         onClick={() => goTo({ type: 'user', id: u.id, data: u })}
                         onMouseEnter={() => setActiveIdx(idx)}
                       >
-                        <div className="w-6 h-6 rounded-full bg-[#EC6608] text-white flex items-center justify-center text-[10px] font-bold shrink-0">
+                        <div className="w-6 h-6 rounded-full bg-brand text-white flex items-center justify-center text-[10px] font-bold shrink-0">
                           {initials || '?'}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -290,11 +284,11 @@ function ResultRow({ children, onClick, onMouseEnter, active }) {
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       className={`cursor-pointer w-full px-3 py-2 flex items-start gap-2.5 text-left transition-colors ${
-        active ? 'bg-[#EC6608]/10 dark:bg-[#EC6608]/15' : 'hover:bg-gray-50 dark:hover:bg-white/5'
+        active ? 'bg-brand/10 dark:bg-brand/15' : 'hover:bg-gray-50 dark:hover:bg-white/5'
       }`}
     >
       {children}
-      <ArrowRight size={12} className={`shrink-0 mt-1.5 transition-colors ${active ? 'text-[#EC6608]' : 'text-gray-300 dark:text-gray-600'}`} />
+      <ArrowRight size={12} className={`shrink-0 mt-1.5 transition-colors ${active ? 'text-brand' : 'text-gray-300 dark:text-gray-600'}`} />
     </button>
   );
 }

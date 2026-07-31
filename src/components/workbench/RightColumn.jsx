@@ -64,7 +64,7 @@ export default function RightColumn({ citations, onCitationClick, preview }) {
                   {CATEGORY_LABELS[previewDoc.category] ?? previewDoc.category ?? ''}
                   {ext ? ` · ${ext}` : ''}
                   {activeCitation?.page ? (
-                    <span className="text-[#EC6608]"> · pág. {activeCitation.page}</span>
+                    <span className="text-brand"> · pág. {activeCitation.page}</span>
                   ) : null}
                 </p>
               </div>
@@ -105,7 +105,7 @@ export default function RightColumn({ citations, onCitationClick, preview }) {
                 <div className="bg-white dark:bg-[#3a3f42] rounded shadow-sm p-4 text-[11px] text-gray-600 dark:text-gray-300 leading-relaxed w-full">
                   <p className="text-xs font-semibold text-[#131E29] dark:text-white mb-2">{citations[0].doc_name}</p>
                   <p className="text-xs text-gray-400 dark:text-gray-500">
-                    Clique em uma citação abaixo (ou em um <span className="text-[#EC6608] font-bold">[N]</span> na resposta) para visualizar o trecho.
+                    Clique em uma citação abaixo (ou em um <span className="text-brand font-bold">[N]</span> na resposta) para visualizar o trecho.
                   </p>
                 </div>
               </motion.div>
@@ -142,15 +142,15 @@ export default function RightColumn({ citations, onCitationClick, preview }) {
                     whileTap={{ scale: 0.99 }}
                     className={`text-left border rounded-lg p-3 transition-colors duration-300 cursor-pointer group ${
                       isActive
-                        ? 'border-[#EC6608] bg-orange-50 dark:bg-[#EC6608]/10'
-                        : 'border-gray-100 dark:border-[#2c3033] bg-gray-50/50 dark:bg-[#2c3033] hover:border-orange-200 dark:hover:border-[#EC6608] hover:bg-white dark:hover:bg-[#323639]'
+                        ? 'border-brand bg-brand/5 dark:bg-brand/10'
+                        : 'border-gray-100 dark:border-[#2c3033] bg-gray-50/50 dark:bg-[#2c3033] hover:border-brand/30 dark:hover:border-brand hover:bg-white dark:hover:bg-[#323639]'
                     }`}
                   >
                     <div className="flex items-start gap-2 mb-1.5">
-                      <span className="text-[10px] font-bold text-[#EC6608] bg-orange-100 dark:bg-[#EC6608]/20 px-1.5 py-0.5 rounded leading-none shrink-0 mt-0.5">
+                      <span className="text-[10px] font-bold text-brand bg-brand/10 dark:bg-brand/20 px-1.5 py-0.5 rounded leading-none shrink-0 mt-0.5">
                         {source.ref ?? `[${i + 1}]`}
                       </span>
-                      <span className="text-xs font-medium text-[#131E29] dark:text-white truncate group-hover:text-[#EC6608] transition-colors duration-300">
+                      <span className="text-xs font-medium text-[#131E29] dark:text-white truncate group-hover:text-brand transition-colors duration-300">
                         {source.doc_name}
                       </span>
                       {source.page && (

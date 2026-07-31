@@ -17,7 +17,7 @@ export default function MarkdownAnswer({ text, className = '', citations, onCita
       const ref = Number(n);
       const cite = citations.find((c) => c.ref === ref);
       if (!cite) return match;
-      return `<button type="button" data-cite-ref="${ref}" class="inline-flex items-center justify-center text-[10px] font-bold text-[#EC6608] bg-orange-100 dark:bg-[#EC6608]/20 hover:bg-[#EC6608] hover:text-white px-1.5 py-0.5 rounded leading-none align-super mx-0.5 cursor-pointer transition-colors" title="${(cite.doc_name || '').replace(/"/g, '&quot;')} · pág. ${cite.page}">${ref}</button>`;
+      return `<button type="button" data-cite-ref="${ref}" class="inline-flex items-center justify-center text-[10px] font-bold text-brand bg-brand/10 dark:bg-brand/20 hover:bg-brand hover:text-white px-1.5 py-0.5 rounded leading-none align-super mx-0.5 cursor-pointer transition-colors" title="${(cite.doc_name || '').replace(/"/g, '&quot;')} · pág. ${cite.page}">${ref}</button>`;
     });
   }, [text, citations]);
 

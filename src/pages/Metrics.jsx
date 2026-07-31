@@ -20,7 +20,7 @@ function KpiCard({ icon: Icon, label, value, hint, delay = 0 }) {
       transition={{ duration: 0.25, ease: 'easeOut', delay }}
       className="bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-700 rounded-xl p-4 flex items-start gap-3 shadow-sm"
     >
-      <div className="w-10 h-10 rounded-lg flex items-center justify-center text-[#EC6608] bg-[#EC6608]/10">
+      <div className="w-10 h-10 rounded-lg flex items-center justify-center text-brand bg-brand/10">
         <Icon size={18} />
       </div>
       <div className="flex-1 min-w-0">
@@ -72,7 +72,7 @@ function DailyChart({ daily, baseDelay = 0 }) {
                 initial={{ height: 0 }}
                 animate={{ height: `${heightPct}%`, minHeight: d.total > 0 ? 4 : 0 }}
                 transition={{ duration: 0.5, ease: 'easeOut', delay: baseDelay + i * 0.03 }}
-                className="w-full bg-[#EC6608] rounded-t-sm relative overflow-hidden hover:bg-[#d95d07] transition-colors"
+                className="w-full bg-brand rounded-t-sm relative overflow-hidden hover:bg-brand-dark transition-colors"
                 title={`${formatDayBR(d.date)}: ${d.total} consultas${d.errors ? ` (${d.errors} erros)` : ''}`}
               >
                 {errorPct > 0 && (
@@ -176,7 +176,7 @@ function ModelsList({ models }) {
           <span className="w-48 truncate font-mono text-gray-600 dark:text-gray-300" title={m.model}>{m.model}</span>
           <div className="flex-1 bg-gray-100 dark:bg-[#2c3033] rounded-full h-2 overflow-hidden">
             <div
-              className="bg-[#EC6608] h-full rounded-full"
+              className="bg-brand h-full rounded-full"
               style={{ width: `${(m.count / max) * 100}%` }}
             />
           </div>
@@ -283,7 +283,7 @@ export default function Metrics() {
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-semibold text-[#131E29] dark:text-white">Consultas por dia</h3>
                     <span className="text-[10px] text-gray-400 flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-sm bg-[#EC6608]" /> total
+                      <span className="w-2 h-2 rounded-sm bg-brand" /> total
                       <span className="w-2 h-2 rounded-sm bg-red-500 ml-2" /> erros
                     </span>
                   </div>

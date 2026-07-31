@@ -202,7 +202,7 @@ export default function MyDocuments() {
             </div>
             <button
               onClick={() => setIsUploadOpen(true)}
-              className="cursor-pointer bg-[#EC6608] hover:bg-[#d95d07] text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm whitespace-nowrap"
+              className="cursor-pointer bg-brand hover:bg-brand-dark text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm whitespace-nowrap"
             >
               <Plus size={16} />
               Novo documento
@@ -218,7 +218,7 @@ export default function MyDocuments() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Pesquisar por nome do documento..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-[#2c3033] border border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-xl text-sm text-[#131E29] dark:text-white placeholder-gray-400 outline-none transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-[#2c3033] border border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-xl text-sm text-[#131E29] dark:text-white placeholder-gray-400 outline-none transition-all"
                 />
               </div>
 
@@ -242,7 +242,7 @@ export default function MyDocuments() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 10 }}
                   onClick={clearFilters}
-                  className="cursor-pointer text-xs font-bold text-[#EC6608] hover:text-[#d95d07] flex items-center gap-1.5 transition-colors"
+                  className="cursor-pointer text-xs font-bold text-brand hover:text-brand-dark flex items-center gap-1.5 transition-colors"
                 >
                   <X size={14} />
                   Limpar Filtros
@@ -253,7 +253,7 @@ export default function MyDocuments() {
 
           {loading ? (
             <div className="py-20 flex flex-col items-center justify-center gap-3">
-              <Loader2 size={28} className="animate-spin text-[#EC6608]" />
+              <Loader2 size={28} className="animate-spin text-brand" />
               <p className="text-sm text-gray-500 dark:text-gray-400">Carregando...</p>
             </div>
           ) : docs.length === 0 ? (
@@ -414,7 +414,7 @@ function DocCard({ doc, onDelete, onDownload, onPreview, variants }) {
       </h3>
 
       <div className="flex items-center gap-2 mb-3">
-        <span className="px-2 py-0.5 rounded-md bg-[#EC6608]/10 text-[#EC6608] text-[10px] font-bold uppercase tracking-wider">
+        <span className="px-2 py-0.5 rounded-md bg-brand/10 text-brand text-[10px] font-bold uppercase tracking-wider">
           {CATEGORY_LABELS[doc.category] ?? doc.category ?? '—'}
         </span>
         {ext && <span className="text-[10px] text-gray-400 font-medium uppercase">{ext}</span>}
@@ -439,7 +439,7 @@ function DocCard({ doc, onDelete, onDownload, onPreview, variants }) {
             <button
               onClick={(e) => { e.stopPropagation(); onPreview?.(); }}
               title="Visualizar"
-              className="cursor-pointer p-1.5 text-gray-400 hover:text-[#EC6608] hover:bg-[#EC6608]/10 rounded-md transition-colors"
+              className="cursor-pointer p-1.5 text-gray-400 hover:text-brand hover:bg-brand/10 rounded-md transition-colors"
             >
               <Eye size={14} />
             </button>
@@ -447,7 +447,7 @@ function DocCard({ doc, onDelete, onDownload, onPreview, variants }) {
           <button
             onClick={(e) => { e.stopPropagation(); onDownload(); }}
             title="Baixar"
-            className="cursor-pointer p-1.5 text-gray-400 hover:text-[#EC6608] hover:bg-[#EC6608]/10 rounded-md transition-colors"
+            className="cursor-pointer p-1.5 text-gray-400 hover:text-brand hover:bg-brand/10 rounded-md transition-colors"
           >
             <Download size={14} />
           </button>
@@ -555,10 +555,10 @@ function UploadModal({ onClose, onSuccess }) {
             onClick={() => !file && inputRef.current?.click()}
             className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-colors ${
               isDragging
-                ? 'border-[#EC6608] bg-[#EC6608]/5'
+                ? 'border-brand bg-brand/5'
                 : file
                 ? 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-[#2c3033] cursor-default'
-                : 'border-gray-200 dark:border-gray-700 hover:border-[#EC6608] cursor-pointer'
+                : 'border-gray-200 dark:border-gray-700 hover:border-brand cursor-pointer'
             }`}
           >
             <input
@@ -571,7 +571,7 @@ function UploadModal({ onClose, onSuccess }) {
             {file ? (
               <div className="flex items-center gap-3 text-left">
                 <div className="w-10 h-10 rounded-lg bg-white dark:bg-[#323639] border border-gray-200 dark:border-gray-600 flex items-center justify-center shrink-0">
-                  <FileText size={18} className="text-[#EC6608]" />
+                  <FileText size={18} className="text-brand" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-[#131E29] dark:text-white truncate">{file.name}</p>
@@ -589,7 +589,7 @@ function UploadModal({ onClose, onSuccess }) {
               <div className="space-y-2">
                 <UploadCloud size={28} className="mx-auto text-gray-400" />
                 <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-                  Arraste um arquivo ou <span className="text-[#EC6608]">clique para selecionar</span>
+                  Arraste um arquivo ou <span className="text-brand">clique para selecionar</span>
                 </p>
                 <p className="text-[11px] text-gray-400">PDF, DOCX, CSV, XLSX, JSON, MD (até 100 MB)</p>
               </div>
@@ -604,7 +604,7 @@ function UploadModal({ onClose, onSuccess }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Como você quer identificar este arquivo"
-              className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none"
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none"
             />
           </div>
 
@@ -625,7 +625,7 @@ function UploadModal({ onClose, onSuccess }) {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none resize-none"
+              className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none resize-none"
             />
           </div>
 
@@ -635,7 +635,7 @@ function UploadModal({ onClose, onSuccess }) {
               id="persistent"
               checked={persistent}
               onChange={(e) => setPersistent(e.target.checked)}
-              className="mt-0.5 w-4 h-4 accent-[#EC6608]"
+              className="mt-0.5 w-4 h-4 accent-brand"
             />
             <label htmlFor="persistent" className="flex-1 cursor-pointer">
               <p className="text-sm font-medium text-[#131E29] dark:text-white">Manter permanentemente</p>
@@ -663,7 +663,7 @@ function UploadModal({ onClose, onSuccess }) {
             <button
               type="submit"
               disabled={submitting || !file}
-              className="cursor-pointer bg-[#EC6608] hover:bg-[#d95d07] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+              className="cursor-pointer bg-brand hover:bg-brand-dark text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {submitting && <Loader2 size={14} className="animate-spin" />}
               Enviar

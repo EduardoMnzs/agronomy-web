@@ -244,7 +244,7 @@ export default function UsersPage() {
             {activeTab === 'users' && (
               <button
                 onClick={handleNewUser}
-                className="cursor-pointer bg-[#EC6608] hover:bg-[#d95d07] text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm whitespace-nowrap"
+                className="cursor-pointer bg-brand hover:bg-brand-dark text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors shadow-sm whitespace-nowrap"
               >
                 <Plus size={16} />
                 Adicionar Usuário
@@ -271,7 +271,7 @@ export default function UsersPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar por nome ou e-mail..."
-                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-[#2c3033] border border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] dark:focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#EC6608]/20 transition-all"
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-[#2c3033] border border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand dark:focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all"
               />
             </div>
             <div className="flex gap-2">
@@ -309,7 +309,7 @@ export default function UsersPage() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 10 }}
                   onClick={clearFilters}
-                  className="cursor-pointer text-xs font-bold text-[#EC6608] hover:text-[#d95d07] flex items-center gap-1.5 transition-colors"
+                  className="cursor-pointer text-xs font-bold text-brand hover:text-brand-dark flex items-center gap-1.5 transition-colors"
                 >
                   <X size={14} />
                   Limpar Filtros
@@ -349,7 +349,7 @@ export default function UsersPage() {
                       <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-[#EC6608]/10 text-[#EC6608] flex items-center justify-center font-bold text-sm shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-brand/10 text-brand flex items-center justify-center font-bold text-sm shrink-0">
                               {u.full_name.split(' ').map((n) => n[0]).join('').substring(0, 2)}
                             </div>
                             <div>
@@ -362,7 +362,7 @@ export default function UsersPage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300">
-                            <Shield size={14} className={u.role === 'admin' ? 'text-[#EC6608]' : 'text-gray-400'} />
+                            <Shield size={14} className={u.role === 'admin' ? 'text-brand' : 'text-gray-400'} />
                             {ROLE_LABEL[u.role] ?? u.role}
                           </div>
                         </td>
@@ -378,7 +378,7 @@ export default function UsersPage() {
                           <div className="flex items-center justify-end gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                             <button
                               onClick={() => handleEditUser(u)}
-                              className="cursor-pointer p-1.5 text-gray-400 hover:text-[#EC6608] hover:bg-[#EC6608]/10 rounded-md transition-colors"
+                              className="cursor-pointer p-1.5 text-gray-400 hover:text-brand hover:bg-brand/10 rounded-md transition-colors"
                             >
                               <Edit2 size={16} />
                             </button>
@@ -417,7 +417,7 @@ export default function UsersPage() {
                     onClick={() => setCurrentPage(i + 1)}
                     className={`cursor-pointer w-10 h-10 rounded-xl text-sm font-bold transition-all ${
                       currentPage === i + 1
-                        ? 'bg-[#EC6608] text-white'
+                        ? 'bg-brand text-white'
                         : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5'
                     }`}
                   >
@@ -470,7 +470,7 @@ export default function UsersPage() {
                     value={formData.full_name}
                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                     placeholder="Ex: João da Silva"
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none transition-all"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none transition-all"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -481,7 +481,7 @@ export default function UsersPage() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     placeholder="joao@fazenda.com"
-                    className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none transition-all"
+                    className="w-full px-3 py-2 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none transition-all"
                   />
                 </div>
                 <div className={editingUser ? 'grid grid-cols-2 gap-3' : ''}>
@@ -544,14 +544,14 @@ export default function UsersPage() {
                             value={formData.password}
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                             placeholder="Mínimo 6 caracteres"
-                            className="w-full px-3 py-2 pr-20 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none transition-all"
+                            className="w-full px-3 py-2 pr-20 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none transition-all"
                           />
                           <div className="absolute inset-y-0 right-2 flex items-center gap-0.5">
                             <button
                               type="button"
                               onClick={() => navigator.clipboard?.writeText(formData.password)}
                               title="Copiar"
-                              className="cursor-pointer p-1.5 text-gray-400 hover:text-[#EC6608] transition-colors"
+                              className="cursor-pointer p-1.5 text-gray-400 hover:text-brand transition-colors"
                             >
                               <Copy size={14} />
                             </button>
@@ -559,7 +559,7 @@ export default function UsersPage() {
                               type="button"
                               onClick={generatePassword}
                               title="Gerar nova senha"
-                              className="cursor-pointer p-1.5 text-gray-400 hover:text-[#EC6608] transition-colors"
+                              className="cursor-pointer p-1.5 text-gray-400 hover:text-brand transition-colors"
                             >
                               <RefreshCw size={14} />
                             </button>
@@ -575,7 +575,7 @@ export default function UsersPage() {
                               setResetPassword(false);
                               setFormData({ ...formData, password: '' });
                             }}
-                            className="cursor-pointer text-[11px] text-gray-500 hover:text-[#EC6608] underline transition-colors shrink-0"
+                            className="cursor-pointer text-[11px] text-gray-500 hover:text-brand underline transition-colors shrink-0"
                           >
                             Cancelar
                           </button>
@@ -594,13 +594,13 @@ export default function UsersPage() {
                         value={formData.password}
                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         placeholder="Mínimo 6 caracteres"
-                        className="w-full px-3 py-2 pr-10 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-[#EC6608] rounded-lg text-sm text-[#131E29] dark:text-white outline-none transition-all"
+                        className="w-full px-3 py-2 pr-10 bg-gray-50 dark:bg-[#2c3033] border border-gray-200 dark:border-transparent focus:bg-white dark:focus:bg-[#323639] focus:border-brand rounded-lg text-sm text-[#131E29] dark:text-white outline-none transition-all"
                       />
                       <button
                         type="button"
                         onClick={generatePassword}
                         title="Gerar senha aleatória"
-                        className="cursor-pointer absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#EC6608] transition-colors"
+                        className="cursor-pointer absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand transition-colors"
                       >
                         <RefreshCw size={16} />
                       </button>
@@ -625,7 +625,7 @@ export default function UsersPage() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="cursor-pointer bg-[#EC6608] hover:bg-[#d95d07] text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="cursor-pointer bg-brand hover:bg-brand-dark text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     {submitting && <Loader2 size={14} className="animate-spin" />}
                     {editingUser ? 'Salvar Alterações' : 'Criar Usuário'}
@@ -698,12 +698,12 @@ function TabButton({ active, onClick, children }) {
       onClick={onClick}
       className={`cursor-pointer px-4 py-2.5 text-sm font-medium rounded-t-lg transition-colors relative ${
         active
-          ? 'text-[#EC6608]'
+          ? 'text-brand'
           : 'text-gray-500 dark:text-gray-400 hover:text-[#131E29] dark:hover:text-white'
       }`}
     >
       {children}
-      {active && <span className="absolute left-0 right-0 -bottom-px h-0.5 bg-[#EC6608]" />}
+      {active && <span className="absolute left-0 right-0 -bottom-px h-0.5 bg-brand" />}
     </button>
   );
 }
